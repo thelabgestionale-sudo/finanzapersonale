@@ -1064,33 +1064,35 @@ canvas { max-width: 100%; }
 // CONFIGURAZIONE
 // ─────────────────────────────────────────────────────────────
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzoB4S0ItxNugJoDbvu8hWbJu9AyRLItSFuqYGSdGnxlQVqlYXadWj9y_mKybLKbfue/exec';
-const AUTH_TOKEN = 'finanza_marco_2024';
+const AUTH_TOKEN  = 'fp-marco-a3f9b2c1-7e4d-4821-beee-mussinatto2024';
+const AUTH_EMAIL  = 'mussinatto.marco@gmail.com';
 
 function saveConfig() {
-  toast('URL e token già configurati nel codice.', 'info');
+  toast('Credenziali già configurate nel codice.', 'info');
 }
 
 // Cache dati
 let _cache = { spazi: [], categorie: [] };
 
 // ─────────────────────────────────────────────────────────────
-// API  (tutte le chiamate includono il token di autenticazione)
+// API — ogni chiamata include token + email (come The Lab)
 // ─────────────────────────────────────────────────────────────
 async function apiGet(action) {
-  const res  = await fetch(`${APPS_SCRIPT_URL}?action=${action}&token=${AUTH_TOKEN}`);
+  const res  = await fetch(`${APPS_SCRIPT_URL}?action=${action}&token=${encodeURIComponent(AUTH_TOKEN)}&email=${encodeURIComponent(AUTH_EMAIL)}`);
   const json = await res.json();
-  if (!json.ok) throw new Error(json.error || 'Errore sconosciuto dal server');
-  return json.data;
+  if (json.error) throw new Error(json.error);
+  return json;
 }
 
 async function apiPost(action, payload) {
+  const body = Object.assign({ action, token: AUTH_TOKEN, email: AUTH_EMAIL }, payload || {});
   const res  = await fetch(APPS_SCRIPT_URL, {
     method: 'POST',
-    body: JSON.stringify({ action, payload, token: AUTH_TOKEN }),
+    body: JSON.stringify(body),
   });
   const json = await res.json();
-  if (!json.ok) throw new Error(json.error || 'Errore sconosciuto dal server');
-  return json.data;
+  if (json.error) throw new Error(json.error);
+  return json;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1328,7 +1330,8 @@ async function loadEntrate() {
   const el = document.getElementById('entrateTable');
   el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   try {
-    const rows = await apiGet('getEntrate');
+    const rawRows = await apiGet('getEntrate');
+    const rows = Array.isArray(rawRows) ? rawRows : [];
     if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↑</div><p>Nessuna entrata registrata.</p></div>'; return; }
     el.innerHTML = `<table>
       <thead><tr><th>Data</th><th>Importo</th><th>Fonte</th><th>Descrizione</th><th>Spazio</th><th></th></tr></thead>
@@ -1351,7 +1354,8 @@ async function loadSpese() {
   const el = document.getElementById('speseTable');
   el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   try {
-    const rows = await apiGet('getSpese');
+    const rawRows = await apiGet('getSpese');
+    const rows = Array.isArray(rawRows) ? rawRows : [];
     await loadCacheIfNeeded();
     if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↓</div><p>Nessuna spesa registrata.</p></div>'; return; }
     el.innerHTML = `<table>
@@ -1382,7 +1386,8 @@ async function loadRicorrenti() {
   const el = document.getElementById('ricorrentiTable');
   el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   try {
-    const rows = await apiGet('getRicorrenti');
+    const rawRows = await apiGet('getRicorrenti');
+    const rows = Array.isArray(rawRows) ? rawRows : [];
     if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↻</div><p>Nessuna spesa ricorrente.</p></div>'; return; }
     el.innerHTML = `<table>
       <thead><tr><th>Nome</th><th>Importo</th><th>Frequenza</th><th>Scadenza</th><th>Spazio</th><th>Stato</th><th></th></tr></thead>
@@ -1407,7 +1412,8 @@ async function loadSpazi() {
   el.innerHTML = '<div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>';
   try {
     const rows = await apiGet('getSpazi');
-    _cache.spazi = rows;
+    const rowsArr = Array.isArray(rows) ? rows : [];
+    _cache.spazi = rowsArr;
     if (!rows.length) { el.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">◉</div><p>Nessuno spazio configurato.</p></div>'; return; }
     el.innerHTML = rows.map(s => {
       const saldo = parseFloat(s.Saldo)||0;
@@ -1431,7 +1437,8 @@ async function loadAccantonamenti() {
   const el = document.getElementById('accGrid');
   el.innerHTML = '<div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>';
   try {
-    const rows = await apiGet('getAccantonamenti');
+    const rawRows = await apiGet('getAccantonamenti');
+    const rows = Array.isArray(rawRows) ? rawRows : [];
     if (!rows.length) { el.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⊕</div><p>Nessun accantonamento.</p></div>'; return; }
     const tipoColors = { tasse:'#f2636a', spese:'#5b8af7', investimento:'#4fcf7a', generico:'#e2c96e' };
     el.innerHTML = rows.map(r => {
@@ -1464,7 +1471,8 @@ async function loadInvestimenti() {
   const el = document.getElementById('invTable');
   el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   try {
-    const rows = await apiGet('getInvestimenti');
+    const rawRows = await apiGet('getInvestimenti');
+    const rows = Array.isArray(rawRows) ? rawRows : [];
     if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">▲</div><p>Nessun investimento registrato.</p></div>'; return; }
     el.innerHTML = `<table>
       <thead><tr><th>Nome</th><th>Tipo</th><th>Valore Iniziale</th><th>Valore Attuale</th><th>Rendimento</th><th>Data</th><th></th></tr></thead>
@@ -1494,7 +1502,8 @@ async function loadCategorie() {
   const el = document.getElementById('catTable');
   el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   try {
-    const rows = await apiGet('getCategorie');
+    const rawRows = await apiGet('getCategorie');
+    const rows = Array.isArray(rawRows) ? rawRows : [];
     _cache.categorie = rows;
     if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">≡</div><p>Nessuna categoria.</p></div>'; return; }
     el.innerHTML = `<table>
@@ -1514,8 +1523,12 @@ async function loadCategorie() {
 // CACHE SPAZI & CATEGORIE per SELECT
 // ─────────────────────────────────────────────────────────────
 async function loadCacheIfNeeded() {
-  if (!_cache.spazi.length) _cache.spazi = await apiGet('getSpazi').catch(()=>[]);
-  if (!_cache.categorie.length) _cache.categorie = await apiGet('getCategorie').catch(()=>[]);
+  if (!_cache.spazi.length) {
+    try { const r = await apiGet('getSpazi'); _cache.spazi = Array.isArray(r) ? r : []; } catch(e) { _cache.spazi = []; }
+  }
+  if (!_cache.categorie.length) {
+    try { const r = await apiGet('getCategorie'); _cache.categorie = Array.isArray(r) ? r : []; } catch(e) { _cache.categorie = []; }
+  }
 }
 
 function fillSpazioSelect(id) {
@@ -1641,7 +1654,6 @@ async function submitCategoria() {
 async function submit(action, payload, modalId, reload) {
   try {
     const res = await apiPost(action, payload);
-    if (res.error) throw new Error(res.error);
     closeModal(modalId);
     toast('Salvato con successo', 'success');
     reload();
@@ -1651,8 +1663,7 @@ async function submit(action, payload, modalId, reload) {
 async function deleteItem(id, sheet) {
   if (!confirm('Eliminare questo elemento?')) return;
   try {
-    const res = await apiPost('deleteRow', { id, sheet });
-    if (res.error) throw new Error(res.error);
+    await apiPost('deleteRow', { id, sheet });
     toast('Eliminato', 'success');
     refreshAll();
   } catch(e) { toast(e.message, 'error'); }
@@ -1666,7 +1677,8 @@ async function testConnection() {
   el.textContent = '⏳ Connessione in corso…';
   try {
     const res = await apiGet('getSpazi');
-    el.innerHTML = `<span style="color:var(--green)">✓ Connessione riuscita — ${res.length} spazi trovati.</span>`;
+    const count = Array.isArray(res) ? res.length : 0;
+    el.innerHTML = `<span style="color:var(--green)">✓ Connessione riuscita — ${count} spazi trovati.</span>`;
   } catch(e) {
     el.innerHTML = `<span style="color:var(--red)">✗ Errore: ${e.message}</span>`;
   }
