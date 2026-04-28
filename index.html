@@ -121,7 +121,8 @@ tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
 .modal-overlay.open { display: flex; }
 .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow); animation: slideUp 0.25s ease; }
 @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-.modal-title { font-family: var(--font-serif); font-size: 1.3rem; color: var(--gold); margin-bottom: 24px; }
+.modal-title.editing { color: var(--teal); }
+.modal-title.editing::before { content: '✎ '; }
 .form-group { margin-bottom: 18px; }
 .form-group label { display: block; font-size: 0.75rem; color: var(--text-dim); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 7px; }
 .form-group input, .form-group select, .form-group textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; color: var(--text); font-family: var(--font-sans); font-size: 0.88rem; outline: none; transition: border-color 0.18s; appearance: none; }
@@ -1526,6 +1527,21 @@ function labelFonte(k) {
   return m[k] || k;
 }
 
+// Risolve ID spazio → Nome leggibile (fallback sull'ID se non trovato)
+function nomeSpazio(idOrNome) {
+  if (!idOrNome) return '—';
+  const found = _cache.spazi.find(s => s.ID === idOrNome || s.Nome === idOrNome);
+  return found ? found.Nome : idOrNome;
+}
+
+// Risolve ID categoria → badge con colore (fallback testo grezzo)
+function catBadge(catIdOrNome) {
+  if (!catIdOrNome) return '<span style="color:var(--text-dim)">—</span>';
+  const cat = _cache.categorie.find(c => c.ID === catIdOrNome || c.Nome === catIdOrNome);
+  if (!cat) return `<span class="pill" style="border-color:var(--border);color:var(--text-dim)">${catIdOrNome}</span>`;
+  return `<span class="pill" style="border-color:${cat.Colore}40;color:${cat.Colore};background:${cat.Colore}18">${cat.Icona||''} ${cat.Nome}</span>`;
+}
+
 function renderSpazioCard(s) {
   const saldo = parseFloat(s.Saldo) || 0;
   const color = s.Colore || '#888';
@@ -1552,6 +1568,7 @@ async function loadEntrate() {
   const alertEl = document.getElementById('fiscalAlertContainer');
   alertEl.innerHTML = '';
   try {
+    await loadCacheIfNeeded();
     const rawRows = await apiGet('getEntrate');
     const rows = Array.isArray(rawRows) ? rawRows : [];
 
@@ -1589,13 +1606,14 @@ async function loadEntrate() {
 
     if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↑</div><p>Nessuna entrata registrata.</p></div>'; return; }
     el.innerHTML = `<table>
-      <thead><tr><th>Data</th><th>Importo</th><th>Fonte</th><th>Stato</th><th>Descrizione</th><th>Spazio</th><th>Acc. Fiscale</th><th></th></tr></thead>
+      <thead><tr><th>Data</th><th>Importo</th><th>Fonte</th><th>Stato</th><th>Descrizione</th><th>Spazio</th><th>Acc. Fiscale</th><th style="width:80px"></th></tr></thead>
       <tbody>${rows.map(r => {
         const imp  = parseFloat(r.Importo) || 0;
         const rend = isRendicontata(r);
         const isPiva = r.Fonte === 'partita_iva_consulenza' || r.Fonte === 'partita_iva_affitto';
         const calc = (isPiva && rend) ? calcolaAccFiscale(imp, r.Fonte) : null;
         const noteClean = (r.Note || '').replace('[RENDICONTATA]','').replace('[NON_RENDICONTATA]','').trim();
+        const spazioNome = nomeSpazio(r.SpazioDestinatario);
         return `<tr>
           <td>${fmtDate(r.Data)}</td>
           <td><span class="positive" style="font-family:var(--font-mono)">+ € ${imp.toLocaleString('it-IT',{minimumFractionDigits:2})}</span></td>
@@ -1606,9 +1624,12 @@ async function loadEntrate() {
                 : `<span class="pill" style="border-color:rgba(251,146,60,0.4);color:var(--orange);background:rgba(251,146,60,0.1);font-size:0.65rem;">⏳ Non rend.</span>`)
             : '—'}</td>
           <td>${r.Descrizione||''}${noteClean?`<br><span style="font-size:0.7rem;color:var(--text-dim)">${noteClean}</span>`:''}</td>
-          <td>${r.SpazioDestinatario||''}</td>
+          <td>${spazioNome}</td>
           <td>${calc ? `<span style="font-family:var(--font-mono);color:var(--orange);font-size:0.8rem;">- € ${calc.totale.toFixed(2)}</span>` : '<span style="color:var(--text-dim);font-size:0.75rem;">—</span>'}</td>
-          <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Entrate')">✕</button></td>
+          <td style="white-space:nowrap;">
+            <button class="btn btn-ghost btn-sm" style="padding:5px 8px;" onclick="editEntrata(${JSON.stringify(r).replace(/"/g,'&quot;')})" title="Modifica">✎</button>
+            <button class="btn btn-danger btn-sm" style="padding:5px 8px;" onclick="deleteItem('${r.ID}','Entrate')" title="Elimina">✕</button>
+          </td>
         </tr>`;
       }).join('')}</tbody>
     </table>`;
@@ -1625,24 +1646,21 @@ async function loadSpese() {
     await loadCacheIfNeeded();
     if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↓</div><p>Nessuna spesa registrata.</p></div>'; return; }
     el.innerHTML = `<table>
-      <thead><tr><th>Data</th><th>Importo</th><th>Categoria</th><th>Tipo</th><th>Descrizione</th><th>Spazio</th><th></th></tr></thead>
+      <thead><tr><th>Data</th><th>Importo</th><th>Categoria</th><th>Tipo</th><th>Descrizione</th><th>Spazio</th><th style="width:80px"></th></tr></thead>
       <tbody>${rows.map(r => `<tr>
         <td>${fmtDate(r.Data)}</td>
         <td><span class="negative" style="font-family:var(--font-mono)">- € ${parseFloat(r.Importo).toLocaleString('it-IT',{minimumFractionDigits:2})}</span></td>
         <td>${catBadge(r.Categoria)}</td>
         <td><span class="pill" style="border-color:var(--border);color:var(--text-dim)">${r.Tipo||''}</span></td>
         <td>${r.Descrizione||''}</td>
-        <td>${r.SpazioDiPrelievo||''}</td>
-        <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Spese')">✕</button></td>
+        <td>${nomeSpazio(r.SpazioDiPrelievo)}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn btn-ghost btn-sm" style="padding:5px 8px;" onclick="editSpesa(${JSON.stringify(r).replace(/"/g,'&quot;')})" title="Modifica">✎</button>
+          <button class="btn btn-danger btn-sm" style="padding:5px 8px;" onclick="deleteItem('${r.ID}','Spese')" title="Elimina">✕</button>
+        </td>
       </tr>`).join('')}</tbody>
     </table>`;
   } catch(e) { el.innerHTML = errMsg(e); }
-}
-
-function catBadge(catId) {
-  const cat = _cache.categorie.find(c => c.ID === catId || c.Nome === catId);
-  if (!cat) return `<span class="pill" style="border-color:var(--border);color:var(--text-dim)">${catId||''}</span>`;
-  return `<span class="pill" style="border-color:${cat.Colore}30;color:${cat.Colore};background:${cat.Colore}18">${cat.Icona||''} ${cat.Nome}</span>`;
 }
 
 // ─── RICORRENTI ───────────────────────────────────────────────
@@ -1650,6 +1668,7 @@ async function loadRicorrenti() {
   const el = document.getElementById('ricorrentiTable');
   el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   try {
+    await loadCacheIfNeeded();
     const rawRows = await apiGet('getRicorrenti');
     const rows = Array.isArray(rawRows) ? rawRows : [];
     if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↻</div><p>Nessuna spesa ricorrente.</p></div>'; return; }
@@ -1668,7 +1687,7 @@ async function loadRicorrenti() {
         <span style="font-size:0.72rem;color:var(--text-dim);margin-left:auto;">${rows.filter(r=>r.Attiva).length} attive su ${rows.length}</span>
       </div>
       <table>
-        <thead><tr><th>Nome</th><th>Importo</th><th>Frequenza</th><th>Mensile equiv.</th><th>Scadenza</th><th>Spazio</th><th>Stato</th><th></th></tr></thead>
+        <thead><tr><th>Nome</th><th>Importo</th><th>Frequenza</th><th>Mensile equiv.</th><th>Scadenza</th><th>Spazio</th><th>Stato</th><th style="width:80px"></th></tr></thead>
         <tbody>${rows.map(r => {
           const imp = parseFloat(r.Importo) || 0;
           const f = r.Frequenza || 'mensile';
@@ -1682,9 +1701,12 @@ async function loadRicorrenti() {
             <td>${r.Frequenza||''}</td>
             <td style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text-dim);">€ ${mensile.toFixed(2)}</td>
             <td>giorno ${r.GiornoScadenza||''}</td>
-            <td>${r.SpazioDiPrelievo||''}</td>
+            <td>${nomeSpazio(r.SpazioDiPrelievo)}</td>
             <td><span class="pill" style="border-color:${r.Attiva?'var(--green)':'var(--text-dim)'};color:${r.Attiva?'var(--green)':'var(--text-dim)'}">${r.Attiva?'Attiva':'Inattiva'}</span></td>
-            <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','SpesesRicorrenti')">✕</button></td>
+            <td style="white-space:nowrap;">
+              <button class="btn btn-ghost btn-sm" style="padding:5px 8px;" onclick="editRicorrente(${JSON.stringify(r).replace(/"/g,'&quot;')})" title="Modifica">✎</button>
+              <button class="btn btn-danger btn-sm" style="padding:5px 8px;" onclick="deleteItem('${r.ID}','SpesesRicorrenti')" title="Elimina">✕</button>
+            </td>
           </tr>`;
         }).join('')}</tbody>
       </table>`;
@@ -1718,6 +1740,7 @@ async function loadAccantonamenti() {
   const el = document.getElementById('accGrid');
   el.innerHTML = '<div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>';
   try {
+    await loadCacheIfNeeded();
     const rawRows = await apiGet('getAccantonamenti');
     const rows = Array.isArray(rawRows) ? rawRows : [];
     if (!rows.length) { el.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⊕</div><p>Nessun accantonamento.</p></div>'; return; }
@@ -1739,7 +1762,11 @@ async function loadAccantonamenti() {
         <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
         <div class="acc-pct">${pct.toFixed(1)}% completato${r.Scadenza?' · Scade: '+fmtDate(r.Scadenza):''}</div>
         ${r.Note?`<div style="font-size:0.75rem;color:var(--text-dim);margin-top:8px;">${r.Note}</div>`:''}
-        <div style="margin-top:12px;"><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Accantonamenti')">Rimuovi</button></div>
+        <div style="font-size:0.72rem;color:var(--text-dim);margin-top:6px;">${r.Spazio ? `Spazio: ${nomeSpazio(r.Spazio)}` : ''}</div>
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="editAccantonamento(${JSON.stringify(r).replace(/"/g,'&quot;')})">✎ Modifica</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Accantonamenti')">✕</button>
+        </div>
       </div>`;
     }).join('');
   } catch(e) { el.innerHTML = errMsg(e); }
@@ -1767,7 +1794,10 @@ async function loadInvestimenti() {
           <td style="font-family:var(--font-mono)">€ ${att.toLocaleString('it-IT',{minimumFractionDigits:2})}</td>
           <td><span class="${delta>=0?'positive':'negative'}" style="font-family:var(--font-mono)">${delta>=0?'+':''}${pct}%</span></td>
           <td>${fmtDate(r.DataInizio)}</td>
-          <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Investimenti')">✕</button></td>
+          <td style="white-space:nowrap;">
+            <button class="btn btn-ghost btn-sm" style="padding:5px 8px;" onclick="editInvestimento(${JSON.stringify(r).replace(/"/g,'&quot;')})" title="Modifica">✎</button>
+            <button class="btn btn-danger btn-sm" style="padding:5px 8px;" onclick="deleteItem('${r.ID}','Investimenti')" title="Elimina">✕</button>
+          </td>
         </tr>`;
       }).join('')}</tbody>
     </table>`;
@@ -2208,7 +2238,26 @@ function fillCatSelect(id) {
 }
 
 function openModal(id) { document.getElementById(id).classList.add('open'); prepModal(id); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  // Reset edit mode whenever a modal is closed
+  if (_editMode) {
+    _editMode = false; _editId = null; _editSheet = null;
+    const modal = document.getElementById(id);
+    if (modal) {
+      const titleEl = modal.querySelector('.modal-title');
+      if (titleEl) titleEl.classList.remove('editing');
+      const saveBtn = modal.querySelector('.modal-footer .btn-primary');
+      if (saveBtn) saveBtn.textContent = saveBtn.getAttribute('data-default-text') || 'Salva';
+    }
+  }
+}
+
+async function submitSpazio() {
+  const payload = { nome: v('spz_nome'), tipo: v('spz_tipo'), saldo: v('spz_saldo'), colore: v('spz_colore'), note: v('spz_note') };
+  if (!payload.nome) return toast('Inserisci un nome', 'error');
+  await submit('addSpazio', payload, 'modalSpazio', loadSpazi);
+}
 
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
@@ -2253,38 +2302,171 @@ function openQuickAdd() {
   else openModal('modalSpesa');
 }
 
-// ─── SUBMIT ───────────────────────────────────────────────────
+// ─── MODIFICA RECORD ─────────────────────────────────────────
+// Stato globale per la modifica
+let _editMode = false;
+let _editId   = null;
+let _editSheet = null;
+
+function setEditMode(title, id, sheet) {
+  _editMode  = true;
+  _editId    = id;
+  _editSheet = sheet;
+  // Cambia aspetto titolo e pulsante salva
+  const modal = document.getElementById('modal' + title);
+  if (modal) {
+    const titleEl = modal.querySelector('.modal-title');
+    if (titleEl) titleEl.classList.add('editing');
+    const saveBtn = modal.querySelector('.modal-footer .btn-primary');
+    if (saveBtn) saveBtn.textContent = 'Aggiorna';
+  }
+}
+
+function clearEditMode(modalName) {
+  _editMode = false; _editId = null; _editSheet = null;
+  const modal = document.getElementById('modal' + modalName);
+  if (modal) {
+    const titleEl = modal.querySelector('.modal-title');
+    if (titleEl) titleEl.classList.remove('editing');
+    const saveBtn = modal.querySelector('.modal-footer .btn-primary');
+    if (saveBtn) saveBtn.textContent = saveBtn.getAttribute('data-orig-text') || 'Salva';
+  }
+}
+
+// updateRow: chiama updateEntrata/updateSpesa/etc sul backend tramite deleteRow + addX
+// Il backend non ha un updateRow generico quindi usiamo la strategia:
+// 1. Aggiorna il record con un'azione dedicata se disponibile (updateSpazio esiste)
+// 2. Altrimenti: delete + insert (con rollback saldo gestito dal backend)
+async function apiUpdateRow(sheet, id, payload) {
+  // Per Spazi esiste updateSpazio nativo
+  if (sheet === 'Spazi') return apiPost('updateSpazio', { id, ...payload });
+  // Per gli altri: delete poi add
+  // Prima eliminiamo (il backend fa rollback del saldo), poi inseriamo
+  await apiPost('deleteRow', { id, sheet });
+  const actionMap = {
+    Entrate: 'addEntrata', Spese: 'addSpesa',
+    SpesesRicorrenti: 'addRicorrente', Accantonamenti: 'addAccantonamento',
+    Investimenti: 'addInvestimento', Categorie: 'addCategoria'
+  };
+  const action = actionMap[sheet];
+  if (!action) throw new Error('Azione di aggiornamento non disponibile per: ' + sheet);
+  return apiPost(action, payload);
+}
+
+async function editEntrata(r) {
+  await loadCacheIfNeeded();
+  openModal('modalEntrata');
+  // Sovrascrive i valori dopo apertura (prepModal li resetta)
+  await new Promise(res => setTimeout(res, 50));
+  document.getElementById('ent_data').value    = r.Data ? r.Data.substring(0, 10) : '';
+  document.getElementById('ent_importo').value  = r.Importo || '';
+  document.getElementById('ent_fonte').value    = r.Fonte || 'partita_iva_consulenza';
+  document.getElementById('ent_desc').value     = r.Descrizione || '';
+  // Risolvi spazio: imposta l'opzione corretta
+  const spazioSel = document.getElementById('ent_spazio');
+  if (spazioSel) setSelectValue(spazioSel, r.SpazioDestinatario);
+  // Gestione rendicontazione
+  const noteRaw = r.Note || '';
+  const noteClean = noteRaw.replace('[RENDICONTATA]','').replace('[NON_RENDICONTATA]','').trim();
+  document.getElementById('ent_note').value = noteClean;
+  const nonRend = noteRaw.includes('[NON_RENDICONTATA]');
+  setRendicontata(!nonRend);
+  aggiornaPrevistaFiscale();
+  setEditMode('Entrata', r.ID, 'Entrate');
+}
+
+async function editSpesa(r) {
+  await loadCacheIfNeeded();
+  openModal('modalSpesa');
+  await new Promise(res => setTimeout(res, 50));
+  document.getElementById('spe_data').value      = r.Data ? r.Data.substring(0, 10) : '';
+  document.getElementById('spe_importo').value    = r.Importo || '';
+  document.getElementById('spe_tipo').value       = r.Tipo || 'quotidiana';
+  document.getElementById('spe_desc').value       = r.Descrizione || '';
+  document.getElementById('spe_note').value       = r.Note || '';
+  setSelectValue(document.getElementById('spe_categoria'), r.Categoria);
+  setSelectValue(document.getElementById('spe_spazio'), r.SpazioDiPrelievo);
+  setEditMode('Spesa', r.ID, 'Spese');
+}
+
+async function editRicorrente(r) {
+  await loadCacheIfNeeded();
+  openModal('modalRicorrente');
+  await new Promise(res => setTimeout(res, 50));
+  document.getElementById('ric_nome').value     = r.Nome || '';
+  document.getElementById('ric_importo').value  = r.Importo || '';
+  document.getElementById('ric_freq').value     = r.Frequenza || 'mensile';
+  document.getElementById('ric_giorno').value   = r.GiornoScadenza || 1;
+  document.getElementById('ric_note').value     = r.Note || '';
+  setSelectValue(document.getElementById('ric_categoria'), r.Categoria);
+  setSelectValue(document.getElementById('ric_spazio'), r.SpazioDiPrelievo);
+  setEditMode('Ricorrente', r.ID, 'SpesesRicorrenti');
+}
+
+async function editAccantonamento(r) {
+  await loadCacheIfNeeded();
+  openModal('modalAccantonamento');
+  await new Promise(res => setTimeout(res, 50));
+  document.getElementById('acc_nome').value       = r.Nome || '';
+  document.getElementById('acc_obiettivo').value  = r.Obiettivo || '';
+  document.getElementById('acc_accumulato').value = r.Accumulato || '';
+  document.getElementById('acc_tipo').value       = r.Tipo || 'generico';
+  document.getElementById('acc_scadenza').value   = r.Scadenza ? r.Scadenza.substring(0,10) : '';
+  document.getElementById('acc_note').value       = r.Note || '';
+  const spazioSel = document.getElementById('acc_spazio');
+  if (spazioSel) setSelectValue(spazioSel, r.Spazio);
+  setEditMode('Accantonamento', r.ID, 'Accantonamenti');
+}
+
+async function editInvestimento(r) {
+  openModal('modalInvestimento');
+  await new Promise(res => setTimeout(res, 50));
+  document.getElementById('inv_nome').value      = r.Nome || '';
+  document.getElementById('inv_tipo').value      = r.Tipo || 'etf';
+  document.getElementById('inv_data').value      = r.DataInizio ? r.DataInizio.substring(0,10) : '';
+  document.getElementById('inv_iniziale').value  = r.ValoreIniziale || '';
+  document.getElementById('inv_attuale').value   = r.ValoreAttuale || '';
+  document.getElementById('inv_note').value      = r.Note || '';
+  setEditMode('Investimento', r.ID, 'Investimenti');
+}
+
+// Helper: imposta il valore di un select cercando per value (ID) o per testo
+function setSelectValue(sel, value) {
+  if (!sel || !value) return;
+  // Prova con il valore esatto prima
+  for (const opt of sel.options) {
+    if (opt.value === value) { sel.value = value; return; }
+  }
+  // Prova con testo (per categorie salvate per nome anziché ID)
+  for (const opt of sel.options) {
+    if (opt.textContent.trim().includes(value)) { sel.value = opt.value; return; }
+  }
+}
+
+// ─── SUBMIT (aggiorna se in editMode, altrimenti inserisce) ──
 async function submitEntrata() {
   const importo = parseFloat(v('ent_importo')) || 0;
   const fonte   = v('ent_fonte');
   const isPiva  = fonte === 'partita_iva_consulenza' || fonte === 'partita_iva_affitto';
-
-  // Costruisce il campo note con il flag rendicontazione
   let noteBase = v('ent_note');
   if (isPiva) {
     const flag = _rendicontata ? '[RENDICONTATA]' : '[NON_RENDICONTATA]';
     noteBase = noteBase ? `${flag} ${noteBase}` : flag;
   }
-
   const payload = {
-    data: v('ent_data'), importo: importo, fonte: fonte,
+    data: v('ent_data'), importo, fonte,
     descrizione: v('ent_desc'), spazioDestinatario: v('ent_spazio'), note: noteBase,
   };
   if (!payload.data || !payload.importo) return toast('Compila data e importo', 'error');
 
-  // Calcola accantonamento SOLO se rendicontata
   const calcolo = (isPiva && _rendicontata) ? calcolaAccFiscale(importo, fonte) : null;
 
-  await submit('addEntrata', payload, 'modalEntrata', () => loadEntrate());
-
-  if (calcolo && calcolo.totale > 0) {
-    setTimeout(() => {
-      toast(`⚖ Ricorda di accantonare € ${calcolo.totale.toFixed(2)} per tasse/contributi (${labelFonte(fonte)})`, 'warning');
-    }, 600);
-  } else if (isPiva && !_rendicontata) {
-    setTimeout(() => {
-      toast(`📋 Entrata registrata come NON rendicontata — nessun accantonamento fiscale calcolato`, 'info');
-    }, 600);
+  if (_editMode && _editSheet === 'Entrate') {
+    await submitEdit('Entrate', _editId, payload, 'modalEntrata', loadEntrate);
+  } else {
+    await submit('addEntrata', payload, 'modalEntrata', () => loadEntrate());
+    if (calcolo?.totale > 0) setTimeout(() => toast(`⚖ Ricorda di accantonare € ${calcolo.totale.toFixed(2)} per tasse/contributi`, 'warning'), 600);
+    else if (isPiva && !_rendicontata) setTimeout(() => toast('📋 Entrata registrata come NON rendicontata', 'info'), 600);
   }
 }
 
@@ -2294,7 +2476,8 @@ async function submitSpesa() {
     tipo: v('spe_tipo'), descrizione: v('spe_desc'), spazioDiPrelievo: v('spe_spazio'), note: v('spe_note'),
   };
   if (!payload.data || !payload.importo) return toast('Compila data e importo', 'error');
-  await submit('addSpesa', payload, 'modalSpesa', loadSpese);
+  if (_editMode && _editSheet === 'Spese') await submitEdit('Spese', _editId, payload, 'modalSpesa', loadSpese);
+  else await submit('addSpesa', payload, 'modalSpesa', loadSpese);
 }
 
 async function submitRicorrente() {
@@ -2304,13 +2487,8 @@ async function submitRicorrente() {
     spazioDiPrelievo: v('ric_spazio'), note: v('ric_note'), attiva: true,
   };
   if (!payload.nome || !payload.importo) return toast('Compila nome e importo', 'error');
-  await submit('addRicorrente', payload, 'modalRicorrente', loadRicorrenti);
-}
-
-async function submitSpazio() {
-  const payload = { nome: v('spz_nome'), tipo: v('spz_tipo'), saldo: v('spz_saldo'), colore: v('spz_colore'), note: v('spz_note') };
-  if (!payload.nome) return toast('Inserisci un nome', 'error');
-  await submit('addSpazio', payload, 'modalSpazio', loadSpazi);
+  if (_editMode && _editSheet === 'SpesesRicorrenti') await submitEdit('SpesesRicorrenti', _editId, payload, 'modalRicorrente', loadRicorrenti);
+  else await submit('addRicorrente', payload, 'modalRicorrente', loadRicorrenti);
 }
 
 async function submitAccantonamento() {
@@ -2319,7 +2497,8 @@ async function submitAccantonamento() {
     tipo: v('acc_tipo'), scadenza: v('acc_scadenza'), spazio: v('acc_spazio'), note: v('acc_note'),
   };
   if (!payload.nome || !payload.obiettivo) return toast('Compila nome e obiettivo', 'error');
-  await submit('addAccantonamento', payload, 'modalAccantonamento', loadAccantonamenti);
+  if (_editMode && _editSheet === 'Accantonamenti') await submitEdit('Accantonamenti', _editId, payload, 'modalAccantonamento', loadAccantonamenti);
+  else await submit('addAccantonamento', payload, 'modalAccantonamento', loadAccantonamenti);
 }
 
 async function submitInvestimento() {
@@ -2328,13 +2507,25 @@ async function submitInvestimento() {
     valoreIniziale: v('inv_iniziale'), valoreAttuale: v('inv_attuale'), note: v('inv_note'),
   };
   if (!payload.nome || !payload.valoreIniziale) return toast('Compila nome e valore', 'error');
-  await submit('addInvestimento', payload, 'modalInvestimento', loadInvestimenti);
+  if (_editMode && _editSheet === 'Investimenti') await submitEdit('Investimenti', _editId, payload, 'modalInvestimento', loadInvestimenti);
+  else await submit('addInvestimento', payload, 'modalInvestimento', loadInvestimenti);
 }
 
 async function submitCategoria() {
   const payload = { nome: v('cat_nome'), tipo: v('cat_tipo'), icona: v('cat_icona'), colore: v('cat_colore') };
   if (!payload.nome) return toast('Inserisci un nome', 'error');
   await submit('addCategoria', payload, 'modalCategoria', loadCategorie);
+}
+
+async function submitEdit(sheet, id, payload, modalId, reload) {
+  try {
+    await apiUpdateRow(sheet, id, payload);
+    closeModal(modalId);
+    clearEditMode(modalId.replace('modal', ''));
+    _cache.spazi = []; _cache.categorie = []; // invalida cache
+    toast('Aggiornato con successo', 'success');
+    reload();
+  } catch(e) { toast(e.message, 'error'); }
 }
 
 async function submit(action, payload, modalId, reload) {
@@ -2350,8 +2541,9 @@ async function deleteItem(id, sheet) {
   if (!confirm('Eliminare questo elemento?')) return;
   try {
     await apiPost('deleteRow', { id, sheet });
+    _cache.spazi = []; _cache.categorie = []; // invalida cache
     toast('Eliminato', 'success');
-    refreshAll();
+    loadPage(currentPage());
   } catch(e) { toast(e.message, 'error'); }
 }
 
