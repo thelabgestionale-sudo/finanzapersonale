@@ -1063,7 +1063,7 @@ canvas { max-width: 100%; }
 // ─────────────────────────────────────────────────────────────
 // CONFIGURAZIONE
 // ─────────────────────────────────────────────────────────────
-let APPS_SCRIPT_URL = localStorage.getItem('finanza_url') || '';
+let APPS_SCRIPT_URL = localStorage.getItem('finanza_url') || 'https://script.google.com/macros/s/AKfycbxtXZhNdAA40AHwxagCs5x0QsDCct1WqD2lU3FiGFi01wjC44QWxiKcEC3xvkgpcgoS/exec';
 
 function saveConfig() {
   APPS_SCRIPT_URL = document.getElementById('setupUrl').value.trim();
