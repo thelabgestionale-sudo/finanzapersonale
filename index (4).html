@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Finanza Personale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* ── VARIABILI & RESET ────────────────────────────────────── */
+:root {
+  --bg:        #0d0d14;
+  --surface:   #141420;
+  --surface2:  #1a1a2e;
+  --surface3:  #20203d;
+  --border:    rgba(226,201,110,0.12);
+  --gold:      #e2c96e;
+  --gold-dim:  rgba(226,201,110,0.4);
+  --gold-glow: rgba(226,201,110,0.08);
+  --text:      #e8e6f0;
+  --text-dim:  #7a7898;
+  --green:     #4fcf7a;
+  --red:       #f2636a;
+  --blue:      #5b8af7;
+  --purple:    #a78bfa;
+  --orange:    #fb923c;
+  --radius:    12px;
+  --radius-lg: 20px;
+  --shadow:    0 8px 32px rgba(0,0,0,0.5);
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans:  'DM Sans', system-ui, sans-serif;
+  --font-mono:  'JetBrains Mono', monospace;
+  --sidebar-w: 240px;
+  --topbar-h:  64px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* ── SIDEBAR ──────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  transition: transform 0.3s ease;
+}
+.sidebar-logo {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo h1 {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  color: var(--gold);
+  line-height: 1.2;
+  font-weight: 700;
+}
+.sidebar-logo p {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-top: 3px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.nav {
+  flex: 1;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav-section {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 10px 12px 6px;
+  margin-top: 8px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.18s;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+.nav-item:hover { background: var(--gold-glow); color: var(--text); }
+.nav-item.active {
+  background: rgba(226,201,110,0.12);
+  color: var(--gold);
+  font-weight: 500;
+}
+.nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+.nav-badge {
+  margin-left: auto;
+  font-size: 0.65rem;
+  background: var(--gold);
+  color: var(--bg);
+  border-radius: 999px;
+  padding: 1px 7px;
+  font-weight: 600;
+}
+
+/* ── TOPBAR ───────────────────────────────────────────────── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.topbar {
+  height: var(--topbar-h);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.topbar-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--text);
+}
+.topbar-actions { display: flex; gap: 12px; align-items: center; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: all 0.18s;
+}
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+}
+.btn-ghost:hover { border-color: var(--gold-dim); color: var(--gold); }
+.btn-primary {
+  background: var(--gold);
+  color: var(--bg);
+}
+.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-sm { padding: 6px 14px; font-size: 0.78rem; }
+.btn-danger { background: rgba(242,99,106,0.15); color: var(--red); border: 1px solid rgba(242,99,106,0.3); }
+.btn-danger:hover { background: rgba(242,99,106,0.25); }
+
+/* ── CONTENT ──────────────────────────────────────────────── */
+.content {
+  padding: 32px;
+  flex: 1;
+}
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── CARD ─────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+.card-title {
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+  letter-spacing: 0.04em;
+}
+.card-value {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1;
+}
+.card-sub {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+.positive { color: var(--green) !important; }
+.negative { color: var(--red) !important; }
+.gold     { color: var(--gold) !important; }
+
+/* ── GRID LAYOUTS ─────────────────────────────────────────── */
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+.mt-20 { margin-top: 20px; }
+.mt-28 { margin-top: 28px; }
+
+/* ── STAT CARDS SPECIALI ──────────────────────────────────── */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  transition: transform 0.2s;
+}
+.stat-card:hover { transform: translateY(-2px); }
+.stat-card .icon {
+  font-size: 1.6rem;
+  margin-bottom: 10px;
+  display: block;
+}
+.stat-card .label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.stat-card .amount {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+.stat-card .delta {
+  font-size: 0.75rem;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── TABLE ────────────────────────────────────────────────── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+thead th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+}
+tbody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.15s;
+}
+tbody tr:hover { background: var(--gold-glow); }
+tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
+.pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+/* ── MODAL ────────────────────────────────────────────────── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(13,13,20,0.85);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.modal-title {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  color: var(--gold);
+  margin-bottom: 24px;
+}
+.form-group { margin-bottom: 18px; }
+.form-group label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.18s;
+  appearance: none;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { border-color: var(--gold-dim); }
+.form-group textarea { resize: vertical; min-height: 72px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.modal-footer { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+
+/* ── SPAZIO CARDS ─────────────────────────────────────────── */
+.spazio-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+.spazio-card:hover { transform: translateY(-2px); }
+.spazio-card .dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+.spazio-card .spazio-tipo {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+.spazio-card .spazio-nome {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+.spazio-card .spazio-saldo {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+.spazio-card .spazio-note {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+.progress-bar {
+  height: 4px;
+  background: var(--surface3);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--gold);
+  transition: width 0.6s ease;
+}
+
+/* ── CHART CONTAINERS ─────────────────────────────────────── */
+.chart-container { position: relative; }
+.chart-title {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+canvas { max-width: 100%; }
+
+/* ── LOADING ──────────────────────────────────────────────── */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 48px;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── TOAST ────────────────────────────────────────────────── */
+#toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.toast-msg {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  font-size: 0.83rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--shadow);
+  animation: slideIn 0.25s ease;
+  max-width: 320px;
+}
+.toast-msg.success { border-left: 3px solid var(--green); }
+.toast-msg.error   { border-left: 3px solid var(--red); }
+.toast-msg.info    { border-left: 3px solid var(--gold); }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── ACCANTONAMENTO CARDS ─────────────────────────────────── */
+.acc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+.acc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.acc-nome { font-family: var(--font-serif); font-size: 1rem; }
+.acc-tipo { font-size: 0.65rem; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.1em; }
+.acc-numbers { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.acc-curr { font-family: var(--font-mono); font-size: 1.2rem; }
+.acc-target { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-dim); align-self: flex-end; }
+.acc-pct { font-size: 0.72rem; color: var(--text-dim); margin-top: 6px; text-align: right; }
+
+/* ── EMPTY STATE ──────────────────────────────────────────── */
+.empty {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-dim);
+}
+.empty .empty-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5; }
+.empty p { font-size: 0.85rem; }
+
+/* ── SETUP BANNER ────────────────────────────────────────── */
+.setup-banner {
+  background: linear-gradient(135deg, rgba(226,201,110,0.08), rgba(226,201,110,0.03));
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+.setup-banner .icon { font-size: 2rem; flex-shrink: 0; margin-top: 2px; }
+.setup-banner h3 { font-family: var(--font-serif); font-size: 1.15rem; color: var(--gold); margin-bottom: 6px; }
+.setup-banner p { font-size: 0.83rem; color: var(--text-dim); line-height: 1.6; }
+.setup-banner .code {
+  display: inline-block;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--gold);
+  margin: 2px;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 1100px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 800px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: none; }
+  .main { margin-left: 0; }
+  .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .grid-2-1 { grid-template-columns: 1fr; }
+  .content { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ──────────────────────────────────────────────── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <h1>Finanza<br>Personale</h1>
+    <p>Gestione patrimonio</p>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Panoramica</div>
+    <button class="nav-item active" data-page="dashboard">
+      <span class="nav-icon">◈</span> Dashboard
+    </button>
+
+    <div class="nav-section">Flussi</div>
+    <button class="nav-item" data-page="entrate">
+      <span class="nav-icon">↑</span> Entrate
+    </button>
+    <button class="nav-item" data-page="spese">
+      <span class="nav-icon">↓</span> Spese
+    </button>
+    <button class="nav-item" data-page="ricorrenti">
+      <span class="nav-icon">↻</span> Spese Ricorrenti
+    </button>
+
+    <div class="nav-section">Patrimonio</div>
+    <button class="nav-item" data-page="spazi">
+      <span class="nav-icon">◉</span> Spazi & Saldi
+    </button>
+    <button class="nav-item" data-page="accantonamenti">
+      <span class="nav-icon">⊕</span> Accantonamenti
+    </button>
+    <button class="nav-item" data-page="investimenti">
+      <span class="nav-icon">▲</span> Investimenti
+    </button>
+
+    <div class="nav-section">Impostazioni</div>
+    <button class="nav-item" data-page="categorie">
+      <span class="nav-icon">≡</span> Categorie
+    </button>
+    <button class="nav-item" data-page="setup">
+      <span class="nav-icon">⚙</span> Configurazione
+    </button>
+  </nav>
+</aside>
+
+<!-- ── MAIN ─────────────────────────────────────────────────── -->
+<div class="main">
+  <header class="topbar">
+    <span class="topbar-title" id="topbarTitle">Dashboard</span>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost btn-sm" onclick="refreshAll()">↺ Aggiorna</button>
+      <button class="btn btn-primary btn-sm" id="quickAddBtn" onclick="openQuickAdd()">+ Aggiungi</button>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <!-- ═══════════ DASHBOARD ═══════════ -->
+    <div class="page active" id="page-dashboard">
+      <div id="dashboardContent">
+        <div class="loading"><div class="spinner"></div> Caricamento dati…</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ ENTRATE ═══════════ -->
+    <div class="page" id="page-entrate">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <h2 style="font-family:var(--font-serif);font-size:1.4rem;">Entrate</h2>
+          <p style="color:var(--text-dim);font-size:0.8rem;margin-top:4px;">Partita IVA, affitti, contanti</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modalEntrata')">+ Nuova Entrata</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap" id="entrateTable">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ SPESE ═══════════ -->
+    <div class="page" id="page-spese">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <h2 style="font-family:var(--font-serif);font-size:1.4rem;">Spese</h2>
+          <p style="color:var(--text-dim);font-size:0.8rem;margin-top:4px;">Quotidiane e straordinarie</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modalSpesa')">+ Nuova Spesa</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap" id="speseTable">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ RICORRENTI ═══════════ -->
+    <div class="page" id="page-ricorrenti">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <h2 style="font-family:var(--font-serif);font-size:1.4rem;">Spese Ricorrenti</h2>
+          <p style="color:var(--text-dim);font-size:0.8rem;margin-top:4px;">Abbonamenti, affitti, utenze</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modalRicorrente')">+ Nuova Ricorrente</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap" id="ricorrentiTable">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ SPAZI ═══════════ -->
+    <div class="page" id="page-spazi">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <h2 style="font-family:var(--font-serif);font-size:1.4rem;">Spazi & Saldi</h2>
+          <p style="color:var(--text-dim);font-size:0.8rem;margin-top:4px;">Contanti, carte, conti</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modalSpazio')">+ Nuovo Spazio</button>
+      </div>
+      <div class="grid-3" id="spaziGrid">
+        <div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ ACCANTONAMENTI ═══════════ -->
+    <div class="page" id="page-accantonamenti">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <h2 style="font-family:var(--font-serif);font-size:1.4rem;">Accantonamenti</h2>
+          <p style="color:var(--text-dim);font-size:0.8rem;margin-top:4px;">Tasse, spese future, investimenti programmati</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modalAccantonamento')">+ Nuovo</button>
+      </div>
+      <div class="grid-3" id="accGrid">
+        <div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ INVESTIMENTI ═══════════ -->
+    <div class="page" id="page-investimenti">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <h2 style="font-family:var(--font-serif);font-size:1.4rem;">Investimenti</h2>
+          <p style="color:var(--text-dim);font-size:0.8rem;margin-top:4px;">Portafoglio e performance</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modalInvestimento')">+ Nuovo</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap" id="invTable">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ CATEGORIE ═══════════ -->
+    <div class="page" id="page-categorie">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <h2 style="font-family:var(--font-serif);font-size:1.4rem;">Categorie</h2>
+          <p style="color:var(--text-dim);font-size:0.8rem;margin-top:4px;">Gestisci le categorie di spesa</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modalCategoria')">+ Nuova</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap" id="catTable">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ SETUP ═══════════ -->
+    <div class="page" id="page-setup">
+      <h2 style="font-family:var(--font-serif);font-size:1.4rem;margin-bottom:24px;">Configurazione</h2>
+      <div class="setup-banner">
+        <div class="icon">🔧</div>
+        <div>
+          <h3>Primo avvio – collega il tuo Google Sheet</h3>
+          <p>Per iniziare, hai bisogno di:</p>
+          <ol style="margin:12px 0 0 16px;line-height:2.2;font-size:0.83rem;color:var(--text-dim);">
+            <li>Creare un <strong style="color:var(--text)">Google Sheet</strong> vuoto su drive.google.com</li>
+            <li>Andare su <strong style="color:var(--text)">script.google.com</strong> → Nuovo progetto</li>
+            <li>Incollare il contenuto di <span class="code">Code.gs</span></li>
+            <li>Inserire il tuo <span class="code">SPREADSHEET_ID</span> nell'apposito campo del file .gs</li>
+            <li>Distribuire come <strong style="color:var(--text)">Web App</strong> (esegui come: Me, accesso: Chiunque)</li>
+            <li>Incollare l'URL della Web App qui sotto e salvare</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="card" style="max-width:560px;">
+        <div class="form-group">
+          <label>URL Google Apps Script Web App</label>
+          <input type="url" id="setupUrl" placeholder="https://script.google.com/macros/s/…/exec"
+            value="" oninput="saveConfig()" />
+        </div>
+        <div style="display:flex;gap:12px;margin-top:8px;">
+          <button class="btn btn-primary" onclick="testConnection()">✓ Testa Connessione</button>
+          <button class="btn btn-ghost" onclick="initSheets()">⬡ Inizializza Fogli</button>
+        </div>
+        <div id="connStatus" style="margin-top:14px;font-size:0.8rem;color:var(--text-dim);"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ──────────── MODALS ────────────────────────────────────── -->
+
+<!-- ENTRATA -->
+<div class="modal-overlay" id="modalEntrata">
+  <div class="modal">
+    <div class="modal-title">↑ Nuova Entrata</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Data</label>
+        <input type="date" id="ent_data" />
+      </div>
+      <div class="form-group">
+        <label>Importo (€)</label>
+        <input type="number" id="ent_importo" placeholder="0.00" min="0" step="0.01" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Fonte</label>
+      <select id="ent_fonte">
+        <option value="partita_iva_consulenza">Partita IVA – Consulenza</option>
+        <option value="partita_iva_affitto">Partita IVA – Affitto Studi</option>
+        <option value="contanti">Contanti</option>
+        <option value="altro">Altro</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Destinatario (Spazio)</label>
+      <select id="ent_spazio"></select>
+    </div>
+    <div class="form-group">
+      <label>Descrizione</label>
+      <input type="text" id="ent_desc" placeholder="Fattura cliente, affitto mese…" />
+    </div>
+    <div class="form-group">
+      <label>Note</label>
+      <textarea id="ent_note" placeholder="Note aggiuntive…"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalEntrata')">Annulla</button>
+      <button class="btn btn-primary" onclick="submitEntrata()">Salva Entrata</button>
+    </div>
+  </div>
+</div>
+
+<!-- SPESA -->
+<div class="modal-overlay" id="modalSpesa">
+  <div class="modal">
+    <div class="modal-title">↓ Nuova Spesa</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Data</label>
+        <input type="date" id="spe_data" />
+      </div>
+      <div class="form-group">
+        <label>Importo (€)</label>
+        <input type="number" id="spe_importo" placeholder="0.00" min="0" step="0.01" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Categoria</label>
+        <select id="spe_categoria"></select>
+      </div>
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="spe_tipo">
+          <option value="quotidiana">Quotidiana</option>
+          <option value="ricorrente">Ricorrente</option>
+          <option value="straordinaria">Straordinaria</option>
+          <option value="professionale">Professionale</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Preleva da (Spazio)</label>
+      <select id="spe_spazio"></select>
+    </div>
+    <div class="form-group">
+      <label>Descrizione</label>
+      <input type="text" id="spe_desc" placeholder="Dove hai speso…" />
+    </div>
+    <div class="form-group">
+      <label>Note</label>
+      <textarea id="spe_note"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalSpesa')">Annulla</button>
+      <button class="btn btn-primary" onclick="submitSpesa()">Salva Spesa</button>
+    </div>
+  </div>
+</div>
+
+<!-- RICORRENTE -->
+<div class="modal-overlay" id="modalRicorrente">
+  <div class="modal">
+    <div class="modal-title">↻ Spesa Ricorrente</div>
+    <div class="form-group">
+      <label>Nome</label>
+      <input type="text" id="ric_nome" placeholder="Netflix, Affitto, Palestra…" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Importo (€)</label>
+        <input type="number" id="ric_importo" min="0" step="0.01" />
+      </div>
+      <div class="form-group">
+        <label>Frequenza</label>
+        <select id="ric_freq">
+          <option value="mensile">Mensile</option>
+          <option value="settimanale">Settimanale</option>
+          <option value="trimestrale">Trimestrale</option>
+          <option value="annuale">Annuale</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Categoria</label>
+        <select id="ric_categoria"></select>
+      </div>
+      <div class="form-group">
+        <label>Giorno scadenza</label>
+        <input type="number" id="ric_giorno" min="1" max="31" value="1" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Preleva da (Spazio)</label>
+      <select id="ric_spazio"></select>
+    </div>
+    <div class="form-group">
+      <label>Note</label>
+      <textarea id="ric_note"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalRicorrente')">Annulla</button>
+      <button class="btn btn-primary" onclick="submitRicorrente()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- SPAZIO -->
+<div class="modal-overlay" id="modalSpazio">
+  <div class="modal">
+    <div class="modal-title">◉ Nuovo Spazio</div>
+    <div class="form-group">
+      <label>Nome</label>
+      <input type="text" id="spz_nome" placeholder="Es. Conto ING, Cassaforte…" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="spz_tipo">
+          <option value="contanti">Contanti</option>
+          <option value="carta">Carta / Conto</option>
+          <option value="investimento">Investimento</option>
+          <option value="accantonamento">Accantonamento</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Saldo iniziale (€)</label>
+        <input type="number" id="spz_saldo" value="0" step="0.01" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Colore</label>
+      <input type="color" id="spz_colore" value="#4fcf7a" style="height:40px;" />
+    </div>
+    <div class="form-group">
+      <label>Note</label>
+      <textarea id="spz_note"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalSpazio')">Annulla</button>
+      <button class="btn btn-primary" onclick="submitSpazio()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- ACCANTONAMENTO -->
+<div class="modal-overlay" id="modalAccantonamento">
+  <div class="modal">
+    <div class="modal-title">⊕ Accantonamento</div>
+    <div class="form-group">
+      <label>Nome</label>
+      <input type="text" id="acc_nome" placeholder="Tasse Q1, Fondo spese, Vacanza…" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Obiettivo (€)</label>
+        <input type="number" id="acc_obiettivo" min="0" step="0.01" />
+      </div>
+      <div class="form-group">
+        <label>Accumulato (€)</label>
+        <input type="number" id="acc_accumulato" value="0" min="0" step="0.01" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="acc_tipo">
+          <option value="tasse">Tasse P.IVA</option>
+          <option value="spese">Spese future</option>
+          <option value="investimento">Fondo investimento</option>
+          <option value="generico">Generico</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Scadenza</label>
+        <input type="date" id="acc_scadenza" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Spazio collegato</label>
+      <select id="acc_spazio"></select>
+    </div>
+    <div class="form-group">
+      <label>Note</label>
+      <textarea id="acc_note"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalAccantonamento')">Annulla</button>
+      <button class="btn btn-primary" onclick="submitAccantonamento()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- INVESTIMENTO -->
+<div class="modal-overlay" id="modalInvestimento">
+  <div class="modal">
+    <div class="modal-title">▲ Investimento</div>
+    <div class="form-group">
+      <label>Nome</label>
+      <input type="text" id="inv_nome" placeholder="ETF MSCI World, BTP, Bitcoin…" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="inv_tipo">
+          <option value="etf">ETF / Fondi</option>
+          <option value="azioni">Azioni</option>
+          <option value="obbligazioni">Obbligazioni / BTP</option>
+          <option value="crypto">Crypto</option>
+          <option value="immobiliare">Immobiliare</option>
+          <option value="altro">Altro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Data inizio</label>
+        <input type="date" id="inv_data" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Valore iniziale (€)</label>
+        <input type="number" id="inv_iniziale" min="0" step="0.01" />
+      </div>
+      <div class="form-group">
+        <label>Valore attuale (€)</label>
+        <input type="number" id="inv_attuale" min="0" step="0.01" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Note</label>
+      <textarea id="inv_note"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalInvestimento')">Annulla</button>
+      <button class="btn btn-primary" onclick="submitInvestimento()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORIA -->
+<div class="modal-overlay" id="modalCategoria">
+  <div class="modal">
+    <div class="modal-title">≡ Nuova Categoria</div>
+    <div class="form-group">
+      <label>Nome</label>
+      <input type="text" id="cat_nome" placeholder="Viaggi, Salute, Formazione…" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="cat_tipo">
+          <option value="spesa">Spesa</option>
+          <option value="risparmio">Risparmio</option>
+          <option value="investimento">Investimento</option>
+          <option value="accantonamento">Accantonamento</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Icona (emoji)</label>
+        <input type="text" id="cat_icona" placeholder="🎯" maxlength="4" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Colore</label>
+      <input type="color" id="cat_colore" value="#5b8af7" style="height:40px;" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalCategoria')">Annulla</button>
+      <button class="btn btn-primary" onclick="submitCategoria()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// CONFIGURAZIONE
+// ─────────────────────────────────────────────────────────────
+let APPS_SCRIPT_URL = localStorage.getItem('finanza_url') || '';
+
+function saveConfig() {
+  APPS_SCRIPT_URL = document.getElementById('setupUrl').value.trim();
+  localStorage.setItem('finanza_url', APPS_SCRIPT_URL);
+}
+
+// Cache dati
+let _cache = { spazi: [], categorie: [] };
+
+// ─────────────────────────────────────────────────────────────
+// API
+// ─────────────────────────────────────────────────────────────
+async function apiGet(action) {
+  if (!APPS_SCRIPT_URL) throw new Error('URL non configurato. Vai in Configurazione.');
+  const res = await fetch(`${APPS_SCRIPT_URL}?action=${action}`);
+  return res.json();
+}
+
+async function apiPost(action, payload) {
+  if (!APPS_SCRIPT_URL) throw new Error('URL non configurato. Vai in Configurazione.');
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action, payload }),
+  });
+  return res.json();
+}
+
+// ─────────────────────────────────────────────────────────────
+// NAVIGAZIONE
+// ─────────────────────────────────────────────────────────────
+const PAGE_TITLES = {
+  dashboard: 'Dashboard', entrate: 'Entrate', spese: 'Spese',
+  ricorrenti: 'Spese Ricorrenti', spazi: 'Spazi & Saldi',
+  accantonamenti: 'Accantonamenti', investimenti: 'Investimenti',
+  categorie: 'Categorie', setup: 'Configurazione',
+};
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const page = btn.dataset.page;
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.getElementById('topbarTitle').textContent = PAGE_TITLES[page] || page;
+    loadPage(page);
+  });
+});
+
+function loadPage(page) {
+  switch (page) {
+    case 'dashboard':      loadDashboard(); break;
+    case 'entrate':        loadEntrate(); break;
+    case 'spese':          loadSpese(); break;
+    case 'ricorrenti':     loadRicorrenti(); break;
+    case 'spazi':          loadSpazi(); break;
+    case 'accantonamenti': loadAccantonamenti(); break;
+    case 'investimenti':   loadInvestimenti(); break;
+    case 'categorie':      loadCategorie(); break;
+    case 'setup':
+      document.getElementById('setupUrl').value = APPS_SCRIPT_URL;
+      break;
+  }
+}
+
+function refreshAll() { loadPage(currentPage()); }
+
+function currentPage() {
+  const active = document.querySelector('.nav-item.active');
+  return active ? active.dataset.page : 'dashboard';
+}
+
+// ─────────────────────────────────────────────────────────────
+// DASHBOARD
+// ─────────────────────────────────────────────────────────────
+let chartTrend = null, chartCat = null;
+
+async function loadDashboard() {
+  const el = document.getElementById('dashboardContent');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div> Caricamento…</div>';
+  try {
+    const d = await apiGet('getDashboard');
+    if (d.error) throw new Error(d.error);
+    renderDashboard(d);
+  } catch (e) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">⚡</div><p>${e.message}</p><br><button class="btn btn-ghost btn-sm" onclick="navigate('setup')">Configura URL</button></div>`;
+  }
+}
+
+function navigate(page) {
+  document.querySelector(`[data-page="${page}"]`).click();
+}
+
+function renderDashboard(d) {
+  const fmt = v => '€ ' + Number(v).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const sign = v => v >= 0 ? `<span class="positive">▲ ${fmt(v)}</span>` : `<span class="negative">▼ ${fmt(Math.abs(v))}</span>`;
+
+  // Suddivisione spazi per tipo
+  const spaziTipi = {};
+  (d.spazi || []).forEach(s => {
+    const t = s.Tipo || 'altro';
+    if (!spaziTipi[t]) spaziTipi[t] = 0;
+    spaziTipi[t] += parseFloat(s.Saldo) || 0;
+  });
+
+  const el = document.getElementById('dashboardContent');
+  el.innerHTML = `
+    <!-- KPI Cards -->
+    <div class="grid-4">
+      <div class="stat-card">
+        <span class="icon">◈</span>
+        <div class="label">Patrimonio Netto</div>
+        <div class="amount gold">${fmt(d.patrimonioNetto)}</div>
+        <div class="delta" style="color:var(--text-dim)">totale spazi attivi</div>
+      </div>
+      <div class="stat-card">
+        <span class="icon">↑</span>
+        <div class="label">Entrate Mese</div>
+        <div class="amount positive">${fmt(d.totaleEntrateMese)}</div>
+        <div class="delta">${Object.entries(d.entrateFonte||{}).map(([k,v])=>`<span style="color:var(--text-dim)">${labelFonte(k)}: ${fmt(v)}</span>`).join(' · ')}</div>
+      </div>
+      <div class="stat-card">
+        <span class="icon">↓</span>
+        <div class="label">Spese Mese</div>
+        <div class="amount negative">${fmt(d.totaleSpeseMese)}</div>
+        <div class="delta" style="color:var(--text-dim)">questo mese</div>
+      </div>
+      <div class="stat-card">
+        <span class="icon">≈</span>
+        <div class="label">Risparmio Mese</div>
+        <div class="amount">${sign(d.risparmioMese)}</div>
+        <div class="delta" style="color:var(--text-dim)">entrate − spese</div>
+      </div>
+    </div>
+
+    <!-- Spazi summary row -->
+    <div class="grid-4 mt-20">
+      ${Object.entries({ contanti:'💵', carta:'💳', investimento:'📈', accantonamento:'🏦' }).map(([tipo, ico]) => `
+        <div class="stat-card">
+          <span class="icon">${ico}</span>
+          <div class="label">${tipo.charAt(0).toUpperCase()+tipo.slice(1)}</div>
+          <div class="amount" style="font-size:1.2rem;">${fmt(spaziTipi[tipo]||0)}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <!-- Charts row -->
+    <div class="grid-2-1 mt-20">
+      <div class="card">
+        <div class="chart-title">Trend ultimi 6 mesi</div>
+        <div class="chart-container" style="height:220px;">
+          <canvas id="chartTrend"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="chart-title">Spese per categoria</div>
+        <div class="chart-container" style="height:220px;">
+          <canvas id="chartCat"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spazi cards -->
+    <div class="mt-20">
+      <div class="chart-title">Tutti gli spazi</div>
+      <div class="grid-3 mt-20">
+        ${(d.spazi||[]).map(s => renderSpazioCard(s)).join('')}
+      </div>
+    </div>
+
+    <!-- Investimenti & Accantonamenti summary -->
+    <div class="grid-2 mt-20">
+      <div class="card">
+        <div class="chart-title">Investimenti</div>
+        <div style="display:flex;align-items:center;gap:16px;padding-top:6px;">
+          <span style="font-size:2rem;">📈</span>
+          <div>
+            <div class="card-value positive">${fmt(d.investimentiValore)}</div>
+            <div class="card-sub">valore attuale portafoglio</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="chart-title">Accantonamenti attivi</div>
+        <div style="display:flex;align-items:center;gap:16px;padding-top:6px;">
+          <span style="font-size:2rem;">🏦</span>
+          <div>
+            <div class="card-value gold">${d.accantonamentiCount}</div>
+            <div class="card-sub">obiettivi in corso</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Trend chart
+  if (chartTrend) chartTrend.destroy();
+  const trend = d.trend || [];
+  const ctxT = document.getElementById('chartTrend').getContext('2d');
+  chartTrend = new Chart(ctxT, {
+    type: 'bar',
+    data: {
+      labels: trend.map(t => t.label),
+      datasets: [
+        { label: 'Entrate', data: trend.map(t => t.entrate), backgroundColor: 'rgba(79,207,122,0.6)', borderRadius: 6 },
+        { label: 'Spese',   data: trend.map(t => t.spese),   backgroundColor: 'rgba(242,99,106,0.6)',  borderRadius: 6 },
+        { label: 'Risparmio', data: trend.map(t => t.risparmio), type: 'line', borderColor: '#e2c96e', backgroundColor: 'transparent', tension: 0.4, pointRadius: 4, pointBackgroundColor: '#e2c96e', borderWidth: 2 },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#7a7898', font: { size: 11 } } } },
+      scales: {
+        x: { ticks: { color: '#7a7898' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        y: { ticks: { color: '#7a7898', callback: v => '€'+v.toLocaleString('it-IT') }, grid: { color: 'rgba(255,255,255,0.05)' } },
+      },
+    },
+  });
+
+  // Cat chart
+  if (chartCat) chartCat.destroy();
+  const catEntries = Object.entries(d.speseCat || {});
+  const ctxC = document.getElementById('chartCat').getContext('2d');
+  chartCat = new Chart(ctxC, {
+    type: 'doughnut',
+    data: {
+      labels: catEntries.map(e => e[0]),
+      datasets: [{ data: catEntries.map(e => e[1]), backgroundColor: PALETTE, borderWidth: 0, hoverOffset: 8 }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: { legend: { position: 'right', labels: { color: '#7a7898', font: { size: 10 }, boxWidth: 12, padding: 8 } } },
+    },
+  });
+}
+
+const PALETTE = ['#4fcf7a','#f2636a','#5b8af7','#e2c96e','#a78bfa','#fb923c','#22d3ee','#ec4899','#34d399','#fbbf24'];
+
+function labelFonte(k) {
+  const m = { partita_iva_consulenza: 'P.IVA Consulenza', partita_iva_affitto: 'P.IVA Affitto', contanti: 'Contanti', altro: 'Altro' };
+  return m[k] || k;
+}
+
+function renderSpazioCard(s) {
+  const saldo = parseFloat(s.Saldo) || 0;
+  const color = s.Colore || '#888';
+  return `
+    <div class="spazio-card">
+      <div class="spazio-tipo"><span class="dot" style="background:${color}"></span>${s.Tipo||''}</div>
+      <div class="spazio-nome">${s.Nome}</div>
+      <div class="spazio-saldo" style="color:${saldo>=0?'var(--green)':'var(--red)'}">${'€ '+saldo.toLocaleString('it-IT',{minimumFractionDigits:2})}</div>
+      ${s.Note ? `<div class="spazio-note">${s.Note}</div>` : ''}
+    </div>`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// ENTRATE
+// ─────────────────────────────────────────────────────────────
+async function loadEntrate() {
+  const el = document.getElementById('entrateTable');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const rows = await apiGet('getEntrate');
+    if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↑</div><p>Nessuna entrata registrata.</p></div>'; return; }
+    el.innerHTML = `<table>
+      <thead><tr><th>Data</th><th>Importo</th><th>Fonte</th><th>Descrizione</th><th>Spazio</th><th></th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td>${fmtDate(r.Data)}</td>
+        <td><span class="positive" style="font-family:var(--font-mono)">+ € ${parseFloat(r.Importo).toLocaleString('it-IT',{minimumFractionDigits:2})}</span></td>
+        <td><span class="pill" style="border-color:var(--green);color:var(--green)">${labelFonte(r.Fonte)}</span></td>
+        <td>${r.Descrizione||''}</td>
+        <td>${r.SpazioDestinatario||''}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Entrate')">✕</button></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  } catch(e) { el.innerHTML = errMsg(e); }
+}
+
+// ─────────────────────────────────────────────────────────────
+// SPESE
+// ─────────────────────────────────────────────────────────────
+async function loadSpese() {
+  const el = document.getElementById('speseTable');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const rows = await apiGet('getSpese');
+    await loadCacheIfNeeded();
+    if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↓</div><p>Nessuna spesa registrata.</p></div>'; return; }
+    el.innerHTML = `<table>
+      <thead><tr><th>Data</th><th>Importo</th><th>Categoria</th><th>Tipo</th><th>Descrizione</th><th>Spazio</th><th></th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td>${fmtDate(r.Data)}</td>
+        <td><span class="negative" style="font-family:var(--font-mono)">- € ${parseFloat(r.Importo).toLocaleString('it-IT',{minimumFractionDigits:2})}</span></td>
+        <td>${catBadge(r.Categoria)}</td>
+        <td><span class="pill" style="border-color:var(--border);color:var(--text-dim)">${r.Tipo||''}</span></td>
+        <td>${r.Descrizione||''}</td>
+        <td>${r.SpazioDiPrelievo||''}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Spese')">✕</button></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  } catch(e) { el.innerHTML = errMsg(e); }
+}
+
+function catBadge(catId) {
+  const cat = _cache.categorie.find(c => c.ID === catId || c.Nome === catId);
+  if (!cat) return `<span class="pill" style="border-color:var(--border);color:var(--text-dim)">${catId||''}</span>`;
+  return `<span class="pill" style="border-color:${cat.Colore}30;color:${cat.Colore};background:${cat.Colore}18">${cat.Icona||''} ${cat.Nome}</span>`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// RICORRENTI
+// ─────────────────────────────────────────────────────────────
+async function loadRicorrenti() {
+  const el = document.getElementById('ricorrentiTable');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const rows = await apiGet('getRicorrenti');
+    if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↻</div><p>Nessuna spesa ricorrente.</p></div>'; return; }
+    el.innerHTML = `<table>
+      <thead><tr><th>Nome</th><th>Importo</th><th>Frequenza</th><th>Scadenza</th><th>Spazio</th><th>Stato</th><th></th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td><strong>${r.Nome}</strong></td>
+        <td><span class="negative" style="font-family:var(--font-mono)">€ ${parseFloat(r.Importo).toLocaleString('it-IT',{minimumFractionDigits:2})}</span></td>
+        <td>${r.Frequenza||''}</td>
+        <td>giorno ${r.GiornoScadenza||''}</td>
+        <td>${r.SpazioDiPrelievo||''}</td>
+        <td><span class="pill" style="border-color:${r.Attiva?'var(--green)':'var(--text-dim)'};color:${r.Attiva?'var(--green)':'var(--text-dim)'}">${r.Attiva?'Attiva':'Inattiva'}</span></td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','SpesesRicorrenti')">✕</button></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  } catch(e) { el.innerHTML = errMsg(e); }
+}
+
+// ─────────────────────────────────────────────────────────────
+// SPAZI
+// ─────────────────────────────────────────────────────────────
+async function loadSpazi() {
+  const el = document.getElementById('spaziGrid');
+  el.innerHTML = '<div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>';
+  try {
+    const rows = await apiGet('getSpazi');
+    _cache.spazi = rows;
+    if (!rows.length) { el.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">◉</div><p>Nessuno spazio configurato.</p></div>'; return; }
+    el.innerHTML = rows.map(s => {
+      const saldo = parseFloat(s.Saldo)||0;
+      return `<div class="spazio-card">
+        <div class="spazio-tipo"><span class="dot" style="background:${s.Colore||'#888'}"></span>${s.Tipo||''}</div>
+        <div class="spazio-nome">${s.Nome}</div>
+        <div class="spazio-saldo" style="color:${saldo>=0?'var(--green)':'var(--red)'}">€ ${saldo.toLocaleString('it-IT',{minimumFractionDigits:2})}</div>
+        ${s.Note?`<div class="spazio-note">${s.Note}</div>`:''}
+        <div style="margin-top:14px;display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="deleteItem('${s.ID}','Spazi')">Rimuovi</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { el.innerHTML = errMsg(e); }
+}
+
+// ─────────────────────────────────────────────────────────────
+// ACCANTONAMENTI
+// ─────────────────────────────────────────────────────────────
+async function loadAccantonamenti() {
+  const el = document.getElementById('accGrid');
+  el.innerHTML = '<div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>';
+  try {
+    const rows = await apiGet('getAcquisizioniDati');
+    if (!rows.length) { el.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⊕</div><p>Nessun accantonamento.</p></div>'; return; }
+    const tipoColors = { tasse:'#f2636a', spese:'#5b8af7', investimento:'#4fcf7a', generico:'#e2c96e' };
+    el.innerHTML = rows.map(r => {
+      const obi = parseFloat(r.Obiettivo)||0;
+      const acc = parseFloat(r.Accumulato)||0;
+      const pct = obi > 0 ? Math.min(100, (acc/obi)*100) : 0;
+      const color = tipoColors[r.Tipo] || '#888';
+      return `<div class="acc-card">
+        <div class="acc-header">
+          <div class="acc-nome">${r.Nome}</div>
+          <span class="acc-tipo pill" style="border-color:${color}40;color:${color};background:${color}18">${r.Tipo||''}</span>
+        </div>
+        <div class="acc-numbers">
+          <div class="acc-curr" style="color:${color}">€ ${acc.toLocaleString('it-IT',{minimumFractionDigits:2})}</div>
+          <div class="acc-target">/ € ${obi.toLocaleString('it-IT',{minimumFractionDigits:2})}</div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
+        <div class="acc-pct">${pct.toFixed(1)}% completato${r.Scadenza?' · Scade: '+fmtDate(r.Scadenza):''}</div>
+        ${r.Note?`<div style="font-size:0.75rem;color:var(--text-dim);margin-top:8px;">${r.Note}</div>`:''}
+        <div style="margin-top:12px;"><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Accantonamenti')">Rimuovi</button></div>
+      </div>`;
+    }).join('');
+  } catch(e) { el.innerHTML = errMsg(e); }
+}
+
+// ─────────────────────────────────────────────────────────────
+// INVESTIMENTI
+// ─────────────────────────────────────────────────────────────
+async function loadInvestimenti() {
+  const el = document.getElementById('invTable');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const rows = await apiGet('getInvestimenti');
+    if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">▲</div><p>Nessun investimento registrato.</p></div>'; return; }
+    el.innerHTML = `<table>
+      <thead><tr><th>Nome</th><th>Tipo</th><th>Valore Iniziale</th><th>Valore Attuale</th><th>Rendimento</th><th>Data</th><th></th></tr></thead>
+      <tbody>${rows.map(r => {
+        const ini = parseFloat(r.ValoreIniziale)||0;
+        const att = parseFloat(r.ValoreAttuale)||0;
+        const delta = att - ini;
+        const pct = ini > 0 ? (delta/ini*100).toFixed(2) : 0;
+        return `<tr>
+          <td><strong>${r.Nome}</strong>${r.Note?`<br><span style="font-size:0.72rem;color:var(--text-dim)">${r.Note}</span>`:''}</td>
+          <td><span class="pill" style="border-color:var(--border);color:var(--text-dim)">${r.Tipo||''}</span></td>
+          <td style="font-family:var(--font-mono)">€ ${ini.toLocaleString('it-IT',{minimumFractionDigits:2})}</td>
+          <td style="font-family:var(--font-mono)">€ ${att.toLocaleString('it-IT',{minimumFractionDigits:2})}</td>
+          <td><span class="${delta>=0?'positive':'negative'}" style="font-family:var(--font-mono)">${delta>=0?'+':''}${pct}%</span></td>
+          <td>${fmtDate(r.DataInizio)}</td>
+          <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Investimenti')">✕</button></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+  } catch(e) { el.innerHTML = errMsg(e); }
+}
+
+// ─────────────────────────────────────────────────────────────
+// CATEGORIE
+// ─────────────────────────────────────────────────────────────
+async function loadCategorie() {
+  const el = document.getElementById('catTable');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const rows = await apiGet('getCategorie');
+    _cache.categorie = rows;
+    if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">≡</div><p>Nessuna categoria.</p></div>'; return; }
+    el.innerHTML = `<table>
+      <thead><tr><th>Icona</th><th>Nome</th><th>Tipo</th><th>Colore</th><th></th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td style="font-size:1.3rem">${r.Icona||'📦'}</td>
+        <td><strong>${r.Nome}</strong></td>
+        <td><span class="pill" style="border-color:var(--border);color:var(--text-dim)">${r.Tipo||''}</span></td>
+        <td><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${r.Colore||'#888'};vertical-align:middle;margin-right:6px;"></span>${r.Colore||''}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Categorie')">✕</button></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  } catch(e) { el.innerHTML = errMsg(e); }
+}
+
+// ─────────────────────────────────────────────────────────────
+// CACHE SPAZI & CATEGORIE per SELECT
+// ─────────────────────────────────────────────────────────────
+async function loadCacheIfNeeded() {
+  if (!_cache.spazi.length) _cache.spazi = await apiGet('getSpazi').catch(()=>[]);
+  if (!_cache.categorie.length) _cache.categorie = await apiGet('getCategorie').catch(()=>[]);
+}
+
+function fillSpazioSelect(id) {
+  const sel = document.getElementById(id);
+  sel.innerHTML = _cache.spazi.map(s => `<option value="${s.ID}">${s.Nome} (${s.Tipo})</option>`).join('');
+}
+
+function fillCatSelect(id) {
+  const sel = document.getElementById(id);
+  sel.innerHTML = _cache.categorie.filter(c => c.Tipo === 'spesa').map(c => `<option value="${c.ID}">${c.Icona||''} ${c.Nome}</option>`).join('');
+}
+
+// ─────────────────────────────────────────────────────────────
+// MODALS
+// ─────────────────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); prepModal(id); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
+});
+
+async function prepModal(id) {
+  await loadCacheIfNeeded();
+  const today = new Date().toISOString().split('T')[0];
+  if (id === 'modalEntrata') {
+    document.getElementById('ent_data').value = today;
+    fillSpazioSelect('ent_spazio');
+  }
+  if (id === 'modalSpesa') {
+    document.getElementById('spe_data').value = today;
+    fillSpazioSelect('spe_spazio');
+    fillCatSelect('spe_categoria');
+  }
+  if (id === 'modalRicorrente') {
+    fillSpazioSelect('ric_spazio');
+    fillCatSelect('ric_categoria');
+  }
+  if (id === 'modalAccantonamento') {
+    const sel = document.getElementById('acc_spazio');
+    sel.innerHTML = '<option value="">— nessuno —</option>' + _cache.spazi.map(s => `<option value="${s.ID}">${s.Nome}</option>`).join('');
+  }
+}
+
+function openQuickAdd() {
+  const page = currentPage();
+  if (page === 'entrate') openModal('modalEntrata');
+  else if (page === 'spese') openModal('modalSpesa');
+  else if (page === 'ricorrenti') openModal('modalRicorrente');
+  else if (page === 'spazi') openModal('modalSpazio');
+  else if (page === 'accantonamenti') openModal('modalAccantonamento');
+  else if (page === 'investimenti') openModal('modalInvestimento');
+  else if (page === 'categorie') openModal('modalCategoria');
+  else openModal('modalSpesa');
+}
+
+// ─────────────────────────────────────────────────────────────
+// SUBMIT FORMS
+// ─────────────────────────────────────────────────────────────
+async function submitEntrata() {
+  const payload = {
+    data: v('ent_data'), importo: v('ent_importo'), fonte: v('ent_fonte'),
+    descrizione: v('ent_desc'), spazioDestinatario: v('ent_spazio'), note: v('ent_note'),
+  };
+  if (!payload.data || !payload.importo) return toast('Compila data e importo', 'error');
+  await submit('addEntrata', payload, 'modalEntrata', loadEntrate);
+}
+
+async function submitSpesa() {
+  const payload = {
+    data: v('spe_data'), importo: v('spe_importo'), categoria: v('spe_categoria'),
+    tipo: v('spe_tipo'), descrizione: v('spe_desc'), spazioDiPrelievo: v('spe_spazio'), note: v('spe_note'),
+  };
+  if (!payload.data || !payload.importo) return toast('Compila data e importo', 'error');
+  await submit('addSpesa', payload, 'modalSpesa', loadSpese);
+}
+
+async function submitRicorrente() {
+  const payload = {
+    nome: v('ric_nome'), importo: v('ric_importo'), categoria: v('ric_categoria'),
+    frequenza: v('ric_freq'), giornoScadenza: v('ric_giorno'),
+    spazioDiPrelievo: v('ric_spazio'), note: v('ric_note'), attiva: true,
+  };
+  if (!payload.nome || !payload.importo) return toast('Compila nome e importo', 'error');
+  await submit('addRicorrente', payload, 'modalRicorrente', loadRicorrenti);
+}
+
+async function submitSpazio() {
+  const payload = {
+    nome: v('spz_nome'), tipo: v('spz_tipo'), saldo: v('spz_saldo'),
+    colore: v('spz_colore'), note: v('spz_note'),
+  };
+  if (!payload.nome) return toast('Inserisci un nome', 'error');
+  await submit('addSpazio', payload, 'modalSpazio', loadSpazi);
+}
+
+async function submitAccantonamento() {
+  const payload = {
+    nome: v('acc_nome'), obiettivo: v('acc_obiettivo'), accumulato: v('acc_accumulato'),
+    tipo: v('acc_tipo'), scadenza: v('acc_scadenza'), spazio: v('acc_spazio'), note: v('acc_note'),
+  };
+  if (!payload.nome || !payload.obiettivo) return toast('Compila nome e obiettivo', 'error');
+  await submit('addAcquisizioniDati', payload, 'modalAccantonamento', loadAccantonamenti);
+}
+
+async function submitInvestimento() {
+  const payload = {
+    nome: v('inv_nome'), tipo: v('inv_tipo'), dataInizio: v('inv_data'),
+    valoreIniziale: v('inv_iniziale'), valoreAttuale: v('inv_attuale'), note: v('inv_note'),
+  };
+  if (!payload.nome || !payload.valoreIniziale) return toast('Compila nome e valore', 'error');
+  await submit('addInvestimento', payload, 'modalInvestimento', loadInvestimenti);
+}
+
+async function submitCategoria() {
+  const payload = {
+    nome: v('cat_nome'), tipo: v('cat_tipo'), icona: v('cat_icona'), colore: v('cat_colore'),
+  };
+  if (!payload.nome) return toast('Inserisci un nome', 'error');
+  await submit('addCategoria', payload, 'modalCategoria', loadCategorie);
+}
+
+async function submit(action, payload, modalId, reload) {
+  try {
+    const res = await apiPost(action, payload);
+    if (res.error) throw new Error(res.error);
+    closeModal(modalId);
+    toast('Salvato con successo', 'success');
+    reload();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function deleteItem(id, sheet) {
+  if (!confirm('Eliminare questo elemento?')) return;
+  try {
+    const res = await apiPost('deleteRow', { id, sheet });
+    if (res.error) throw new Error(res.error);
+    toast('Eliminato', 'success');
+    refreshAll();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ─────────────────────────────────────────────────────────────
+// SETUP
+// ─────────────────────────────────────────────────────────────
+async function testConnection() {
+  const el = document.getElementById('connStatus');
+  el.textContent = '⏳ Connessione in corso…';
+  try {
+    const res = await apiGet('getSpazi');
+    el.innerHTML = `<span style="color:var(--green)">✓ Connessione riuscita — ${res.length} spazi trovati.</span>`;
+  } catch(e) {
+    el.innerHTML = `<span style="color:var(--red)">✗ Errore: ${e.message}</span>`;
+  }
+}
+
+async function initSheets() {
+  const el = document.getElementById('connStatus');
+  el.textContent = '⏳ Inizializzazione in corso…';
+  try {
+    const res = await apiPost('initSheets', {});
+    el.innerHTML = res.success
+      ? `<span style="color:var(--green)">✓ ${res.message}</span>`
+      : `<span style="color:var(--red)">✗ ${res.error}</span>`;
+  } catch(e) { el.innerHTML = `<span style="color:var(--red)">✗ ${e.message}</span>`; }
+}
+
+// ─────────────────────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────────────────────
+function v(id) { return document.getElementById(id)?.value || ''; }
+function fmtDate(d) {
+  if (!d) return '—';
+  const dd = new Date(d);
+  return isNaN(dd) ? d : dd.toLocaleDateString('it-IT');
+}
+function errMsg(e) { return `<div class="empty"><div class="empty-icon">⚡</div><p>${e.message}</p></div>`; }
+
+function toast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast-msg ${type}`;
+  el.innerHTML = `<span>${type==='success'?'✓':type==='error'?'✗':'ℹ'}</span>${msg}`;
+  document.getElementById('toast').appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ─────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  if (APPS_SCRIPT_URL) {
+    loadDashboard();
+  } else {
+    // Mostra setup se non configurato
+    const el = document.getElementById('dashboardContent');
+    el.innerHTML = `<div class="setup-banner">
+      <div class="icon">🔧</div>
+      <div>
+        <h3>Benvenuto – configura la connessione</h3>
+        <p>Prima di iniziare, vai in <strong>Configurazione</strong> e inserisci l'URL del tuo Google Apps Script.</p>
+        <br><button class="btn btn-primary btn-sm" onclick="navigate('setup')" style="margin-top:6px;">→ Vai alla Configurazione</button>
+      </div>
+    </div>`;
+  }
+});
+</script>
+</body>
+</html>
