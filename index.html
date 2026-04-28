@@ -737,7 +737,7 @@ canvas { max-width: 100%; }
         <div class="form-group">
           <label>URL Google Apps Script Web App</label>
           <input type="url" id="setupUrl" placeholder="https://script.google.com/macros/s/…/exec"
-            value="" oninput="saveConfig()" />
+            value="" readonly style="opacity:0.5;cursor:default;" />
         </div>
         <div style="display:flex;gap:12px;margin-top:8px;">
           <button class="btn btn-primary" onclick="testConnection()">✓ Testa Connessione</button>
@@ -1063,32 +1063,34 @@ canvas { max-width: 100%; }
 // ─────────────────────────────────────────────────────────────
 // CONFIGURAZIONE
 // ─────────────────────────────────────────────────────────────
-let APPS_SCRIPT_URL = localStorage.getItem('finanza_url') || 'https://script.google.com/macros/s/AKfycbwmAd_S6Elp3Lxg36A3Yr-nD5STw0cuyZSJDctF0XwYuGVGRJpUgtaNhSxNy-BXQaFq/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwmAd_S6Elp3Lxg36A3Yr-nD5STw0cuyZSJDctF0XwYuGVGRJpUgtaNhSxNy-BXQaFq/exec';
+const AUTH_TOKEN = 'FP_10Z3yxK2';
 
 function saveConfig() {
-  APPS_SCRIPT_URL = document.getElementById('setupUrl').value.trim();
-  localStorage.setItem('finanza_url', APPS_SCRIPT_URL);
+  toast('URL e token già configurati nel codice.', 'info');
 }
 
 // Cache dati
 let _cache = { spazi: [], categorie: [] };
 
 // ─────────────────────────────────────────────────────────────
-// API
+// API  (tutte le chiamate includono il token di autenticazione)
 // ─────────────────────────────────────────────────────────────
 async function apiGet(action) {
-  if (!APPS_SCRIPT_URL) throw new Error('URL non configurato. Vai in Configurazione.');
-  const res = await fetch(`${APPS_SCRIPT_URL}?action=${action}`);
-  return res.json();
+  const res  = await fetch(`${APPS_SCRIPT_URL}?action=${action}&token=${AUTH_TOKEN}`);
+  const json = await res.json();
+  if (!json.ok) throw new Error(json.error || 'Errore sconosciuto dal server');
+  return json.data;
 }
 
 async function apiPost(action, payload) {
-  if (!APPS_SCRIPT_URL) throw new Error('URL non configurato. Vai in Configurazione.');
-  const res = await fetch(APPS_SCRIPT_URL, {
+  const res  = await fetch(APPS_SCRIPT_URL, {
     method: 'POST',
-    body: JSON.stringify({ action, payload }),
+    body: JSON.stringify({ action, payload, token: AUTH_TOKEN }),
   });
-  return res.json();
+  const json = await res.json();
+  if (!json.ok) throw new Error(json.error || 'Errore sconosciuto dal server');
+  return json.data;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1146,7 +1148,6 @@ async function loadDashboard() {
   el.innerHTML = '<div class="loading"><div class="spinner"></div> Caricamento…</div>';
   try {
     const d = await apiGet('getDashboard');
-    if (d.error) throw new Error(d.error);
     renderDashboard(d);
   } catch (e) {
     el.innerHTML = `<div class="empty"><div class="empty-icon">⚡</div><p>${e.message}</p><br><button class="btn btn-ghost btn-sm" onclick="navigate('setup')">Configura URL</button></div>`;
@@ -1430,7 +1431,7 @@ async function loadAccantonamenti() {
   const el = document.getElementById('accGrid');
   el.innerHTML = '<div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>';
   try {
-    const rows = await apiGet('getAcquisizioniDati');
+    const rows = await apiGet('getAccantonamenti');
     if (!rows.length) { el.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⊕</div><p>Nessun accantonamento.</p></div>'; return; }
     const tipoColors = { tasse:'#f2636a', spese:'#5b8af7', investimento:'#4fcf7a', generico:'#e2c96e' };
     el.innerHTML = rows.map(r => {
@@ -1617,7 +1618,7 @@ async function submitAccantonamento() {
     tipo: v('acc_tipo'), scadenza: v('acc_scadenza'), spazio: v('acc_spazio'), note: v('acc_note'),
   };
   if (!payload.nome || !payload.obiettivo) return toast('Compila nome e obiettivo', 'error');
-  await submit('addAcquisizioniDati', payload, 'modalAccantonamento', loadAccantonamenti);
+  await submit('addAccantonamento', payload, 'modalAccantonamento', loadAccantonamenti);
 }
 
 async function submitInvestimento() {
@@ -1676,9 +1677,7 @@ async function initSheets() {
   el.textContent = '⏳ Inizializzazione in corso…';
   try {
     const res = await apiPost('initSheets', {});
-    el.innerHTML = res.success
-      ? `<span style="color:var(--green)">✓ ${res.message}</span>`
-      : `<span style="color:var(--red)">✗ ${res.error}</span>`;
+    el.innerHTML = `<span style="color:var(--green)">✓ ${res.message} — Creati: ${(res.created||[]).join(', ')||'nessuno'}</span>`;
   } catch(e) { el.innerHTML = `<span style="color:var(--red)">✗ ${e.message}</span>`; }
 }
 
