@@ -715,6 +715,18 @@ tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
         <option value="altro">Altro</option>
       </select>
     </div>
+
+    <!-- RENDICONTAZIONE (solo per P.IVA) -->
+    <div id="rendicontazioneBox" style="margin-bottom:16px;display:none;">
+      <label style="font-size:0.75rem;color:var(--text-dim);letter-spacing:0.07em;text-transform:uppercase;display:block;margin-bottom:8px;">Fattura emessa / Rendicontata?</label>
+      <div style="display:flex;gap:8px;">
+        <button type="button" id="rend_si" class="regime-tab active" onclick="setRendicontata(true)">✓ Sì — fattura emessa</button>
+        <button type="button" id="rend_no" class="regime-tab" onclick="setRendicontata(false)">✗ No — non ancora rendicontata</button>
+      </div>
+      <div id="rendNote" style="margin-top:8px;font-size:0.75rem;color:var(--text-dim);line-height:1.5;padding:8px 10px;border-radius:var(--radius);background:rgba(91,138,247,0.08);border:1px solid rgba(91,138,247,0.2);">
+        Fattura emessa: l'importo è imponibile fiscalmente e l'accantonamento tasse/INPS viene calcolato.
+      </div>
+    </div>
     <div id="fiscalPreview" class="fiscal-preview">
       <div class="fp-title">⚖ Accantonamento fiscale automatico</div>
       <div id="fpRows"></div>
@@ -1028,11 +1040,40 @@ function calcolaAccFiscale(importo, fonte) {
   return null;
 }
 
+let _rendicontata = true; // default: sì, fattura emessa
+
+function setRendicontata(val) {
+  _rendicontata = val;
+  document.getElementById('rend_si').classList.toggle('active', val);
+  document.getElementById('rend_no').classList.toggle('active', !val);
+  const note = document.getElementById('rendNote');
+  if (val) {
+    note.style.background = 'rgba(91,138,247,0.08)';
+    note.style.borderColor = 'rgba(91,138,247,0.2)';
+    note.style.color = 'var(--text-dim)';
+    note.textContent = 'Fattura emessa: l\'importo è imponibile fiscalmente e l\'accantonamento tasse/INPS viene calcolato.';
+  } else {
+    note.style.background = 'rgba(251,146,60,0.08)';
+    note.style.borderColor = 'rgba(251,146,60,0.3)';
+    note.style.color = 'var(--orange)';
+    note.textContent = '⚠ Non rendicontata: l\'incasso viene registrato ma escluso dal calcolo delle imposte. Ricordati di rendicontarla quando emetti la fattura.';
+  }
+  aggiornaPrevistaFiscale();
+}
+
 function aggiornaPrevistaFiscale() {
   const importo = parseFloat(document.getElementById('ent_importo').value) || 0;
   const fonte   = document.getElementById('ent_fonte').value;
   const box     = document.getElementById('fiscalPreview');
   const rows    = document.getElementById('fpRows');
+  const rendBox = document.getElementById('rendicontazioneBox');
+
+  // Mostra il toggle rendicontazione solo per P.IVA
+  const isPiva = fonte === 'partita_iva_consulenza' || fonte === 'partita_iva_affitto';
+  if (rendBox) rendBox.style.display = isPiva ? 'block' : 'none';
+
+  // Se non P.IVA o non rendicontata → nascondi il calcolo fiscale
+  if (!isPiva || !_rendicontata) { box.classList.remove('show'); return; }
 
   const calcolo = calcolaAccFiscale(importo, fonte);
   if (!calcolo || importo <= 0) { box.classList.remove('show'); return; }
@@ -1230,6 +1271,29 @@ function renderDashboard(d) {
       </div>
     </div>
 
+    <!-- GRAFICO INTERATTIVO ENTRATE/SPESE -->
+    <div class="card mt-20" id="chartAnalisiContainer">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+        <div style="font-family:var(--font-serif);font-size:1rem;">Analisi per categoria e fonte</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button id="analisiTabEnt" class="regime-tab active" onclick="switchAnalisi('entrate')">↑ Entrate</button>
+          <button id="analisiTabSpe" class="regime-tab" onclick="switchAnalisi('spese')">↓ Spese</button>
+        </div>
+      </div>
+      <div class="grid-2" style="gap:20px;align-items:start;">
+        <div>
+          <div style="position:relative;height:280px;"><canvas id="chartAnalisi"></canvas></div>
+          <div id="chartAnalisiLegend" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;"></div>
+        </div>
+        <div>
+          <div style="font-size:0.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;" id="analisiDetailTitle">Seleziona una fetta per vedere il dettaglio</div>
+          <div id="analisiDetail" style="min-height:160px;">
+            <div style="color:var(--text-dim);font-size:0.82rem;padding:24px 0;text-align:center;">← Clicca su una categoria nel grafico</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="mt-20">
       <div style="font-family:var(--font-serif);font-size:1rem;margin-bottom:16px;">Tutti gli spazi</div>
       <div class="grid-3">${(d.spazi||[]).map(s => renderSpazioCard(s)).join('')}</div>
@@ -1282,7 +1346,7 @@ function renderDashboard(d) {
     },
   });
 
-  // Cat chart
+  // Old simple cat doughnut (kept for backward compat)
   if (chartCat) chartCat.destroy();
   const catEntries = Object.entries(d.speseCat || {});
   chartCat = new Chart(document.getElementById('chartCat').getContext('2d'), {
@@ -1296,6 +1360,163 @@ function renderDashboard(d) {
       plugins: { legend: { position: 'right', labels: { color: '#7a7898', font: { size: 10 }, boxWidth: 12, padding: 8 } } },
     },
   });
+
+  // Avvia il grafico interattivo con i dati del dashboard
+  _analisiDashData = d;
+  initAnalisiChart(d);
+}
+
+// ─── GRAFICO ANALISI INTERATTIVO ──────────────────────────────
+let _analisiDashData = null;
+let _analisiMode = 'spese'; // 'entrate' | 'spese'
+let chartAnalisi = null;
+
+function switchAnalisi(mode) {
+  _analisiMode = mode;
+  document.getElementById('analisiTabEnt').classList.toggle('active', mode === 'entrate');
+  document.getElementById('analisiTabSpe').classList.toggle('active', mode === 'spese');
+  document.getElementById('analisiDetail').innerHTML = '<div style="color:var(--text-dim);font-size:0.82rem;padding:24px 0;text-align:center;">← Clicca su una categoria nel grafico</div>';
+  document.getElementById('analisiDetailTitle').textContent = 'Seleziona una fetta per vedere il dettaglio';
+  if (_analisiDashData) initAnalisiChart(_analisiDashData);
+}
+
+function initAnalisiChart(d) {
+  const isEnt = _analisiMode === 'entrate';
+
+  // Aggrega dati per la modalità selezionata
+  // Per spese: usa speseCat e arricchisce con spazioInfo dai dati spese
+  // Per entrate: usa entrateFonte aggregato
+  let labels = [], values = [], colors = [], detailMap = {};
+
+  if (!isEnt) {
+    // SPESE per categoria
+    const cat = d.speseCat || {};
+    const catColors = {};
+    (d.categorieFull || []).forEach(c => { catColors[c.Nome] = c.Colore || '#888'; });
+    Object.entries(cat).forEach(([k, v], i) => {
+      labels.push(k);
+      values.push(Math.round(v * 100) / 100);
+      colors.push(catColors[k] || PALETTE[i % PALETTE.length]);
+    });
+    // Per il dettaglio delle fonti di spesa (spazio), usiamo speseFonteDetail se disponibile
+    detailMap = d.speseFonteDetail || {};
+  } else {
+    // ENTRATE per fonte
+    const fonti = d.entrateFonte || {};
+    const fonteColors = {
+      partita_iva_consulenza: '#4fcf7a',
+      partita_iva_affitto:    '#5b8af7',
+      contanti:               '#e2c96e',
+      altro:                  '#7a7898',
+    };
+    Object.entries(fonti).forEach(([k, v]) => {
+      if (v > 0) {
+        labels.push(labelFonte(k));
+        values.push(Math.round(v * 100) / 100);
+        colors.push(fonteColors[k] || '#888');
+        detailMap[labelFonte(k)] = d.entratefFonteDetail?.[k] || {};
+      }
+    });
+  }
+
+  if (chartAnalisi) chartAnalisi.destroy();
+
+  const canvas = document.getElementById('chartAnalisi');
+  if (!canvas) return;
+
+  chartAnalisi = new Chart(canvas.getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: colors, borderWidth: 2, borderColor: '#141420', hoverOffset: 12, hoverBorderWidth: 0 }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '58%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` € ${ctx.parsed.toLocaleString('it-IT', {minimumFractionDigits:2})} — ${((ctx.parsed / values.reduce((a,b)=>a+b,0))*100).toFixed(1)}%`,
+          }
+        }
+      },
+      onClick: (evt, elements) => {
+        if (!elements.length) return;
+        const idx = elements[0].index;
+        mostraDettaglioAnalisi(labels[idx], values[idx], colors[idx], values, d, isEnt);
+      }
+    },
+  });
+
+  // Custom legend
+  const legendEl = document.getElementById('chartAnalisiLegend');
+  if (legendEl) {
+    legendEl.innerHTML = labels.map((l, i) => `
+      <div style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .15s;"
+           onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'"
+           onclick="mostraDettaglioAnalisi('${l.replace(/'/g,"\\'")}',${values[i]},'${colors[i]}',${JSON.stringify(values)},_analisiDashData,${isEnt})">
+        <span style="width:10px;height:10px;border-radius:2px;background:${colors[i]};flex-shrink:0;"></span>
+        <span style="font-size:0.75rem;color:var(--text-dim);">${l}</span>
+        <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--text);margin-left:4px;">€ ${values[i].toLocaleString('it-IT',{minimumFractionDigits:0})}</span>
+      </div>`).join('');
+  }
+}
+
+function mostraDettaglioAnalisi(label, valore, color, allValues, d, isEnt) {
+  const tot = allValues.reduce((a, b) => a + b, 0);
+  const pct = tot > 0 ? ((valore / tot) * 100).toFixed(1) : 0;
+  const titleEl  = document.getElementById('analisiDetailTitle');
+  const detailEl = document.getElementById('analisiDetail');
+  if (!titleEl || !detailEl) return;
+
+  titleEl.textContent = label;
+
+  // Costruisce il dettaglio per spazio/fonte da dati aggregati in modo client-side
+  // Usiamo i dati grezzi che il backend manda per ricostruire il breakdown
+  let breakdown = [];
+
+  if (!isEnt) {
+    // Per spese: guarda speseByCatAndSpazio se disponibile, altrimenti mostra solo il totale
+    const detail = (d.speseByCatAndSpazio || {})[label] || {};
+    breakdown = Object.entries(detail).map(([spazio, imp]) => ({ label: spazio, value: imp }));
+    if (!breakdown.length && d.speseCatAndTipo) {
+      const byTipo = (d.speseCatAndTipo || {})[label] || {};
+      breakdown = Object.entries(byTipo).map(([tipo, imp]) => ({ label: tipo, value: imp }));
+    }
+  } else {
+    // Per entrate: breakdown per stato rendicontazione (se disponibile)
+    const fonteKey = Object.keys({
+      partita_iva_consulenza:'P.IVA Consulenza', partita_iva_affitto:'P.IVA Affitto', contanti:'Contanti', altro:'Altro'
+    }).find(k => labelFonte(k) === label);
+    if (fonteKey && d.entratefFonteDetail) {
+      const det = d.entratefFonteDetail[fonteKey] || {};
+      breakdown = Object.entries(det).map(([k, v]) => ({ label: k, value: v }));
+    }
+  }
+
+  const fmtV = v => '€ ' + Number(v).toLocaleString('it-IT', {minimumFractionDigits:2});
+
+  detailEl.innerHTML = `
+    <div style="margin-bottom:14px;">
+      <div style="font-family:var(--font-mono);font-size:1.6rem;font-weight:500;color:${color}">${fmtV(valore)}</div>
+      <div style="font-size:0.75rem;color:var(--text-dim);margin-top:2px;">${pct}% del totale ${isEnt?'entrate':'spese'} del mese</div>
+    </div>
+    <div style="height:4px;background:var(--surface3);border-radius:99px;overflow:hidden;margin-bottom:14px;">
+      <div style="height:100%;width:${pct}%;background:${color};border-radius:99px;"></div>
+    </div>
+    ${breakdown.length > 0 ? `
+    <div style="font-size:0.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Dettaglio per ${isEnt?'stato':'spazio/tipo'}</div>
+    ${breakdown.sort((a,b) => b.value - a.value).map(b => {
+      const bPct = valore > 0 ? ((b.value / valore) * 100).toFixed(0) : 0;
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+        <div>
+          <div style="font-size:0.8rem;">${b.label}</div>
+          <div style="height:3px;width:${bPct}%;background:${color};opacity:0.5;border-radius:99px;margin-top:3px;"></div>
+        </div>
+        <div style="font-family:var(--font-mono);font-size:0.8rem;color:${color}">${fmtV(b.value)}</div>
+      </div>`;
+    }).join('')}` : `<div style="font-size:0.78rem;color:var(--text-dim);padding:8px 0;">Nessun dettaglio per fonte/spazio disponibile per questa voce.</div>`}
+  `;
 }
 
 const PALETTE = ['#4fcf7a','#f2636a','#5b8af7','#e2c96e','#a78bfa','#fb923c','#22d3ee','#ec4899','#34d399','#fbbf24'];
@@ -1318,6 +1539,13 @@ function renderSpazioCard(s) {
 }
 
 // ─── ENTRATE ─────────────────────────────────────────────────
+function isRendicontata(r) {
+  const note = r.Note || '';
+  if (note.includes('[NON_RENDICONTATA]')) return false;
+  // Se non ha flag ma è P.IVA, assumiamo rendicontata (retrocompatibilità)
+  return true;
+}
+
 async function loadEntrate() {
   const el = document.getElementById('entrateTable');
   el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
@@ -1327,45 +1555,57 @@ async function loadEntrate() {
     const rawRows = await apiGet('getEntrate');
     const rows = Array.isArray(rawRows) ? rawRows : [];
 
-    // Calcola accantonamento cumulativo mese
+    // Calcola accantonamento cumulativo mese — solo entrate rendicontate
     const now = new Date();
     const meseCor = now.getMonth(), annoCor = now.getFullYear();
     let accConsulenzaMese = 0, accAffittoMese = 0;
+    let nonRendicontateCount = 0, nonRendicontateImporto = 0;
     rows.forEach(r => {
       const d = new Date(r.Data);
       if (d.getMonth() === meseCor && d.getFullYear() === annoCor) {
         const imp = parseFloat(r.Importo) || 0;
-        if (r.Fonte === 'partita_iva_consulenza') {
-          accConsulenzaMese += imp * ((ALIQUOTE.consulenza_imposte + ALIQUOTE.consulenza_inps) / 100);
-        } else if (r.Fonte === 'partita_iva_affitto') {
-          accAffittoMese += imp * (ALIQUOTE.affitto_imposte / 100);
+        const rend = isRendicontata(r);
+        const isPiva = r.Fonte === 'partita_iva_consulenza' || r.Fonte === 'partita_iva_affitto';
+        if (isPiva && !rend) { nonRendicontateCount++; nonRendicontateImporto += imp; }
+        if (rend) {
+          if (r.Fonte === 'partita_iva_consulenza') accConsulenzaMese += imp * ((ALIQUOTE.consulenza_imposte + ALIQUOTE.consulenza_inps) / 100);
+          else if (r.Fonte === 'partita_iva_affitto') accAffittoMese += imp * (ALIQUOTE.affitto_imposte / 100);
         }
       }
     });
     const totAcc = accConsulenzaMese + accAffittoMese;
-    if (totAcc > 0) {
+    if (totAcc > 0 || nonRendicontateCount > 0) {
       alertEl.innerHTML = `
         <div class="fiscal-alert" style="margin-bottom:16px;">
           <div class="fa-title">⚖ Accantonamento fiscale P.IVA — mese corrente</div>
           <div class="fa-details">
             ${accConsulenzaMese > 0 ? `<div class="fa-item"><div class="fa-label">Da consulenza</div><div class="fa-val" style="color:var(--red)">€ ${accConsulenzaMese.toFixed(2)}</div></div>` : ''}
             ${accAffittoMese > 0 ? `<div class="fa-item"><div class="fa-label">Da affitto studi</div><div class="fa-val" style="color:var(--orange)">€ ${accAffittoMese.toFixed(2)}</div></div>` : ''}
-            <div class="fa-item"><div class="fa-label">Totale da accantonare</div><div class="fa-val" style="color:var(--orange);font-size:1.3rem;">€ ${totAcc.toFixed(2)}</div></div>
+            ${totAcc > 0 ? `<div class="fa-item"><div class="fa-label">Totale da accantonare</div><div class="fa-val" style="color:var(--orange);font-size:1.3rem;">€ ${totAcc.toFixed(2)}</div></div>` : ''}
+            ${nonRendicontateCount > 0 ? `<div class="fa-item"><div class="fa-label">Non rendicontate (escluse)</div><div class="fa-val" style="color:var(--text-dim);font-size:0.9rem;">${nonRendicontateCount} entrate — € ${nonRendicontateImporto.toFixed(2)}</div></div>` : ''}
           </div>
         </div>`;
     }
 
     if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↑</div><p>Nessuna entrata registrata.</p></div>'; return; }
     el.innerHTML = `<table>
-      <thead><tr><th>Data</th><th>Importo</th><th>Fonte</th><th>Descrizione</th><th>Spazio</th><th>Acc. Fiscale</th><th></th></tr></thead>
+      <thead><tr><th>Data</th><th>Importo</th><th>Fonte</th><th>Stato</th><th>Descrizione</th><th>Spazio</th><th>Acc. Fiscale</th><th></th></tr></thead>
       <tbody>${rows.map(r => {
-        const imp = parseFloat(r.Importo) || 0;
-        const calc = calcolaAccFiscale(imp, r.Fonte);
+        const imp  = parseFloat(r.Importo) || 0;
+        const rend = isRendicontata(r);
+        const isPiva = r.Fonte === 'partita_iva_consulenza' || r.Fonte === 'partita_iva_affitto';
+        const calc = (isPiva && rend) ? calcolaAccFiscale(imp, r.Fonte) : null;
+        const noteClean = (r.Note || '').replace('[RENDICONTATA]','').replace('[NON_RENDICONTATA]','').trim();
         return `<tr>
           <td>${fmtDate(r.Data)}</td>
           <td><span class="positive" style="font-family:var(--font-mono)">+ € ${imp.toLocaleString('it-IT',{minimumFractionDigits:2})}</span></td>
           <td><span class="pill" style="border-color:var(--green);color:var(--green)">${labelFonte(r.Fonte)}</span></td>
-          <td>${r.Descrizione||''}</td>
+          <td>${isPiva
+            ? (rend
+                ? `<span class="pill" style="border-color:rgba(79,207,122,0.4);color:var(--green);background:rgba(79,207,122,0.1);font-size:0.65rem;">✓ Fattura</span>`
+                : `<span class="pill" style="border-color:rgba(251,146,60,0.4);color:var(--orange);background:rgba(251,146,60,0.1);font-size:0.65rem;">⏳ Non rend.</span>`)
+            : '—'}</td>
+          <td>${r.Descrizione||''}${noteClean?`<br><span style="font-size:0.7rem;color:var(--text-dim)">${noteClean}</span>`:''}</td>
           <td>${r.SpazioDestinatario||''}</td>
           <td>${calc ? `<span style="font-family:var(--font-mono);color:var(--orange);font-size:0.8rem;">- € ${calc.totale.toFixed(2)}</span>` : '<span style="color:var(--text-dim);font-size:0.75rem;">—</span>'}</td>
           <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Entrate')">✕</button></td>
@@ -1981,6 +2221,9 @@ async function prepModal(id) {
     document.getElementById('ent_data').value = today;
     document.getElementById('ent_importo').value = '';
     document.getElementById('fiscalPreview').classList.remove('show');
+    document.getElementById('rendicontazioneBox').style.display = 'none';
+    _rendicontata = true;
+    setRendicontata(true);
     fillSpazioSelect('ent_spazio');
   }
   if (id === 'modalSpesa') {
@@ -2014,20 +2257,33 @@ function openQuickAdd() {
 async function submitEntrata() {
   const importo = parseFloat(v('ent_importo')) || 0;
   const fonte   = v('ent_fonte');
+  const isPiva  = fonte === 'partita_iva_consulenza' || fonte === 'partita_iva_affitto';
+
+  // Costruisce il campo note con il flag rendicontazione
+  let noteBase = v('ent_note');
+  if (isPiva) {
+    const flag = _rendicontata ? '[RENDICONTATA]' : '[NON_RENDICONTATA]';
+    noteBase = noteBase ? `${flag} ${noteBase}` : flag;
+  }
+
   const payload = {
     data: v('ent_data'), importo: importo, fonte: fonte,
-    descrizione: v('ent_desc'), spazioDestinatario: v('ent_spazio'), note: v('ent_note'),
+    descrizione: v('ent_desc'), spazioDestinatario: v('ent_spazio'), note: noteBase,
   };
   if (!payload.data || !payload.importo) return toast('Compila data e importo', 'error');
 
-  const calcolo = calcolaAccFiscale(importo, fonte);
+  // Calcola accantonamento SOLO se rendicontata
+  const calcolo = (isPiva && _rendicontata) ? calcolaAccFiscale(importo, fonte) : null;
 
   await submit('addEntrata', payload, 'modalEntrata', () => loadEntrate());
 
-  // Avvisa sull'accantonamento
   if (calcolo && calcolo.totale > 0) {
     setTimeout(() => {
       toast(`⚖ Ricorda di accantonare € ${calcolo.totale.toFixed(2)} per tasse/contributi (${labelFonte(fonte)})`, 'warning');
+    }, 600);
+  } else if (isPiva && !_rendicontata) {
+    setTimeout(() => {
+      toast(`📋 Entrata registrata come NON rendicontata — nessun accantonamento fiscale calcolato`, 'info');
     }, 600);
   }
 }
