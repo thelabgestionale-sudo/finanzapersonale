@@ -25,14 +25,13 @@
   --blue:      #5b8af7;
   --purple:    #a78bfa;
   --orange:    #fb923c;
-  --teal:      #2dd4bf;
   --radius:    12px;
   --radius-lg: 20px;
   --shadow:    0 8px 32px rgba(0,0,0,0.5);
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-sans:  'DM Sans', system-ui, sans-serif;
   --font-mono:  'JetBrains Mono', monospace;
-  --sidebar-w: 250px;
+  --sidebar-w: 240px;
   --topbar-h:  64px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -40,7 +39,7 @@ html { font-size: 15px; }
 body { background: var(--bg); color: var(--text); font-family: var(--font-sans); font-weight: 300; min-height: 100vh; display: flex; }
 
 /* SIDEBAR */
-.sidebar { width: var(--sidebar-w); min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+.sidebar { width: var(--sidebar-w); min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; transition: transform 0.3s ease; }
 .sidebar-logo { padding: 28px 24px 20px; border-bottom: 1px solid var(--border); }
 .sidebar-logo h1 { font-family: var(--font-serif); font-size: 1.3rem; color: var(--gold); line-height: 1.2; font-weight: 700; }
 .sidebar-logo p { font-size: 0.7rem; color: var(--text-dim); margin-top: 3px; letter-spacing: 0.1em; text-transform: uppercase; }
@@ -50,8 +49,9 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-sans);
 .nav-item:hover { background: var(--gold-glow); color: var(--text); }
 .nav-item.active { background: rgba(226,201,110,0.12); color: var(--gold); font-weight: 500; }
 .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+.nav-badge { margin-left: auto; font-size: 0.65rem; background: var(--gold); color: var(--bg); border-radius: 999px; padding: 1px 7px; font-weight: 600; }
 
-/* MAIN */
+/* TOPBAR */
 .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 .topbar { height: var(--topbar-h); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; background: var(--surface); position: sticky; top: 0; z-index: 50; }
 .topbar-title { font-family: var(--font-serif); font-size: 1.25rem; color: var(--text); }
@@ -64,8 +64,8 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-sans);
 .btn-sm { padding: 6px 14px; font-size: 0.78rem; }
 .btn-danger { background: rgba(242,99,106,0.15); color: var(--red); border: 1px solid rgba(242,99,106,0.3); }
 .btn-danger:hover { background: rgba(242,99,106,0.25); }
-.btn-teal { background: rgba(45,212,191,0.15); color: var(--teal); border: 1px solid rgba(45,212,191,0.3); }
-.btn-teal:hover { background: rgba(45,212,191,0.25); }
+.btn-success { background: rgba(79,207,122,0.15); color: var(--green); border: 1px solid rgba(79,207,122,0.3); }
+.btn-success:hover { background: rgba(79,207,122,0.25); }
 
 /* CONTENT */
 .content { padding: 32px; flex: 1; }
@@ -81,9 +81,8 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-sans);
 .positive { color: var(--green) !important; }
 .negative { color: var(--red) !important; }
 .gold { color: var(--gold) !important; }
-.teal { color: var(--teal) !important; }
 
-/* GRID */
+/* GRIDS */
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
@@ -92,20 +91,12 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-sans);
 .mt-28 { margin-top: 28px; }
 
 /* STAT CARDS */
-.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; position: relative; overflow: hidden; transition: transform 0.2s; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; position: relative; overflow: hidden; cursor: default; transition: transform 0.2s; }
 .stat-card:hover { transform: translateY(-2px); }
 .stat-card .icon { font-size: 1.6rem; margin-bottom: 10px; display: block; }
 .stat-card .label { font-size: 0.75rem; color: var(--text-dim); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
 .stat-card .amount { font-family: var(--font-mono); font-size: 1.5rem; font-weight: 500; }
 .stat-card .delta { font-size: 0.75rem; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
-
-/* ACCANTONAMENTO FISCALE ALERT */
-.fiscal-alert { background: linear-gradient(135deg, rgba(242,99,106,0.1), rgba(251,146,60,0.08)); border: 1px solid rgba(242,99,106,0.3); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 16px; }
-.fiscal-alert .fa-title { font-family: var(--font-serif); font-size: 1rem; color: var(--orange); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-.fiscal-alert .fa-details { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
-.fiscal-alert .fa-item { background: rgba(0,0,0,0.2); border-radius: var(--radius); padding: 12px; }
-.fiscal-alert .fa-item .fa-label { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
-.fiscal-alert .fa-item .fa-val { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 500; }
 
 /* TABLE */
 .table-wrap { overflow-x: auto; }
@@ -116,13 +107,18 @@ tbody tr:hover { background: var(--gold-glow); }
 tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
 .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 500; border: 1px solid; }
 
+/* TOGGLE RENDICONTATA */
+.toggle-btn { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 500; border: 1px solid; cursor: pointer; transition: all 0.2s; background: none; font-family: var(--font-sans); }
+.toggle-btn.rendicontata { border-color: rgba(79,207,122,0.4); color: var(--green); background: rgba(79,207,122,0.1); }
+.toggle-btn.non-rendicontata { border-color: rgba(251,146,60,0.4); color: var(--orange); background: rgba(251,146,60,0.1); }
+.toggle-btn:hover { opacity: 0.75; }
+
 /* MODAL */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(13,13,20,0.85); backdrop-filter: blur(6px); z-index: 1000; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
-.modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow); animation: slideUp 0.25s ease; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow); animation: slideUp 0.25s ease; }
 @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-.modal-title.editing { color: var(--teal); }
-.modal-title.editing::before { content: '✎ '; }
+.modal-title { font-family: var(--font-serif); font-size: 1.3rem; color: var(--gold); margin-bottom: 24px; }
 .form-group { margin-bottom: 18px; }
 .form-group label { display: block; font-size: 0.75rem; color: var(--text-dim); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 7px; }
 .form-group input, .form-group select, .form-group textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; color: var(--text); font-family: var(--font-sans); font-size: 0.88rem; outline: none; transition: border-color 0.18s; appearance: none; }
@@ -131,15 +127,7 @@ tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .modal-footer { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
 
-/* FISCAL PREVIEW IN MODAL */
-.fiscal-preview { background: var(--surface3); border: 1px solid rgba(251,146,60,0.25); border-radius: var(--radius); padding: 14px; margin-top: 6px; display: none; }
-.fiscal-preview.show { display: block; }
-.fp-title { font-size: 0.72rem; color: var(--orange); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
-.fp-row { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.fp-row:last-child { border-bottom: none; font-weight: 500; padding-top: 8px; }
-.fp-row span:last-child { font-family: var(--font-mono); color: var(--orange); }
-
-/* SPAZIO CARD */
+/* SPAZIO CARDS */
 .spazio-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; position: relative; overflow: hidden; transition: transform 0.2s; }
 .spazio-card:hover { transform: translateY(-2px); }
 .spazio-card .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
@@ -149,6 +137,24 @@ tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
 .spazio-card .spazio-note { font-size: 0.72rem; color: var(--text-dim); margin-top: 6px; }
 .progress-bar { height: 4px; background: var(--surface3); border-radius: 99px; overflow: hidden; margin-top: 12px; }
 .progress-fill { height: 100%; border-radius: 99px; background: var(--gold); transition: width 0.6s ease; }
+
+/* CHART */
+.chart-container { position: relative; }
+.chart-title { font-family: var(--font-serif); font-size: 1rem; color: var(--text); margin-bottom: 16px; }
+canvas { max-width: 100%; }
+
+/* LOADING */
+.loading { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 48px; color: var(--text-dim); font-size: 0.85rem; }
+.spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* TOAST */
+#toast { position: fixed; bottom: 28px; right: 28px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+.toast-msg { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 18px; font-size: 0.83rem; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow); animation: slideIn 0.25s ease; max-width: 320px; }
+.toast-msg.success { border-left: 3px solid var(--green); }
+.toast-msg.error   { border-left: 3px solid var(--red); }
+.toast-msg.info    { border-left: 3px solid var(--gold); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
 /* ACC CARD */
 .acc-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; }
@@ -160,83 +166,49 @@ tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
 .acc-target { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-dim); align-self: flex-end; }
 .acc-pct { font-size: 0.72rem; color: var(--text-dim); margin-top: 6px; text-align: right; }
 
-/* CALCULATORE FISCALE */
-.calc-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
-.calc-section h3 { font-family: var(--font-serif); font-size: 1.1rem; color: var(--gold); margin-bottom: 20px; }
-.calc-slider { margin-bottom: 20px; }
-.calc-slider label { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 8px; }
-.calc-slider label span { font-family: var(--font-mono); color: var(--text); font-size: 0.88rem; }
-.range-input { width: 100%; height: 6px; border-radius: 99px; background: var(--surface3); outline: none; cursor: pointer; -webkit-appearance: none; }
-.range-input::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--gold); cursor: pointer; }
-.range-input::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--gold); cursor: pointer; border: none; }
-.calc-result { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
-.calc-result-title { font-family: var(--font-serif); font-size: 0.9rem; color: var(--text-dim); margin-bottom: 16px; }
-.calc-result-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
-.calc-result-row:last-child { border-bottom: none; font-weight: 500; font-size: 1rem; padding-top: 14px; margin-top: 4px; }
-.calc-result-row span:last-child { font-family: var(--font-mono); }
-.regime-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-.regime-tab { padding: 8px 16px; border-radius: var(--radius); border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; font-size: 0.82rem; font-family: var(--font-sans); transition: all 0.18s; }
-.regime-tab.active { background: rgba(226,201,110,0.12); border-color: var(--gold-dim); color: var(--gold); }
-
-/* SPESE FISSE BANNER */
-.spese-fisse-banner { background: linear-gradient(135deg, rgba(91,138,247,0.1), rgba(91,138,247,0.04)); border: 1px solid rgba(91,138,247,0.25); border-radius: var(--radius-lg); padding: 20px 24px; }
-.sfb-title { font-family: var(--font-serif); font-size: 0.95rem; color: var(--blue); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-.sfb-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-.sfb-item { background: rgba(0,0,0,0.2); border-radius: var(--radius); padding: 12px; }
-.sfb-label { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
-.sfb-val { font-family: var(--font-mono); font-size: 1rem; }
-
-/* EMPTY & LOADING */
-.loading { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 48px; color: var(--text-dim); font-size: 0.85rem; }
-.spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+/* EMPTY */
 .empty { text-align: center; padding: 48px 24px; color: var(--text-dim); }
 .empty .empty-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5; }
 .empty p { font-size: 0.85rem; }
 
-/* TOAST */
-#toast { position: fixed; bottom: 28px; right: 28px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-.toast-msg { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 18px; font-size: 0.83rem; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow); animation: slideIn 0.25s ease; max-width: 360px; }
-.toast-msg.success { border-left: 3px solid var(--green); }
-.toast-msg.error   { border-left: 3px solid var(--red); }
-.toast-msg.info    { border-left: 3px solid var(--gold); }
-.toast-msg.warning { border-left: 3px solid var(--orange); }
-@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
-/* SETUP */
+/* SETUP BANNER */
 .setup-banner { background: linear-gradient(135deg, rgba(226,201,110,0.08), rgba(226,201,110,0.03)); border: 1px solid var(--gold-dim); border-radius: var(--radius-lg); padding: 28px 32px; margin-bottom: 28px; display: flex; align-items: flex-start; gap: 20px; }
 .setup-banner .icon { font-size: 2rem; flex-shrink: 0; margin-top: 2px; }
 .setup-banner h3 { font-family: var(--font-serif); font-size: 1.15rem; color: var(--gold); margin-bottom: 6px; }
 .setup-banner p { font-size: 0.83rem; color: var(--text-dim); line-height: 1.6; }
 .code { display: inline-block; background: var(--surface3); border: 1px solid var(--border); border-radius: 6px; padding: 2px 8px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--gold); margin: 2px; }
 
-/* OBIETTIVI & HEALTH SCORE */
-.health-score-ring { display:flex; align-items:center; gap:20px; }
-.score-ring { position:relative; width:80px; height:80px; flex-shrink:0; }
-.score-ring svg { transform:rotate(-90deg); }
-.score-ring .score-val { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:1.3rem; font-weight:500; }
-.obj-progress-row { margin-bottom:12px; }
-.obj-progress-row .obj-label { display:flex; justify-content:space-between; font-size:0.78rem; margin-bottom:5px; }
-.obj-progress-row .obj-label span:first-child { color:var(--text-dim); }
-.obj-progress-row .obj-label span:last-child { font-family:var(--font-mono); font-size:0.75rem; }
-.obj-bar { height:6px; background:var(--surface3); border-radius:99px; overflow:hidden; }
-.obj-bar-fill { height:100%; border-radius:99px; transition:width 0.6s ease; }
-.regola-item { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
-.regola-item:last-child { border-bottom:none; }
-.regola-check { width:20px; height:20px; border-radius:6px; border:1px solid var(--border); background:var(--surface2); cursor:pointer; flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; transition:all 0.18s; }
-.regola-check.checked { background:rgba(79,207,122,0.2); border-color:var(--green); color:var(--green); }
-.regola-content { flex:1; }
-.regola-title { font-size:0.83rem; margin-bottom:2px; }
-.regola-desc { font-size:0.72rem; color:var(--text-dim); line-height:1.5; }
-.regola-pts { font-size:0.65rem; color:var(--text-dim); margin-top:2px; }
+/* FISCAL BANNER */
+.fiscal-banner { background: linear-gradient(135deg, rgba(242,99,106,0.1), rgba(242,99,106,0.03)); border: 1px solid rgba(242,99,106,0.25); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 20px; }
+.fiscal-banner h4 { font-family: var(--font-serif); color: var(--orange); margin-bottom: 4px; font-size: 0.95rem; }
+.fiscal-banner p { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 14px; }
+.fiscal-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.fiscal-item .fi-label { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+.fiscal-item .fi-value { font-family: var(--font-mono); color: var(--red); font-size: 1.1rem; }
 
-/* DASHBOARD OBIETTIVI PANEL */
-.dash-obj-panel { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px 24px; position:relative; overflow:hidden; }
-.dash-obj-panel::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--gold-dim),transparent); }
+/* FATTURA STATO BADGES */
+.stato-emessa   { border-color: rgba(91,138,247,0.4); color: var(--blue); }
+.stato-pagata   { border-color: rgba(79,207,122,0.4); color: var(--green); }
+.stato-scaduta  { border-color: rgba(242,99,106,0.4); color: var(--red); }
 
-/* RESPONSIVE */
-@media (max-width: 1100px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } .sfb-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 800px) { .sidebar { transform: translateX(-100%); } .main { margin-left: 0; } .grid-3, .grid-2 { grid-template-columns: 1fr; } .grid-2-1 { grid-template-columns: 1fr; } .content { padding: 16px; } .fa-details { grid-template-columns: 1fr; } }
+/* FATTURA NUMERO */
+.fattura-num { font-family: var(--font-mono); font-size: 0.8rem; color: var(--gold); background: rgba(226,201,110,0.08); border: 1px solid var(--border); border-radius: 6px; padding: 2px 8px; }
+
+/* OBIETTIVI BANNER */
+.obiettivi-banner { background: linear-gradient(135deg, rgba(91,138,247,0.08), rgba(91,138,247,0.02)); border: 1px solid rgba(91,138,247,0.2); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+.obiettivi-banner .ob-left h4 { font-family: var(--font-serif); color: var(--blue); margin-bottom: 4px; }
+.obiettivi-banner .ob-left p { font-size: 0.78rem; color: var(--text-dim); }
+
+@media (max-width: 1100px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } .fiscal-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 800px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: none; }
+  .main { margin-left: 0; }
+  .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .grid-2-1 { grid-template-columns: 1fr; }
+  .content { padding: 16px; }
+  .fiscal-grid { grid-template-columns: repeat(2, 1fr); }
+}
 </style>
 </head>
 <body>
@@ -255,17 +227,15 @@ tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
     <button class="nav-item" data-page="spese"><span class="nav-icon">↓</span> Spese</button>
     <button class="nav-item" data-page="ricorrenti"><span class="nav-icon">↻</span> Spese Ricorrenti</button>
 
+    <div class="nav-section">Partita IVA</div>
+    <button class="nav-item" data-page="fatture"><span class="nav-icon">🧾</span> Fatture P.IVA</button>
+
     <div class="nav-section">Patrimonio</div>
     <button class="nav-item" data-page="spazi"><span class="nav-icon">◉</span> Spazi & Saldi</button>
     <button class="nav-item" data-page="accantonamenti"><span class="nav-icon">⊕</span> Accantonamenti</button>
     <button class="nav-item" data-page="investimenti"><span class="nav-icon">▲</span> Investimenti</button>
 
-    <div class="nav-section">Fiscale</div>
-    <button class="nav-item" data-page="calcolatore"><span class="nav-icon">⚖</span> Calcolatore P.IVA</button>
-    <button class="nav-item" data-page="obiettivi"><span class="nav-icon">◎</span> Obiettivi Mensili</button>
-
     <div class="nav-section">Impostazioni</div>
-    <button class="nav-item" data-page="saldi_iniziali"><span class="nav-icon">⊞</span> Saldi Iniziali</button>
     <button class="nav-item" data-page="categorie"><span class="nav-icon">≡</span> Categorie</button>
     <button class="nav-item" data-page="setup"><span class="nav-icon">⚙</span> Configurazione</button>
   </nav>
@@ -296,7 +266,7 @@ tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
         </div>
         <button class="btn btn-primary" onclick="openModal('modalEntrata')">+ Nuova Entrata</button>
       </div>
-      <div id="fiscalAlertContainer"></div>
+      <div id="entrateFiscalBanner"></div>
       <div class="card"><div class="table-wrap" id="entrateTable"><div class="loading"><div class="spinner"></div></div></div></div>
     </div>
 
@@ -322,6 +292,19 @@ tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
         <button class="btn btn-primary" onclick="openModal('modalRicorrente')">+ Nuova Ricorrente</button>
       </div>
       <div class="card"><div class="table-wrap" id="ricorrentiTable"><div class="loading"><div class="spinner"></div></div></div></div>
+    </div>
+
+    <!-- FATTURE P.IVA -->
+    <div class="page" id="page-fatture">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <h2 style="font-family:var(--font-serif);font-size:1.4rem;">Fatture P.IVA</h2>
+          <p style="color:var(--text-dim);font-size:0.8rem;margin-top:4px;">Archivio progressivo fatture emesse</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modalFattura')">+ Nuova Fattura</button>
+      </div>
+      <div id="fattureStats" style="margin-bottom:20px;"></div>
+      <div class="card"><div class="table-wrap" id="fattureTable"><div class="loading"><div class="spinner"></div></div></div></div>
     </div>
 
     <!-- SPAZI -->
@@ -360,271 +343,6 @@ tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
       <div class="card"><div class="table-wrap" id="invTable"><div class="loading"><div class="spinner"></div></div></div></div>
     </div>
 
-    <!-- OBIETTIVI MENSILI -->
-    <div class="page" id="page-obiettivi">
-      <div style="margin-bottom:24px;">
-        <p style="color:var(--text-dim);font-size:0.8rem;">Definisci i tuoi target mensili. La dashboard li confronterà con i dati reali ogni mese.</p>
-      </div>
-
-      <!-- Salute finanziaria: spiegazione regola -->
-      <div class="card" style="margin-bottom:20px;background:linear-gradient(135deg,rgba(226,201,110,0.06),rgba(91,138,247,0.04));">
-        <div style="font-family:var(--font-serif);font-size:1.05rem;color:var(--gold);margin-bottom:14px;">◎ Il framework 50/30/20 adattato per partita IVA</div>
-        <div class="grid-3" style="gap:12px;">
-          <div style="background:rgba(242,99,106,0.08);border:1px solid rgba(242,99,106,0.2);border-radius:var(--radius);padding:14px;">
-            <div style="font-size:0.68rem;color:var(--red);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">50% — Necessità</div>
-            <div style="font-size:0.82rem;color:var(--text-dim);line-height:1.6;">Spese fisse: affitto, cibo, trasporti, utenze. Il tetto del 50% include anche l'accantonamento fiscale obbligatorio.</div>
-          </div>
-          <div style="background:rgba(91,138,247,0.08);border:1px solid rgba(91,138,247,0.2);border-radius:var(--radius);padding:14px;">
-            <div style="font-size:0.68rem;color:var(--blue);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">30% — Desideri</div>
-            <div style="font-size:0.82rem;color:var(--text-dim);line-height:1.6;">Svago, ristoranti, abbigliamento, viaggi, hobby. Goditi la vita senza sensi di colpa — ma con un limite.</div>
-          </div>
-          <div style="background:rgba(79,207,122,0.08);border:1px solid rgba(79,207,122,0.2);border-radius:var(--radius);padding:14px;">
-            <div style="font-size:0.68rem;color:var(--green);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">20% — Futuro</div>
-            <div style="font-size:0.82rem;color:var(--text-dim);line-height:1.6;">Investimenti, fondo emergenza, risparmio. Per un freelance con P.IVA il 20% va pensato <em>al netto</em> delle tasse già accantonate.</div>
-          </div>
-        </div>
-        <div style="margin-top:14px;font-size:0.78rem;color:var(--text-dim);line-height:1.7;border-top:1px solid var(--border);padding-top:12px;">
-          <strong style="color:var(--gold)">Obiettivo sano per freelance:</strong> tasso di risparmio netto ≥ 20% del fatturato lordo, fondo emergenza pari a 6 mesi di spese fisse, investimento mensile costante anche piccolo (automatismo &gt; importo). Ogni obiettivo ha un punteggio: la dashboard ti darà un voto di salute finanziaria da 0 a 100.
-        </div>
-      </div>
-
-      <div class="grid-2" style="gap:20px;align-items:start;">
-        <!-- Colonna sinistra: obiettivi numerici -->
-        <div>
-          <div class="calc-section">
-            <h3>🎯 Target mensili</h3>
-            <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:20px;line-height:1.6;">I valori suggeriti sono calcolati automaticamente dalla tua media degli ultimi 3 mesi se disponibile, altrimenti usa i preset.</p>
-
-            <div class="form-group">
-              <label>🎯 Fatturato minimo mensile (€)</label>
-              <input type="number" id="obj_fatturato" placeholder="es. 3500" min="0" step="50" oninput="salvaObiettivi()" />
-              <div style="font-size:0.72rem;color:var(--text-dim);margin-top:4px;">Il tuo obiettivo di incasso lordo mensile da tutte le fonti P.IVA</div>
-            </div>
-            <div class="form-group">
-              <label>💸 Tetto spese mensili (€)</label>
-              <input type="number" id="obj_spese" placeholder="es. 1800" min="0" step="50" oninput="salvaObiettivi()" />
-              <div style="font-size:0.72rem;color:var(--text-dim);margin-top:4px;">Limite massimo di spesa (escluso accantonamento fiscale)</div>
-            </div>
-            <div class="form-group">
-              <label>🏦 Accantonamento fiscale mensile (€)</label>
-              <input type="number" id="obj_acc_fiscale" placeholder="es. 900" min="0" step="50" oninput="salvaObiettivi()" />
-              <div style="font-size:0.72rem;color:var(--text-dim);margin-top:4px;">Quanto mettere da parte ogni mese per tasse + INPS</div>
-            </div>
-            <div class="form-group">
-              <label>📈 Investimento mensile (€)</label>
-              <input type="number" id="obj_investimento" placeholder="es. 300" min="0" step="50" oninput="salvaObiettivi()" />
-              <div style="font-size:0.72rem;color:var(--text-dim);margin-top:4px;">Versamento mensile in ETF, BTP, o altro strumento di investimento</div>
-            </div>
-            <div class="form-group">
-              <label>💰 Risparmio netto mensile (€)</label>
-              <input type="number" id="obj_risparmio" placeholder="es. 700" min="0" step="50" oninput="salvaObiettivi()" />
-              <div style="font-size:0.72rem;color:var(--text-dim);margin-top:4px;">Entrate − spese − accantonamento fiscale. Il denaro che "avanza" davvero.</div>
-            </div>
-            <div class="form-group">
-              <label>🛡 Fondo emergenza — obiettivo totale (€)</label>
-              <input type="number" id="obj_emergenza" placeholder="es. 12000" min="0" step="500" oninput="salvaObiettivi()" />
-              <div style="font-size:0.72rem;color:var(--text-dim);margin-top:4px;">Target complessivo del fondo di emergenza (ideale: 6 mesi di spese fisse)</div>
-            </div>
-            <div class="form-group">
-              <label>📊 Tasso di risparmio obiettivo (%)</label>
-              <input type="number" id="obj_tasso_risp" placeholder="es. 20" min="0" max="100" step="1" oninput="salvaObiettivi()" />
-              <div style="font-size:0.72rem;color:var(--text-dim);margin-top:4px;">% del fatturato lordo da destinare a risparmio + investimento. Benchmark sano: ≥ 20%</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Colonna destra: regole comportamentali + anteprima score -->
-        <div>
-          <div class="calc-section" style="margin-bottom:16px;">
-            <h3>📋 Regole comportamentali attive</h3>
-            <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:16px;">Queste regole contribuiscono al tuo punteggio di salute finanziaria in dashboard. Attivale quando le rispetti.</p>
-
-            <div id="regoleList">
-              <!-- generato da JS -->
-            </div>
-          </div>
-
-          <div class="calc-section">
-            <h3>👁 Anteprima punteggio</h3>
-            <div style="text-align:center;padding:16px 0;">
-              <div id="objScorePreview" style="font-family:var(--font-mono);font-size:3.5rem;font-weight:500;color:var(--gold);line-height:1;">—</div>
-              <div id="objScoreLabel" style="font-size:0.82rem;color:var(--text-dim);margin-top:6px;">Imposta gli obiettivi per vedere il punteggio</div>
-            </div>
-            <div id="objScoreBars" style="margin-top:12px;"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CALCOLATORE P.IVA -->
-    <div class="page" id="page-calcolatore">
-      <div style="margin-bottom:24px;">
-        <p style="color:var(--text-dim);font-size:0.8rem;">Stima imposte e contributi — Regime Forfettario &amp; Ordinario</p>
-      </div>
-
-      <div class="grid-2">
-        <div>
-          <div class="calc-section" style="margin-bottom:16px;">
-            <h3>⚙ Parametri</h3>
-            <div style="margin-bottom:16px;">
-              <label style="font-size:0.75rem;color:var(--text-dim);letter-spacing:0.07em;text-transform:uppercase;display:block;margin-bottom:8px;">Regime fiscale</label>
-              <div class="regime-tabs">
-                <button class="regime-tab active" id="tabForf" onclick="setRegime('forfettario')">Forfettario</button>
-                <button class="regime-tab" id="tabOrd" onclick="setRegime('ordinario')">Ordinario</button>
-              </div>
-            </div>
-
-            <div class="calc-slider">
-              <label>Fatturato annuo lordo <span id="calcFatturatoLabel">€ 40.000</span></label>
-              <input type="range" class="range-input" id="calcFatturato" min="5000" max="200000" step="1000" value="40000" oninput="aggiornaCalcolatore()" />
-            </div>
-
-            <!-- FORFETTARIO -->
-            <div id="sezForfettario">
-              <div class="calc-slider">
-                <label>Codice ATECO — coefficiente di redditività <span id="calcCoeffLabel">67%</span></label>
-                <input type="range" class="range-input" id="calcCoeff" min="40" max="86" step="1" value="67" oninput="aggiornaCalcolatore()" />
-              </div>
-              <div style="margin-bottom:16px;">
-                <label style="font-size:0.75rem;color:var(--text-dim);letter-spacing:0.07em;text-transform:uppercase;display:block;margin-bottom:8px;">Aliquota imposta sostitutiva</label>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                  <button class="regime-tab active" id="tabAliq5" onclick="setAliquota(5)">5% (primo anno)</button>
-                  <button class="regime-tab" id="tabAliq15" onclick="setAliquota(15)">15% (ordinaria)</button>
-                </div>
-              </div>
-
-              <!-- TIPO CASSA PREVIDENZIALE -->
-              <div style="margin-bottom:16px;">
-                <label style="font-size:0.75rem;color:var(--text-dim);letter-spacing:0.07em;text-transform:uppercase;display:block;margin-bottom:8px;">Cassa previdenziale</label>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                  <button class="regime-tab active" id="tabGestSep" onclick="setCassa('gestione_separata')">Gestione Separata</button>
-                  <button class="regime-tab" id="tabArtigiani" onclick="setCassa('artigiani_commercianti')">Artigiani / Commercianti</button>
-                </div>
-              </div>
-
-              <!-- GESTIONE SEPARATA -->
-              <div id="sezGestSep">
-                <div class="calc-slider">
-                  <label>Aliquota Gestione Separata INPS <span id="calcInpsLabel">26.23%</span></label>
-                  <input type="range" class="range-input" id="calcInps" min="24" max="35" step="0.01" value="26.23" oninput="aggiornaCalcolatore()" />
-                </div>
-                <div style="background:rgba(91,138,247,0.08);border:1px solid rgba(91,138,247,0.2);border-radius:var(--radius);padding:10px 12px;font-size:0.75rem;color:var(--text-dim);line-height:1.5;">
-                  Aliquote 2024: <strong style="color:var(--text)">26.23%</strong> senza altra copertura, <strong style="color:var(--text)">24%</strong> con pensione/dipendente, <strong style="color:var(--text)">35.03%</strong> senza pensione e con partecipazione agli utili. Calcolata sull'imponibile (fatturato × coeff. ATECO).
-                </div>
-              </div>
-
-              <!-- ARTIGIANI / COMMERCIANTI -->
-              <div id="sezArtigiani" style="display:none;">
-                <div style="background:rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.2);border-radius:var(--radius);padding:12px;margin-bottom:14px;font-size:0.78rem;color:var(--text-dim);line-height:1.6;">
-                  La Cassa Artigiani/Commercianti prevede un <strong style="color:var(--text)">contributo fisso minimale</strong> (dovuto sempre, anche a reddito zero) + un <strong style="color:var(--text)">contributo eccedentario</strong> sulla parte di reddito oltre il minimale.
-                </div>
-                <div class="calc-slider">
-                  <label>Reddito minimale INPS <span id="calcMinLabel">€ 18.415</span></label>
-                  <input type="range" class="range-input" id="calcMin" min="15000" max="25000" step="100" value="18415" oninput="aggiornaCalcolatore()" />
-                </div>
-                <div class="calc-slider">
-                  <label>Contributo fisso annuo (su minimale) <span id="calcFissoLabel">€ 4.292</span></label>
-                  <input type="range" class="range-input" id="calcFisso" min="3000" max="6000" step="10" value="4292" oninput="aggiornaCalcolatore()" />
-                </div>
-                <div class="calc-slider">
-                  <label>Aliquota eccedenza reddito minimale <span id="calcEccLabel">24%</span></label>
-                  <input type="range" class="range-input" id="calcEcc" min="20" max="30" step="0.1" value="24" oninput="aggiornaCalcolatore()" />
-                </div>
-                <div style="background:rgba(91,138,247,0.08);border:1px solid rgba(91,138,247,0.2);border-radius:var(--radius);padding:10px 12px;font-size:0.75rem;color:var(--text-dim);line-height:1.5;">
-                  Valori 2024 indicativi. Artigiani: fisso ~€ 4.208, aliquota ecc. 24%. Commercianti: fisso ~€ 4.292, aliquota ecc. 24.48%. Verifica i valori esatti sul sito INPS.
-                </div>
-              </div>
-            </div>
-
-            <!-- ORDINARIO -->
-            <div id="sezOrdinario" style="display:none;">
-              <div style="margin-bottom:16px;">
-                <label style="font-size:0.75rem;color:var(--text-dim);letter-spacing:0.07em;text-transform:uppercase;display:block;margin-bottom:8px;">Cassa previdenziale</label>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                  <button class="regime-tab active" id="tabOrdGestSep" onclick="setCassaOrd('gestione_separata')">Gestione Separata</button>
-                  <button class="regime-tab" id="tabOrdArtig" onclick="setCassaOrd('artigiani_commercianti')">Artigiani / Commercianti</button>
-                </div>
-              </div>
-              <div class="calc-slider">
-                <label>Costi deducibili <span id="calcCostiLabel">€ 8.000</span></label>
-                <input type="range" class="range-input" id="calcCosti" min="0" max="80000" step="500" value="8000" oninput="aggiornaCalcolatore()" />
-              </div>
-              <!-- Ord Gestione Separata -->
-              <div id="sezOrdGestSep">
-                <div class="calc-slider">
-                  <label>Aliquota Gestione Separata <span id="calcInpsOrdPctLabel">26.23%</span></label>
-                  <input type="range" class="range-input" id="calcInpsOrdPct" min="24" max="35" step="0.01" value="26.23" oninput="aggiornaCalcolatore()" />
-                </div>
-              </div>
-              <!-- Ord Artigiani/Commercianti -->
-              <div id="sezOrdArtig" style="display:none;">
-                <div class="calc-slider">
-                  <label>Contributo fisso annuo <span id="calcOrdFissoLabel">€ 4.292</span></label>
-                  <input type="range" class="range-input" id="calcOrdFisso" min="3000" max="6000" step="10" value="4292" oninput="aggiornaCalcolatore()" />
-                </div>
-                <div class="calc-slider">
-                  <label>Aliquota eccedenza minimale (€ 18.415) <span id="calcOrdEccLabel">24%</span></label>
-                  <input type="range" class="range-input" id="calcOrdEcc" min="20" max="30" step="0.1" value="24" oninput="aggiornaCalcolatore()" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="calc-result">
-            <div class="calc-result-title">Riepilogo fiscale stimato</div>
-            <div id="calcOutput"></div>
-          </div>
-
-          <div class="calc-section" style="margin-top:16px;">
-            <h3>📅 Accantonamento mensile consigliato</h3>
-            <div style="background:var(--surface3);border-radius:var(--radius);padding:16px;text-align:center;">
-              <div style="font-size:0.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Da mettere da parte ogni mese</div>
-              <div id="calcMensile" style="font-family:var(--font-mono);font-size:2rem;color:var(--orange);"></div>
-              <div style="font-size:0.72rem;color:var(--text-dim);margin-top:6px;" id="calcPercMensile"></div>
-            </div>
-            <div style="margin-top:12px;background:rgba(226,201,110,0.06);border:1px solid rgba(226,201,110,0.15);border-radius:var(--radius);padding:12px;font-size:0.75rem;color:var(--text-dim);line-height:1.6;">
-              <strong style="color:var(--gold);">Nota:</strong> Calcolo indicativo. Le imposte si versano in due rate (giugno/novembre). I contributi INPS hanno scadenze specifiche. Consulta un commercialista per la tua situazione.
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SALDI INIZIALI -->
-    <div class="page" id="page-saldi_iniziali">
-      <div style="margin-bottom:24px;">
-        <p style="color:var(--text-dim);font-size:0.8rem;">Imposta i saldi di partenza per ogni spazio. Questi valori non entrano nelle statistiche mensili/annuali.</p>
-      </div>
-
-      <div class="card" style="max-width:680px;margin-bottom:20px;">
-        <div style="display:flex;align-items:flex-start;gap:16px;">
-          <span style="font-size:1.8rem;flex-shrink:0;">⊞</span>
-          <div>
-            <div style="font-family:var(--font-serif);font-size:1rem;color:var(--gold);margin-bottom:6px;">Come funziona</div>
-            <p style="font-size:0.82rem;color:var(--text-dim);line-height:1.7;">
-              Il saldo iniziale rappresenta il <strong style="color:var(--text);">patrimonio reale già esistente</strong> prima di iniziare a tracciare i movimenti con questa app.
-              Imposta qui i saldi correnti di ogni spazio: vengono scritti direttamente come saldo dello spazio, <strong style="color:var(--text);">senza creare movimenti</strong> che andrebbero a gonfiare entrate o spese nei grafici e negli indicatori mensili.
-            </p>
-            <p style="font-size:0.8rem;color:var(--text-dim);margin-top:8px;line-height:1.6;">
-              Da domani in poi registra solo i <em>nuovi</em> movimenti: entrate, spese, trasferimenti. Le statistiche rifletteranno solo quelli.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div id="saldiInizGrid" class="grid-3">
-        <div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>
-      </div>
-
-      <div style="max-width:680px;margin-top:20px;">
-        <div style="background:rgba(242,99,106,0.08);border:1px solid rgba(242,99,106,0.2);border-radius:var(--radius);padding:14px 16px;font-size:0.78rem;color:var(--text-dim);line-height:1.6;">
-          <strong style="color:var(--red);">Attenzione:</strong> Modificare il saldo di uno spazio che ha già movimenti registrati può creare incongruenze. Usa questa funzione preferibilmente al primo avvio, prima di inserire entrate o spese.
-        </div>
-      </div>
-    </div>
-
     <!-- CATEGORIE -->
     <div class="page" id="page-categorie">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
@@ -643,61 +361,35 @@ tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
       <div class="setup-banner">
         <div class="icon">🔧</div>
         <div>
-          <h3>Primo avvio – collega il tuo Google Sheet</h3>
-          <p>Per iniziare, hai bisogno di:</p>
+          <h3>Collega il tuo Google Sheet</h3>
+          <p>Per iniziare:</p>
           <ol style="margin:12px 0 0 16px;line-height:2.2;font-size:0.83rem;color:var(--text-dim);">
-            <li>Creare un <strong style="color:var(--text)">Google Sheet</strong> vuoto</li>
-            <li>Andare su <strong style="color:var(--text)">script.google.com</strong> → Nuovo progetto</li>
-            <li>Incollare il contenuto di <span class="code">Code.gs</span></li>
-            <li>Inserire il tuo <span class="code">SPREADSHEET_ID</span> nel file .gs</li>
-            <li>Distribuire come <strong style="color:var(--text)">Web App</strong> (esegui come: Me, accesso: Chiunque)</li>
-            <li>Incollare l'URL qui sotto e salvare</li>
+            <li>Crea un <strong style="color:var(--text)">Google Sheet</strong> vuoto su drive.google.com</li>
+            <li>Vai su <strong style="color:var(--text)">script.google.com</strong> → Nuovo progetto</li>
+            <li>Incolla il contenuto di <span class="code">Code_v2.gs</span></li>
+            <li>Inserisci il tuo <span class="code">SPREADSHEET_ID</span></li>
+            <li>Distribuisci come <strong style="color:var(--text)">Web App</strong> (esegui come: Me, accesso: Chiunque)</li>
+            <li>Incolla l'URL della Web App nel codice HTML e salva</li>
           </ol>
         </div>
       </div>
       <div class="card" style="max-width:560px;">
         <div class="form-group">
           <label>URL Google Apps Script Web App</label>
-          <input type="url" id="setupUrl" placeholder="https://script.google.com/macros/s/…/exec" />
+          <input type="url" id="setupUrl" placeholder="https://script.google.com/macros/s/…/exec" readonly style="opacity:0.5;cursor:default;" />
         </div>
         <div style="display:flex;gap:12px;margin-top:8px;">
-          <button class="btn btn-primary" onclick="testConnection()">✓ Testa</button>
+          <button class="btn btn-primary" onclick="testConnection()">✓ Testa Connessione</button>
           <button class="btn btn-ghost" onclick="initSheets()">⬡ Inizializza Fogli</button>
         </div>
         <div id="connStatus" style="margin-top:14px;font-size:0.8rem;color:var(--text-dim);"></div>
-      </div>
-
-      <div class="card" style="max-width:560px;margin-top:20px;">
-        <div class="card-title">Aliquote accantonamento automatico P.IVA</div>
-        <p style="font-size:0.8rem;color:var(--text-dim);margin-bottom:16px;">Queste aliquote vengono usate per calcolare automaticamente quanto accantonare quando registri un'entrata da P.IVA.</p>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Aliquota Imposte Consulenza (%)</label>
-            <input type="number" id="aliqConsulenza" value="28" min="0" max="100" step="0.5" />
-          </div>
-          <div class="form-group">
-            <label>Aliquota Imposte Affitto (%)</label>
-            <input type="number" id="aliqAffitto" value="23" min="0" max="100" step="0.5" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Contributi INPS Consulenza (%)</label>
-            <input type="number" id="inpsConsulenza" value="26.23" min="0" max="40" step="0.01" />
-          </div>
-          <div class="form-group">
-            <label>Contributi INPS Affitto (%)</label>
-            <input type="number" id="inpsAffitto" value="0" min="0" max="40" step="0.01" />
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="saveAliquote()">Salva Aliquote</button>
       </div>
     </div>
 
   </main>
 </div>
 
-<!-- ═══════════ MODALS ═══════════ -->
+<!-- ═══ MODALS ═══ -->
 
 <!-- ENTRATA -->
 <div class="modal-overlay" id="modalEntrata">
@@ -705,39 +397,27 @@ tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
     <div class="modal-title">↑ Nuova Entrata</div>
     <div class="form-row">
       <div class="form-group"><label>Data</label><input type="date" id="ent_data" /></div>
-      <div class="form-group"><label>Importo (€)</label><input type="number" id="ent_importo" placeholder="0.00" min="0" step="0.01" oninput="aggiornaPrevistaFiscale()" /></div>
+      <div class="form-group"><label>Importo (€)</label><input type="number" id="ent_importo" placeholder="0.00" min="0" step="0.01" /></div>
     </div>
     <div class="form-group">
       <label>Fonte</label>
-      <select id="ent_fonte" onchange="aggiornaPrevistaFiscale()">
+      <select id="ent_fonte">
         <option value="partita_iva_consulenza">Partita IVA – Consulenza</option>
         <option value="partita_iva_affitto">Partita IVA – Affitto Studi</option>
         <option value="contanti">Contanti</option>
         <option value="altro">Altro</option>
       </select>
     </div>
-
-    <!-- RENDICONTAZIONE (solo per P.IVA) -->
-    <div id="rendicontazioneBox" style="margin-bottom:16px;display:none;">
-      <label style="font-size:0.75rem;color:var(--text-dim);letter-spacing:0.07em;text-transform:uppercase;display:block;margin-bottom:8px;">Fattura emessa / Rendicontata?</label>
-      <div style="display:flex;gap:8px;">
-        <button type="button" id="rend_si" class="regime-tab active" onclick="setRendicontata(true)">✓ Sì — fattura emessa</button>
-        <button type="button" id="rend_no" class="regime-tab" onclick="setRendicontata(false)">✗ No — non ancora rendicontata</button>
-      </div>
-      <div id="rendNote" style="margin-top:8px;font-size:0.75rem;color:var(--text-dim);line-height:1.5;padding:8px 10px;border-radius:var(--radius);background:rgba(91,138,247,0.08);border:1px solid rgba(91,138,247,0.2);">
-        Fattura emessa: l'importo è imponibile fiscalmente e l'accantonamento tasse/INPS viene calcolato.
-      </div>
-    </div>
-    <div id="fiscalPreview" class="fiscal-preview">
-      <div class="fp-title">⚖ Accantonamento fiscale automatico</div>
-      <div id="fpRows"></div>
-    </div>
-    <div class="form-group" style="margin-top:14px;">
-      <label>Spazio destinatario</label>
-      <select id="ent_spazio"></select>
-    </div>
+    <div class="form-group"><label>Destinatario (Spazio)</label><select id="ent_spazio"></select></div>
     <div class="form-group"><label>Descrizione</label><input type="text" id="ent_desc" placeholder="Fattura cliente, affitto mese…" /></div>
-    <div class="form-group"><label>Note</label><textarea id="ent_note"></textarea></div>
+    <div class="form-group">
+      <label>Rendicontata (già dichiarata/tassata)</label>
+      <select id="ent_rendicontata">
+        <option value="false">No – da rendicontare</option>
+        <option value="true">Sì – già rendicontata</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Note</label><textarea id="ent_note" placeholder="Note aggiuntive…"></textarea></div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modalEntrata')">Annulla</button>
       <button class="btn btn-primary" onclick="submitEntrata()">Salva Entrata</button>
@@ -799,6 +479,49 @@ tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modalRicorrente')">Annulla</button>
       <button class="btn btn-primary" onclick="submitRicorrente()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- FATTURA -->
+<div class="modal-overlay" id="modalFattura">
+  <div class="modal">
+    <div class="modal-title">🧾 Nuova Fattura P.IVA</div>
+    <div class="form-row">
+      <div class="form-group"><label>Data emissione</label><input type="date" id="fat_data" /></div>
+      <div class="form-group"><label>N° Fattura (auto se vuoto)</label><input type="text" id="fat_numero" placeholder="2025/001" /></div>
+    </div>
+    <div class="form-group"><label>Cliente</label><input type="text" id="fat_cliente" placeholder="Nome cliente o azienda" /></div>
+    <div class="form-group"><label>Descrizione prestazione</label><input type="text" id="fat_desc" placeholder="Consulenza IT, Affitto sala…" /></div>
+    <div class="form-row">
+      <div class="form-group"><label>Importo netto (€)</label><input type="number" id="fat_importo" placeholder="0.00" min="0" step="0.01" /></div>
+      <div class="form-group"><label>IVA (%)</label>
+        <select id="fat_iva">
+          <option value="0">0% – Regime forfettario</option>
+          <option value="22">22% – Regime ordinario</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Tipo P.IVA</label>
+        <select id="fat_fonte">
+          <option value="partita_iva_consulenza">Consulenza</option>
+          <option value="partita_iva_affitto">Affitto Studi</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Stato</label>
+        <select id="fat_stato">
+          <option value="emessa">Emessa</option>
+          <option value="pagata">Pagata</option>
+          <option value="scaduta">Scaduta</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Data pagamento (se pagata)</label><input type="date" id="fat_datapag" /></div>
+    <div class="form-group"><label>Note</label><textarea id="fat_note"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalFattura')">Annulla</button>
+      <button class="btn btn-primary" onclick="submitFattura()">Salva Fattura</button>
     </div>
   </div>
 </div>
@@ -919,68 +642,30 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwjEZq__05BvzDn
 const AUTH_TOKEN  = 'fp-marco-a3f9b2c1-7e4d-4821-beee-mussinatto2024';
 const AUTH_EMAIL  = 'mussinatto.marco@gmail.com';
 
-// Aliquote accantonamento — modificabili da Setup
-let ALIQUOTE = {
-  consulenza_imposte: 28,
-  consulenza_inps:    26.23,
-  affitto_imposte:    23,
-  affitto_inps:       0
-};
-
-function loadAliquote() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('fp_aliquote') || '{}');
-    Object.assign(ALIQUOTE, saved);
-  } catch(e) {}
-}
-
-function saveAliquote() {
-  ALIQUOTE.consulenza_imposte = parseFloat(document.getElementById('aliqConsulenza').value) || 28;
-  ALIQUOTE.consulenza_inps    = parseFloat(document.getElementById('inpsConsulenza').value) || 26.23;
-  ALIQUOTE.affitto_imposte    = parseFloat(document.getElementById('aliqAffitto').value) || 23;
-  ALIQUOTE.affitto_inps       = parseFloat(document.getElementById('inpsAffitto').value) || 0;
-  localStorage.setItem('fp_aliquote', JSON.stringify(ALIQUOTE));
-  toast('Aliquote salvate', 'success');
-}
+let _cache = { spazi: [], categorie: [] };
 
 // ─── API ──────────────────────────────────────────────────────
 async function apiGet(action) {
-  const url = APPS_SCRIPT_URL || localStorage.getItem('fp_url');
-  if (!url) throw new Error('URL non configurato. Vai in Configurazione.');
-  const res  = await fetch(`${url}?action=${action}&token=${encodeURIComponent(AUTH_TOKEN)}&email=${encodeURIComponent(AUTH_EMAIL)}`);
+  const res  = await fetch(`${APPS_SCRIPT_URL}?action=${action}&token=${encodeURIComponent(AUTH_TOKEN)}&email=${encodeURIComponent(AUTH_EMAIL)}`);
   const json = await res.json();
   if (json.error) throw new Error(json.error);
   return json;
 }
 
 async function apiPost(action, payload) {
-  const url = APPS_SCRIPT_URL || localStorage.getItem('fp_url');
-  if (!url) throw new Error('URL non configurato.');
   const body = Object.assign({ action, token: AUTH_TOKEN, email: AUTH_EMAIL }, payload || {});
-  const res  = await fetch(url, { method: 'POST', body: JSON.stringify(body) });
+  const res  = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(body) });
   const json = await res.json();
   if (json.error) throw new Error(json.error);
   return json;
 }
 
-// ─── CACHE ────────────────────────────────────────────────────
-let _cache = { spazi: [], categorie: [] };
-
-async function loadCacheIfNeeded() {
-  if (!_cache.spazi.length) {
-    try { const r = await apiGet('getSpazi'); _cache.spazi = Array.isArray(r) ? r : []; } catch(e) { _cache.spazi = []; }
-  }
-  if (!_cache.categorie.length) {
-    try { const r = await apiGet('getCategorie'); _cache.categorie = Array.isArray(r) ? r : []; } catch(e) { _cache.categorie = []; }
-  }
-}
-
-// ─── NAVIGAZIONE ──────────────────────────────────────────────
+// ─── NAV ──────────────────────────────────────────────────────
 const PAGE_TITLES = {
-  dashboard: 'Dashboard', entrate: 'Entrate', spese: 'Spese',
-  ricorrenti: 'Spese Ricorrenti', spazi: 'Spazi & Saldi',
-  accantonamenti: 'Accantonamenti', investimenti: 'Investimenti',
-  calcolatore: 'Calcolatore P.IVA', obiettivi: 'Obiettivi Mensili', saldi_iniziali: 'Saldi Iniziali', categorie: 'Categorie', setup: 'Configurazione',
+  dashboard:'Dashboard', entrate:'Entrate', spese:'Spese',
+  ricorrenti:'Spese Ricorrenti', fatture:'Fatture P.IVA',
+  spazi:'Spazi & Saldi', accantonamenti:'Accantonamenti',
+  investimenti:'Investimenti', categorie:'Categorie', setup:'Configurazione',
 };
 
 document.querySelectorAll('.nav-item').forEach(btn => {
@@ -997,98 +682,26 @@ document.querySelectorAll('.nav-item').forEach(btn => {
 
 function loadPage(page) {
   switch (page) {
-    case 'dashboard':      loadDashboard(); break;
-    case 'entrate':        loadEntrate(); break;
-    case 'spese':          loadSpese(); break;
-    case 'ricorrenti':     loadRicorrenti(); break;
-    case 'spazi':          loadSpazi(); break;
-    case 'accantonamenti': loadAccantonamenti(); break;
-    case 'investimenti':   loadInvestimenti(); break;
-    case 'calcolatore':    initCalcolatore(); break;
-    case 'obiettivi':      loadObiettivi(); break;
-    case 'saldi_iniziali': loadSaldiIniziali(); break;
-    case 'categorie':      loadCategorie(); break;
-    case 'setup':
-      document.getElementById('setupUrl').value = localStorage.getItem('fp_url') || APPS_SCRIPT_URL || '';
-      document.getElementById('aliqConsulenza').value = ALIQUOTE.consulenza_imposte;
-      document.getElementById('inpsConsulenza').value  = ALIQUOTE.consulenza_inps;
-      document.getElementById('aliqAffitto').value     = ALIQUOTE.affitto_imposte;
-      document.getElementById('inpsAffitto').value     = ALIQUOTE.affitto_inps;
-      break;
+    case 'dashboard':      loadDashboard();      break;
+    case 'entrate':        loadEntrate();         break;
+    case 'spese':          loadSpese();           break;
+    case 'ricorrenti':     loadRicorrenti();      break;
+    case 'fatture':        loadFatture();         break;
+    case 'spazi':          loadSpazi();           break;
+    case 'accantonamenti': loadAccantonamenti();  break;
+    case 'investimenti':   loadInvestimenti();    break;
+    case 'categorie':      loadCategorie();       break;
+    case 'setup': document.getElementById('setupUrl').value = APPS_SCRIPT_URL; break;
   }
 }
 
 function refreshAll() { loadPage(currentPage()); }
 function currentPage() {
-  const active = document.querySelector('.nav-item.active');
-  return active ? active.dataset.page : 'dashboard';
+  const a = document.querySelector('.nav-item.active');
+  return a ? a.dataset.page : 'dashboard';
 }
 
-// ─── CALCOLO ACCANTONAMENTO FISCALE ──────────────────────────
-function calcolaAccFiscale(importo, fonte) {
-  if (fonte === 'partita_iva_consulenza') {
-    const imposte   = importo * (ALIQUOTE.consulenza_imposte / 100);
-    const inps      = importo * (ALIQUOTE.consulenza_inps / 100);
-    const totale    = imposte + inps;
-    return { fonte: 'Consulenza', importo, imposte, inps, totale };
-  }
-  if (fonte === 'partita_iva_affitto') {
-    const imposte   = importo * (ALIQUOTE.affitto_imposte / 100);
-    const inps      = importo * (ALIQUOTE.affitto_inps / 100);
-    const totale    = imposte + inps;
-    return { fonte: 'Affitto Studi', importo, imposte, inps, totale };
-  }
-  return null;
-}
-
-let _rendicontata = true; // default: sì, fattura emessa
-
-function setRendicontata(val) {
-  _rendicontata = val;
-  document.getElementById('rend_si').classList.toggle('active', val);
-  document.getElementById('rend_no').classList.toggle('active', !val);
-  const note = document.getElementById('rendNote');
-  if (val) {
-    note.style.background = 'rgba(91,138,247,0.08)';
-    note.style.borderColor = 'rgba(91,138,247,0.2)';
-    note.style.color = 'var(--text-dim)';
-    note.textContent = 'Fattura emessa: l\'importo è imponibile fiscalmente e l\'accantonamento tasse/INPS viene calcolato.';
-  } else {
-    note.style.background = 'rgba(251,146,60,0.08)';
-    note.style.borderColor = 'rgba(251,146,60,0.3)';
-    note.style.color = 'var(--orange)';
-    note.textContent = '⚠ Non rendicontata: l\'incasso viene registrato ma escluso dal calcolo delle imposte. Ricordati di rendicontarla quando emetti la fattura.';
-  }
-  aggiornaPrevistaFiscale();
-}
-
-function aggiornaPrevistaFiscale() {
-  const importo = parseFloat(document.getElementById('ent_importo').value) || 0;
-  const fonte   = document.getElementById('ent_fonte').value;
-  const box     = document.getElementById('fiscalPreview');
-  const rows    = document.getElementById('fpRows');
-  const rendBox = document.getElementById('rendicontazioneBox');
-
-  // Mostra il toggle rendicontazione solo per P.IVA
-  const isPiva = fonte === 'partita_iva_consulenza' || fonte === 'partita_iva_affitto';
-  if (rendBox) rendBox.style.display = isPiva ? 'block' : 'none';
-
-  // Se non P.IVA o non rendicontata → nascondi il calcolo fiscale
-  if (!isPiva || !_rendicontata) { box.classList.remove('show'); return; }
-
-  const calcolo = calcolaAccFiscale(importo, fonte);
-  if (!calcolo || importo <= 0) { box.classList.remove('show'); return; }
-
-  box.classList.add('show');
-  const fmt = v => '€ ' + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  rows.innerHTML = `
-    <div class="fp-row"><span>Imposte (${fonte==='partita_iva_consulenza'?ALIQUOTE.consulenza_imposte:ALIQUOTE.affitto_imposte}%)</span><span>${fmt(calcolo.imposte)}</span></div>
-    ${calcolo.inps > 0 ? `<div class="fp-row"><span>INPS Gestione Separata (${fonte==='partita_iva_consulenza'?ALIQUOTE.consulenza_inps:ALIQUOTE.affitto_inps}%)</span><span>${fmt(calcolo.inps)}</span></div>` : ''}
-    <div class="fp-row"><span>Totale da accantonare</span><span>${fmt(calcolo.totale)}</span></div>
-  `;
-}
-
-// ─── DASHBOARD ───────────────────────────────────────────────
+// ─── DASHBOARD ────────────────────────────────────────────────
 let chartTrend = null, chartCat = null;
 
 async function loadDashboard() {
@@ -1107,7 +720,6 @@ function navigate(page) { document.querySelector(`[data-page="${page}"]`).click(
 function renderDashboard(d) {
   const fmt  = v => '€ ' + Number(v).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const sign = v => v >= 0 ? `<span class="positive">▲ ${fmt(v)}</span>` : `<span class="negative">▼ ${fmt(Math.abs(v))}</span>`;
-
   const spaziTipi = {};
   (d.spazi || []).forEach(s => {
     const t = s.Tipo || 'altro';
@@ -1115,216 +727,54 @@ function renderDashboard(d) {
     spaziTipi[t] += parseFloat(s.Saldo) || 0;
   });
 
-  const entratefonte = d.entrateFonte || {};
-  const accFiscaleMensile = calcolaAccFiscale(entratefonte.partita_iva_consulenza || 0, 'partita_iva_consulenza');
-  const accAffittoMensile = calcolaAccFiscale(entratefonte.partita_iva_affitto || 0, 'partita_iva_affitto');
-  const totAccFiscale = (accFiscaleMensile?.totale || 0) + (accAffittoMensile?.totale || 0);
-
-  // Health score
-  const score = calcolaHealthScore(d);
-  const obj   = OBIETTIVI;
-  const hasObj = obj.fatturato > 0 || obj.spese > 0 || obj.risparmio > 0;
-
-  // Obiettivi progress bars
-  const objItems = [
-    { label:'Fatturato', reale:d.totaleEntrateMese, target:obj.fatturato, fmt:'€', inv:false },
-    { label:'Spese',     reale:d.totaleSpeseMese,   target:obj.spese,     fmt:'€', inv:true  },
-    { label:'Risparmio', reale:d.risparmioMese,      target:obj.risparmio, fmt:'€', inv:false },
-    { label:'Acc. fiscale', reale:totAccFiscale,     target:obj.acc_fiscale, fmt:'€', inv:false },
-    { label:'Investimento', reale:spaziTipi.investimento||0, target:obj.investimento, fmt:'€', inv:false },
-  ].filter(o => o.target > 0);
+  const afc = d.accFiscaleMese || {};
+  const hasFiscale = (afc.totale || 0) > 0;
 
   const el = document.getElementById('dashboardContent');
   el.innerHTML = `
-    <!-- KPI row -->
     <div class="grid-4">
-      <div class="stat-card">
-        <span class="icon">◈</span>
-        <div class="label">Patrimonio Netto</div>
-        <div class="amount gold">${fmt(d.patrimonioNetto)}</div>
-        <div class="delta" style="color:var(--text-dim)">totale spazi attivi</div>
+      <div class="stat-card"><span class="icon">◈</span><div class="label">Patrimonio Netto</div><div class="amount gold">${fmt(d.patrimonioNetto)}</div><div class="delta" style="color:var(--text-dim)">totale spazi attivi</div></div>
+      <div class="stat-card"><span class="icon">↑</span><div class="label">Entrate Mese</div><div class="amount positive">${fmt(d.totaleEntrateMese)}</div>
+        <div class="delta">${Object.entries(d.entrateFonte||{}).map(([k,v])=>`<span style="color:var(--text-dim)">${labelFonte(k)}: ${fmt(v)}</span>`).join(' · ')}</div>
       </div>
-      <div class="stat-card">
-        <span class="icon">↑</span>
-        <div class="label">Entrate Mese</div>
-        <div class="amount positive">${fmt(d.totaleEntrateMese)}</div>
-        <div class="delta" style="flex-wrap:wrap;gap:4px;">${Object.entries(entratefonte).map(([k,v])=>`<span style="color:var(--text-dim)">${labelFonte(k)}: ${fmt(v)}</span>`).join(' · ')}</div>
-      </div>
-      <div class="stat-card">
-        <span class="icon">↓</span>
-        <div class="label">Spese Mese</div>
-        <div class="amount negative">${fmt(d.totaleSpeseMese)}</div>
-        ${obj.spese > 0 ? `<div class="delta"><span style="color:${d.totaleSpeseMese<=obj.spese?'var(--green)':'var(--red)'}">${d.totaleSpeseMese<=obj.spese?'✓ entro':'✗ oltre'} il target di ${fmt(obj.spese)}</span></div>` : '<div class="delta" style="color:var(--text-dim)">questo mese</div>'}
-      </div>
-      <div class="stat-card">
-        <span class="icon">≈</span>
-        <div class="label">Risparmio Mese</div>
-        <div class="amount">${sign(d.risparmioMese)}</div>
-        ${obj.risparmio > 0 ? `<div class="delta"><span style="color:${d.risparmioMese>=obj.risparmio?'var(--green)':'var(--orange)'}">${Math.round((d.risparmioMese/obj.risparmio)*100)}% dell'obiettivo</span></div>` : '<div class="delta" style="color:var(--text-dim)">entrate − spese</div>'}
-      </div>
+      <div class="stat-card"><span class="icon">↓</span><div class="label">Spese Mese</div><div class="amount negative">${fmt(d.totaleSpeseMese)}</div><div class="delta" style="color:var(--text-dim)">questo mese</div></div>
+      <div class="stat-card"><span class="icon">≈</span><div class="label">Risparmio Mese</div><div class="amount">${sign(d.risparmioMese)}</div><div class="delta" style="color:var(--text-dim)">entrate − spese</div></div>
     </div>
-
-    <!-- Health score + obiettivi progress -->
-    ${hasObj ? `
-    <div class="grid-2-1 mt-20">
-      <div class="dash-obj-panel">
-        <div style="font-family:var(--font-serif);font-size:1rem;margin-bottom:16px;">◎ Obiettivi del mese</div>
-        ${objItems.map(o => {
-          const pct = o.target > 0 ? Math.min(100, Math.round((o.reale / o.target) * 100)) : 0;
-          const buono = o.inv ? (o.reale <= o.target) : (o.reale >= o.target);
-          const barColor = o.inv
-            ? (o.reale <= o.target * 0.9 ? 'var(--green)' : o.reale <= o.target ? 'var(--gold)' : 'var(--red)')
-            : (pct >= 100 ? 'var(--green)' : pct >= 70 ? 'var(--gold)' : 'var(--orange)');
-          const displayPct = o.inv ? Math.min(100, Math.round((o.reale / o.target) * 100)) : pct;
-          return `<div class="obj-progress-row">
-            <div class="obj-label">
-              <span>${o.label}</span>
-              <span style="color:${barColor}">${fmt(o.reale)} <span style="color:var(--text-dim);font-weight:300;">/ ${fmt(o.target)}</span> &nbsp;${buono?'✓':'→'} ${displayPct}%</span>
-            </div>
-            <div class="obj-bar"><div class="obj-bar-fill" style="width:${displayPct}%;background:${barColor}"></div></div>
-          </div>`;
-        }).join('')}
-        ${obj.tasso_risp > 0 && d.totaleEntrateMese > 0 ? (() => {
-          const tassoReale = Math.round((d.risparmioMese / d.totaleEntrateMese) * 100);
-          const pct = Math.min(100, Math.round((tassoReale / obj.tasso_risp) * 100));
-          const col = pct >= 100 ? 'var(--green)' : pct >= 70 ? 'var(--gold)' : 'var(--orange)';
-          return `<div class="obj-progress-row">
-            <div class="obj-label"><span>Tasso risparmio</span><span style="color:${col}">${tassoReale}% <span style="color:var(--text-dim)">/ obiettivo ${obj.tasso_risp}%</span></span></div>
-            <div class="obj-bar"><div class="obj-bar-fill" style="width:${pct}%;background:${col}"></div></div>
-          </div>`;
-        })() : ''}
-      </div>
-
-      <div class="dash-obj-panel" style="text-align:center;">
-        <div style="font-family:var(--font-serif);font-size:1rem;margin-bottom:14px;">Salute Finanziaria</div>
-        <div style="position:relative;width:100px;height:100px;margin:0 auto 12px;">
-          <svg viewBox="0 0 100 100" width="100" height="100" style="transform:rotate(-90deg);">
-            <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="10"/>
-            <circle cx="50" cy="50" r="42" fill="none" stroke="${scoreColor(score.totale)}" stroke-width="10"
-              stroke-dasharray="${2*Math.PI*42}" stroke-dashoffset="${2*Math.PI*42*(1-score.totale/100)}"
-              stroke-linecap="round" style="transition:stroke-dashoffset 1s ease;"/>
-          </svg>
-          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:1.5rem;font-weight:500;color:${scoreColor(score.totale)}">${score.totale}</div>
-        </div>
-        <div style="font-size:0.78rem;color:var(--text-dim);line-height:1.5;padding:0 8px;">${scoreLabel(score.totale)}</div>
-        <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
-          ${score.componenti.map(c => `
-          <div style="display:flex;justify-content:space-between;font-size:0.72rem;padding:3px 0;">
-            <span style="color:var(--text-dim)">${c.label}</span>
-            <span style="font-family:var(--font-mono);color:${scoreColor(c.pct)}">${c.val}/${c.max}</span>
-          </div>`).join('')}
-        </div>
-        <button class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%;font-size:0.75rem;" onclick="navigate('obiettivi')">Modifica obiettivi →</button>
-      </div>
-    </div>` : `
-    <div class="mt-20" style="background:rgba(226,201,110,0.06);border:1px solid rgba(226,201,110,0.2);border-radius:var(--radius-lg);padding:20px 24px;display:flex;align-items:center;gap:16px;">
-      <span style="font-size:2rem;">◎</span>
-      <div>
-        <div style="font-family:var(--font-serif);color:var(--gold);margin-bottom:4px;">Nessun obiettivo mensile configurato</div>
-        <div style="font-size:0.8rem;color:var(--text-dim);">Imposta i tuoi target per monitorare la salute finanziaria e ricevere un punteggio ogni mese.</div>
-        <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="navigate('obiettivi')">→ Configura obiettivi</button>
-      </div>
-    </div>`}
-
-    ${totAccFiscale > 0 ? `
-    <div class="fiscal-alert mt-20">
-      <div class="fa-title">⚖ Accantonamento fiscale stimato questo mese</div>
-      <div style="font-size:0.8rem;color:var(--text-dim);">Basato sulle entrate P.IVA registrate nel mese corrente</div>
-      <div class="fa-details">
-        ${accFiscaleMensile ? `
-        <div class="fa-item"><div class="fa-label">Consulenza — imposte</div><div class="fa-val" style="color:var(--red)">${fmt(accFiscaleMensile.imposte)}</div></div>
-        <div class="fa-item"><div class="fa-label">Consulenza — INPS</div><div class="fa-val" style="color:var(--orange)">${fmt(accFiscaleMensile.inps)}</div></div>` : ''}
-        ${accAffittoMensile ? `
-        <div class="fa-item"><div class="fa-label">Affitto studi — imposte</div><div class="fa-val" style="color:var(--red)">${fmt(accAffittoMensile.imposte)}</div></div>` : ''}
-        <div class="fa-item"><div class="fa-label">Totale da accantonare</div><div class="fa-val" style="color:var(--orange);font-size:1.3rem;">${fmt(totAccFiscale)}</div></div>
-      </div>
-    </div>` : ''}
 
     <div class="grid-4 mt-20">
       ${Object.entries({ contanti:'💵', carta:'💳', investimento:'📈', accantonamento:'🏦' }).map(([tipo, ico]) => `
-        <div class="stat-card">
-          <span class="icon">${ico}</span>
-          <div class="label">${tipo.charAt(0).toUpperCase()+tipo.slice(1)}</div>
-          <div class="amount" style="font-size:1.2rem;">${fmt(spaziTipi[tipo]||0)}</div>
-        </div>
+        <div class="stat-card"><span class="icon">${ico}</span><div class="label">${tipo.charAt(0).toUpperCase()+tipo.slice(1)}</div><div class="amount" style="font-size:1.2rem;">${fmt(spaziTipi[tipo]||0)}</div></div>
       `).join('')}
     </div>
 
-    ${d.accantonamentoSpeseFisse > 0 ? `
-    <div class="spese-fisse-banner mt-20">
-      <div class="sfb-title">📋 Copertura spese fisse mensili stimata</div>
-      <div class="sfb-grid">
-        <div class="sfb-item"><div class="sfb-label">Spese fisse stimate</div><div class="sfb-val negative">${fmt(d.accantonamentoSpeseFisse)}</div></div>
-        <div class="sfb-item"><div class="sfb-label">Entrate mensili</div><div class="sfb-val positive">${fmt(d.totaleEntrateMese)}</div></div>
-        <div class="sfb-item"><div class="sfb-label">Acc. fiscale</div><div class="sfb-val" style="color:var(--orange)">${fmt(totAccFiscale)}</div></div>
-        <div class="sfb-item"><div class="sfb-label">Disponibile netto</div><div class="sfb-val ${(d.totaleEntrateMese-d.accantonamentoSpeseFisse-totAccFiscale)>=0?'positive':'negative'}">${fmt(d.totaleEntrateMese-d.accantonamentoSpeseFisse-totAccFiscale)}</div></div>
+    ${hasFiscale ? `
+    <div class="fiscal-banner mt-20">
+      <h4>⚖️ Accantonamento fiscale stimato questo mese</h4>
+      <p>Basato sulle entrate P.IVA registrate nel mese corrente (${afc.nonRendicontate} non rendicontate)</p>
+      <div class="fiscal-grid">
+        <div class="fiscal-item"><div class="fi-label">Consulenza — Imposte</div><div class="fi-value">${fmt(afc.consulenzaImposta)}</div></div>
+        <div class="fiscal-item"><div class="fi-label">Consulenza — INPS</div><div class="fi-value">${fmt(afc.consulenzaInps)}</div></div>
+        <div class="fiscal-item"><div class="fi-label">Affitto Studi — Imposte</div><div class="fi-value">${fmt(afc.affittoImposta)}</div></div>
+        <div class="fiscal-item"><div class="fi-label">Totale da accantonare</div><div class="fi-value" style="font-size:1.3rem;color:var(--orange)">${fmt(afc.totale)}</div></div>
       </div>
     </div>` : ''}
 
     <div class="grid-2-1 mt-20">
-      <div class="card">
-        <div style="font-family:var(--font-serif);font-size:1rem;margin-bottom:16px;">Trend ultimi 6 mesi</div>
-        <div style="position:relative;height:220px;"><canvas id="chartTrend"></canvas></div>
-      </div>
-      <div class="card">
-        <div style="font-family:var(--font-serif);font-size:1rem;margin-bottom:16px;">Spese per categoria</div>
-        <div style="position:relative;height:220px;"><canvas id="chartCat"></canvas></div>
-      </div>
-    </div>
-
-    <!-- GRAFICO INTERATTIVO ENTRATE/SPESE -->
-    <div class="card mt-20" id="chartAnalisiContainer">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
-        <div style="font-family:var(--font-serif);font-size:1rem;">Analisi per categoria e fonte</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button id="analisiTabEnt" class="regime-tab active" onclick="switchAnalisi('entrate')">↑ Entrate</button>
-          <button id="analisiTabSpe" class="regime-tab" onclick="switchAnalisi('spese')">↓ Spese</button>
-        </div>
-      </div>
-      <div class="grid-2" style="gap:20px;align-items:start;">
-        <div>
-          <div style="position:relative;height:280px;"><canvas id="chartAnalisi"></canvas></div>
-          <div id="chartAnalisiLegend" style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;"></div>
-        </div>
-        <div>
-          <div style="font-size:0.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;" id="analisiDetailTitle">Seleziona una fetta per vedere il dettaglio</div>
-          <div id="analisiDetail" style="min-height:160px;">
-            <div style="color:var(--text-dim);font-size:0.82rem;padding:24px 0;text-align:center;">← Clicca su una categoria nel grafico</div>
-          </div>
-        </div>
-      </div>
+      <div class="card"><div class="chart-title">Trend ultimi 6 mesi</div><div class="chart-container" style="height:220px;"><canvas id="chartTrend"></canvas></div></div>
+      <div class="card"><div class="chart-title">Spese per categoria</div><div class="chart-container" style="height:220px;"><canvas id="chartCat"></canvas></div></div>
     </div>
 
     <div class="mt-20">
-      <div style="font-family:var(--font-serif);font-size:1rem;margin-bottom:16px;">Tutti gli spazi</div>
-      <div class="grid-3">${(d.spazi||[]).map(s => renderSpazioCard(s)).join('')}</div>
+      <div class="chart-title">Tutti gli spazi</div>
+      <div class="grid-3 mt-20">${(d.spazi||[]).map(s => renderSpazioCard(s)).join('')}</div>
     </div>
 
     <div class="grid-2 mt-20">
-      <div class="card">
-        <div style="font-family:var(--font-serif);font-size:1rem;margin-bottom:12px;">Investimenti</div>
-        <div style="display:flex;align-items:center;gap:16px;padding-top:6px;">
-          <span style="font-size:2rem;">📈</span>
-          <div>
-            <div class="card-value positive">${fmt(d.investimentiValore)}</div>
-            <div class="card-sub">valore attuale portafoglio</div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div style="font-family:var(--font-serif);font-size:1rem;margin-bottom:12px;">Accantonamenti attivi</div>
-        <div style="display:flex;align-items:center;gap:16px;padding-top:6px;">
-          <span style="font-size:2rem;">🏦</span>
-          <div>
-            <div class="card-value gold">${d.accantonamentiCount}</div>
-            <div class="card-sub">obiettivi in corso</div>
-          </div>
-        </div>
-      </div>
+      <div class="card"><div class="chart-title">Investimenti</div><div style="display:flex;align-items:center;gap:16px;padding-top:6px;"><span style="font-size:2rem;">📈</span><div><div class="card-value positive">${fmt(d.investimentiValore)}</div><div class="card-sub">valore attuale portafoglio</div></div></div></div>
+      <div class="card"><div class="chart-title">Accantonamenti attivi</div><div style="display:flex;align-items:center;gap:16px;padding-top:6px;"><span style="font-size:2rem;">🏦</span><div><div class="card-value gold">${d.accantonamentiCount}</div><div class="card-sub">obiettivi in corso</div></div></div></div>
     </div>
   `;
 
-  // Trend chart
   if (chartTrend) chartTrend.destroy();
   const trend = d.trend || [];
   chartTrend = new Chart(document.getElementById('chartTrend').getContext('2d'), {
@@ -1332,8 +782,8 @@ function renderDashboard(d) {
     data: {
       labels: trend.map(t => t.label),
       datasets: [
-        { label: 'Entrate', data: trend.map(t => t.entrate), backgroundColor: 'rgba(79,207,122,0.6)', borderRadius: 6 },
-        { label: 'Spese',   data: trend.map(t => t.spese),   backgroundColor: 'rgba(242,99,106,0.6)', borderRadius: 6 },
+        { label: 'Entrate',   data: trend.map(t => t.entrate),   backgroundColor: 'rgba(79,207,122,0.6)', borderRadius: 6 },
+        { label: 'Spese',     data: trend.map(t => t.spese),     backgroundColor: 'rgba(242,99,106,0.6)', borderRadius: 6 },
         { label: 'Risparmio', data: trend.map(t => t.risparmio), type: 'line', borderColor: '#e2c96e', backgroundColor: 'transparent', tension: 0.4, pointRadius: 4, pointBackgroundColor: '#e2c96e', borderWidth: 2 },
       ],
     },
@@ -1347,177 +797,13 @@ function renderDashboard(d) {
     },
   });
 
-  // Old simple cat doughnut (kept for backward compat)
   if (chartCat) chartCat.destroy();
   const catEntries = Object.entries(d.speseCat || {});
   chartCat = new Chart(document.getElementById('chartCat').getContext('2d'), {
     type: 'doughnut',
-    data: {
-      labels: catEntries.map(e => e[0]),
-      datasets: [{ data: catEntries.map(e => e[1]), backgroundColor: PALETTE, borderWidth: 0, hoverOffset: 8 }],
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false, cutout: '65%',
-      plugins: { legend: { position: 'right', labels: { color: '#7a7898', font: { size: 10 }, boxWidth: 12, padding: 8 } } },
-    },
+    data: { labels: catEntries.map(e => e[0]), datasets: [{ data: catEntries.map(e => e[1]), backgroundColor: PALETTE, borderWidth: 0, hoverOffset: 8 }] },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { color: '#7a7898', font: { size: 10 }, boxWidth: 12, padding: 8 } } } },
   });
-
-  // Avvia il grafico interattivo con i dati del dashboard
-  _analisiDashData = d;
-  initAnalisiChart(d);
-}
-
-// ─── GRAFICO ANALISI INTERATTIVO ──────────────────────────────
-let _analisiDashData = null;
-let _analisiMode = 'spese'; // 'entrate' | 'spese'
-let chartAnalisi = null;
-
-function switchAnalisi(mode) {
-  _analisiMode = mode;
-  document.getElementById('analisiTabEnt').classList.toggle('active', mode === 'entrate');
-  document.getElementById('analisiTabSpe').classList.toggle('active', mode === 'spese');
-  document.getElementById('analisiDetail').innerHTML = '<div style="color:var(--text-dim);font-size:0.82rem;padding:24px 0;text-align:center;">← Clicca su una categoria nel grafico</div>';
-  document.getElementById('analisiDetailTitle').textContent = 'Seleziona una fetta per vedere il dettaglio';
-  if (_analisiDashData) initAnalisiChart(_analisiDashData);
-}
-
-function initAnalisiChart(d) {
-  const isEnt = _analisiMode === 'entrate';
-
-  // Aggrega dati per la modalità selezionata
-  // Per spese: usa speseCat e arricchisce con spazioInfo dai dati spese
-  // Per entrate: usa entrateFonte aggregato
-  let labels = [], values = [], colors = [], detailMap = {};
-
-  if (!isEnt) {
-    // SPESE per categoria
-    const cat = d.speseCat || {};
-    const catColors = {};
-    (d.categorieFull || []).forEach(c => { catColors[c.Nome] = c.Colore || '#888'; });
-    Object.entries(cat).forEach(([k, v], i) => {
-      labels.push(k);
-      values.push(Math.round(v * 100) / 100);
-      colors.push(catColors[k] || PALETTE[i % PALETTE.length]);
-    });
-    // Per il dettaglio delle fonti di spesa (spazio), usiamo speseFonteDetail se disponibile
-    detailMap = d.speseFonteDetail || {};
-  } else {
-    // ENTRATE per fonte
-    const fonti = d.entrateFonte || {};
-    const fonteColors = {
-      partita_iva_consulenza: '#4fcf7a',
-      partita_iva_affitto:    '#5b8af7',
-      contanti:               '#e2c96e',
-      altro:                  '#7a7898',
-    };
-    Object.entries(fonti).forEach(([k, v]) => {
-      if (v > 0) {
-        labels.push(labelFonte(k));
-        values.push(Math.round(v * 100) / 100);
-        colors.push(fonteColors[k] || '#888');
-        detailMap[labelFonte(k)] = d.entratefFonteDetail?.[k] || {};
-      }
-    });
-  }
-
-  if (chartAnalisi) chartAnalisi.destroy();
-
-  const canvas = document.getElementById('chartAnalisi');
-  if (!canvas) return;
-
-  chartAnalisi = new Chart(canvas.getContext('2d'), {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{ data: values, backgroundColor: colors, borderWidth: 2, borderColor: '#141420', hoverOffset: 12, hoverBorderWidth: 0 }],
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false, cutout: '58%',
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => ` € ${ctx.parsed.toLocaleString('it-IT', {minimumFractionDigits:2})} — ${((ctx.parsed / values.reduce((a,b)=>a+b,0))*100).toFixed(1)}%`,
-          }
-        }
-      },
-      onClick: (evt, elements) => {
-        if (!elements.length) return;
-        const idx = elements[0].index;
-        mostraDettaglioAnalisi(labels[idx], values[idx], colors[idx], values, d, isEnt);
-      }
-    },
-  });
-
-  // Custom legend
-  const legendEl = document.getElementById('chartAnalisiLegend');
-  if (legendEl) {
-    legendEl.innerHTML = labels.map((l, i) => `
-      <div style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .15s;"
-           onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'"
-           onclick="mostraDettaglioAnalisi('${l.replace(/'/g,"\\'")}',${values[i]},'${colors[i]}',${JSON.stringify(values)},_analisiDashData,${isEnt})">
-        <span style="width:10px;height:10px;border-radius:2px;background:${colors[i]};flex-shrink:0;"></span>
-        <span style="font-size:0.75rem;color:var(--text-dim);">${l}</span>
-        <span style="font-size:0.75rem;font-family:var(--font-mono);color:var(--text);margin-left:4px;">€ ${values[i].toLocaleString('it-IT',{minimumFractionDigits:0})}</span>
-      </div>`).join('');
-  }
-}
-
-function mostraDettaglioAnalisi(label, valore, color, allValues, d, isEnt) {
-  const tot = allValues.reduce((a, b) => a + b, 0);
-  const pct = tot > 0 ? ((valore / tot) * 100).toFixed(1) : 0;
-  const titleEl  = document.getElementById('analisiDetailTitle');
-  const detailEl = document.getElementById('analisiDetail');
-  if (!titleEl || !detailEl) return;
-
-  titleEl.textContent = label;
-
-  // Costruisce il dettaglio per spazio/fonte da dati aggregati in modo client-side
-  // Usiamo i dati grezzi che il backend manda per ricostruire il breakdown
-  let breakdown = [];
-
-  if (!isEnt) {
-    // Per spese: guarda speseByCatAndSpazio se disponibile, altrimenti mostra solo il totale
-    const detail = (d.speseByCatAndSpazio || {})[label] || {};
-    breakdown = Object.entries(detail).map(([spazio, imp]) => ({ label: spazio, value: imp }));
-    if (!breakdown.length && d.speseCatAndTipo) {
-      const byTipo = (d.speseCatAndTipo || {})[label] || {};
-      breakdown = Object.entries(byTipo).map(([tipo, imp]) => ({ label: tipo, value: imp }));
-    }
-  } else {
-    // Per entrate: breakdown per stato rendicontazione (se disponibile)
-    const fonteKey = Object.keys({
-      partita_iva_consulenza:'P.IVA Consulenza', partita_iva_affitto:'P.IVA Affitto', contanti:'Contanti', altro:'Altro'
-    }).find(k => labelFonte(k) === label);
-    if (fonteKey && d.entratefFonteDetail) {
-      const det = d.entratefFonteDetail[fonteKey] || {};
-      breakdown = Object.entries(det).map(([k, v]) => ({ label: k, value: v }));
-    }
-  }
-
-  const fmtV = v => '€ ' + Number(v).toLocaleString('it-IT', {minimumFractionDigits:2});
-
-  detailEl.innerHTML = `
-    <div style="margin-bottom:14px;">
-      <div style="font-family:var(--font-mono);font-size:1.6rem;font-weight:500;color:${color}">${fmtV(valore)}</div>
-      <div style="font-size:0.75rem;color:var(--text-dim);margin-top:2px;">${pct}% del totale ${isEnt?'entrate':'spese'} del mese</div>
-    </div>
-    <div style="height:4px;background:var(--surface3);border-radius:99px;overflow:hidden;margin-bottom:14px;">
-      <div style="height:100%;width:${pct}%;background:${color};border-radius:99px;"></div>
-    </div>
-    ${breakdown.length > 0 ? `
-    <div style="font-size:0.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Dettaglio per ${isEnt?'stato':'spazio/tipo'}</div>
-    ${breakdown.sort((a,b) => b.value - a.value).map(b => {
-      const bPct = valore > 0 ? ((b.value / valore) * 100).toFixed(0) : 0;
-      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-        <div>
-          <div style="font-size:0.8rem;">${b.label}</div>
-          <div style="height:3px;width:${bPct}%;background:${color};opacity:0.5;border-radius:99px;margin-top:3px;"></div>
-        </div>
-        <div style="font-family:var(--font-mono);font-size:0.8rem;color:${color}">${fmtV(b.value)}</div>
-      </div>`;
-    }).join('')}` : `<div style="font-size:0.78rem;color:var(--text-dim);padding:8px 0;">Nessun dettaglio per fonte/spazio disponibile per questa voce.</div>`}
-  `;
 }
 
 const PALETTE = ['#4fcf7a','#f2636a','#5b8af7','#e2c96e','#a78bfa','#fb923c','#22d3ee','#ec4899','#34d399','#fbbf24'];
@@ -1527,113 +813,109 @@ function labelFonte(k) {
   return m[k] || k;
 }
 
-// Risolve ID spazio → Nome leggibile (fallback sull'ID se non trovato)
-function nomeSpazio(idOrNome) {
-  if (!idOrNome) return '—';
-  const found = _cache.spazi.find(s => s.ID === idOrNome || s.Nome === idOrNome);
-  return found ? found.Nome : idOrNome;
-}
-
-// Risolve ID categoria → badge con colore (fallback testo grezzo)
-function catBadge(catIdOrNome) {
-  if (!catIdOrNome) return '<span style="color:var(--text-dim)">—</span>';
-  const cat = _cache.categorie.find(c => c.ID === catIdOrNome || c.Nome === catIdOrNome);
-  if (!cat) return `<span class="pill" style="border-color:var(--border);color:var(--text-dim)">${catIdOrNome}</span>`;
-  return `<span class="pill" style="border-color:${cat.Colore}40;color:${cat.Colore};background:${cat.Colore}18">${cat.Icona||''} ${cat.Nome}</span>`;
-}
-
 function renderSpazioCard(s) {
   const saldo = parseFloat(s.Saldo) || 0;
   const color = s.Colore || '#888';
-  return `
-    <div class="spazio-card">
-      <div class="spazio-tipo"><span class="dot" style="background:${color}"></span>${s.Tipo||''}</div>
-      <div class="spazio-nome">${s.Nome}</div>
-      <div class="spazio-saldo" style="color:${saldo>=0?'var(--green)':'var(--red)'}">${'€ '+saldo.toLocaleString('it-IT',{minimumFractionDigits:2})}</div>
-      ${s.Note ? `<div class="spazio-note">${s.Note}</div>` : ''}
-    </div>`;
+  return `<div class="spazio-card">
+    <div class="spazio-tipo"><span class="dot" style="background:${color}"></span>${s.Tipo||''}</div>
+    <div class="spazio-nome">${s.Nome}</div>
+    <div class="spazio-saldo" style="color:${saldo>=0?'var(--green)':'var(--red)'}">€ ${saldo.toLocaleString('it-IT',{minimumFractionDigits:2})}</div>
+    ${s.Note ? `<div class="spazio-note">${s.Note}</div>` : ''}
+  </div>`;
 }
 
-// ─── ENTRATE ─────────────────────────────────────────────────
-function isRendicontata(r) {
-  const note = r.Note || '';
-  if (note.includes('[NON_RENDICONTATA]')) return false;
-  // Se non ha flag ma è P.IVA, assumiamo rendicontata (retrocompatibilità)
-  return true;
-}
-
+// ─── ENTRATE ──────────────────────────────────────────────────
 async function loadEntrate() {
-  const el = document.getElementById('entrateTable');
+  const el   = document.getElementById('entrateTable');
+  const banEl = document.getElementById('entrateFiscalBanner');
   el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-  const alertEl = document.getElementById('fiscalAlertContainer');
-  alertEl.innerHTML = '';
+  banEl.innerHTML = '';
   try {
-    await loadCacheIfNeeded();
     const rawRows = await apiGet('getEntrate');
     const rows = Array.isArray(rawRows) ? rawRows : [];
 
-    // Calcola accantonamento cumulativo mese — solo entrate rendicontate
+    // Calcola banner fiscale per il mese corrente
     const now = new Date();
     const meseCor = now.getMonth(), annoCor = now.getFullYear();
-    let accConsulenzaMese = 0, accAffittoMese = 0;
-    let nonRendicontateCount = 0, nonRendicontateImporto = 0;
-    rows.forEach(r => {
+    const pivaRows = rows.filter(r => {
       const d = new Date(r.Data);
-      if (d.getMonth() === meseCor && d.getFullYear() === annoCor) {
-        const imp = parseFloat(r.Importo) || 0;
-        const rend = isRendicontata(r);
-        const isPiva = r.Fonte === 'partita_iva_consulenza' || r.Fonte === 'partita_iva_affitto';
-        if (isPiva && !rend) { nonRendicontateCount++; nonRendicontateImporto += imp; }
-        if (rend) {
-          if (r.Fonte === 'partita_iva_consulenza') accConsulenzaMese += imp * ((ALIQUOTE.consulenza_imposte + ALIQUOTE.consulenza_inps) / 100);
-          else if (r.Fonte === 'partita_iva_affitto') accAffittoMese += imp * (ALIQUOTE.affitto_imposte / 100);
-        }
-      }
+      return (r.Fonte === 'partita_iva_consulenza' || r.Fonte === 'partita_iva_affitto')
+             && d.getMonth() === meseCor && d.getFullYear() === annoCor;
     });
-    const totAcc = accConsulenzaMese + accAffittoMese;
-    if (totAcc > 0 || nonRendicontateCount > 0) {
-      alertEl.innerHTML = `
-        <div class="fiscal-alert" style="margin-bottom:16px;">
-          <div class="fa-title">⚖ Accantonamento fiscale P.IVA — mese corrente</div>
-          <div class="fa-details">
-            ${accConsulenzaMese > 0 ? `<div class="fa-item"><div class="fa-label">Da consulenza</div><div class="fa-val" style="color:var(--red)">€ ${accConsulenzaMese.toFixed(2)}</div></div>` : ''}
-            ${accAffittoMese > 0 ? `<div class="fa-item"><div class="fa-label">Da affitto studi</div><div class="fa-val" style="color:var(--orange)">€ ${accAffittoMese.toFixed(2)}</div></div>` : ''}
-            ${totAcc > 0 ? `<div class="fa-item"><div class="fa-label">Totale da accantonare</div><div class="fa-val" style="color:var(--orange);font-size:1.3rem;">€ ${totAcc.toFixed(2)}</div></div>` : ''}
-            ${nonRendicontateCount > 0 ? `<div class="fa-item"><div class="fa-label">Non rendicontate (escluse)</div><div class="fa-val" style="color:var(--text-dim);font-size:0.9rem;">${nonRendicontateCount} entrate — € ${nonRendicontateImporto.toFixed(2)}</div></div>` : ''}
+    const nonRend = pivaRows.filter(r => !isTruthy(r.Rendicontata));
+
+    if (pivaRows.length > 0) {
+      let consulImposte = 0, consulInps = 0, affittoImp = 0;
+      nonRend.forEach(r => {
+        const imp = parseFloat(r.Importo) || 0;
+        if (r.Fonte === 'partita_iva_consulenza') { consulImposte += imp * 0.15; consulInps += imp * 0.2623; }
+        if (r.Fonte === 'partita_iva_affitto')    { affittoImp   += imp * 0.21; }
+      });
+      const totale = consulImposte + consulInps + affittoImp;
+      const fmt2 = v => '€ ' + v.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      banEl.innerHTML = `<div class="fiscal-banner" style="margin-bottom:20px;">
+        <h4>⚖️ Accantonamento fiscale P.IVA — mese corrente</h4>
+        <p>Basato sulle entrate P.IVA registrate nel mese corrente</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;">
+            <div class="fi-label" style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;">NON RENDICONTATE (escluse)</div>
+            <div style="font-family:var(--font-mono);font-size:0.9rem;">${nonRend.length} entrate — ${fmt2(nonRend.reduce((a,r)=>a+(parseFloat(r.Importo)||0),0))}</div>
           </div>
-        </div>`;
+        </div>
+        <div class="fiscal-grid" style="margin-top:14px;">
+          <div class="fiscal-item"><div class="fi-label">Consulenza — Imposte</div><div class="fi-value">${fmt2(consulImposte)}</div></div>
+          <div class="fiscal-item"><div class="fi-label">Consulenza — INPS</div><div class="fi-value">${fmt2(consulInps)}</div></div>
+          <div class="fiscal-item"><div class="fi-label">Affitto Studi — Imposte</div><div class="fi-value">${fmt2(affittoImp)}</div></div>
+          <div class="fiscal-item"><div class="fi-label">Totale da accantonare</div><div class="fi-value" style="font-size:1.3rem;color:var(--orange)">${fmt2(totale)}</div></div>
+        </div>
+      </div>`;
     }
 
     if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↑</div><p>Nessuna entrata registrata.</p></div>'; return; }
     el.innerHTML = `<table>
-      <thead><tr><th>Data</th><th>Importo</th><th>Fonte</th><th>Stato</th><th>Descrizione</th><th>Spazio</th><th>Acc. Fiscale</th><th style="width:80px"></th></tr></thead>
+      <thead><tr><th>Data</th><th>Importo</th><th>Fonte</th><th>Descrizione</th><th>Spazio</th><th>Stato</th><th>Acc. Fiscale</th><th></th></tr></thead>
       <tbody>${rows.map(r => {
-        const imp  = parseFloat(r.Importo) || 0;
-        const rend = isRendicontata(r);
+        const rend = isTruthy(r.Rendicontata);
         const isPiva = r.Fonte === 'partita_iva_consulenza' || r.Fonte === 'partita_iva_affitto';
-        const calc = (isPiva && rend) ? calcolaAccFiscale(imp, r.Fonte) : null;
-        const noteClean = (r.Note || '').replace('[RENDICONTATA]','').replace('[NON_RENDICONTATA]','').trim();
-        const spazioNome = nomeSpazio(r.SpazioDestinatario);
+        const accFis = parseFloat(r.AccFiscale) || 0;
         return `<tr>
           <td>${fmtDate(r.Data)}</td>
-          <td><span class="positive" style="font-family:var(--font-mono)">+ € ${imp.toLocaleString('it-IT',{minimumFractionDigits:2})}</span></td>
+          <td><span class="positive" style="font-family:var(--font-mono)">+ € ${parseFloat(r.Importo).toLocaleString('it-IT',{minimumFractionDigits:2})}</span></td>
           <td><span class="pill" style="border-color:var(--green);color:var(--green)">${labelFonte(r.Fonte)}</span></td>
+          <td>${r.Descrizione||''}</td>
+          <td>${r.SpazioDestinatario||''}</td>
           <td>${isPiva
-            ? (rend
-                ? `<span class="pill" style="border-color:rgba(79,207,122,0.4);color:var(--green);background:rgba(79,207,122,0.1);font-size:0.65rem;">✓ Fattura</span>`
-                : `<span class="pill" style="border-color:rgba(251,146,60,0.4);color:var(--orange);background:rgba(251,146,60,0.1);font-size:0.65rem;">⏳ Non rend.</span>`)
-            : '—'}</td>
-          <td>${r.Descrizione||''}${noteClean?`<br><span style="font-size:0.7rem;color:var(--text-dim)">${noteClean}</span>`:''}</td>
-          <td>${spazioNome}</td>
-          <td>${calc ? `<span style="font-family:var(--font-mono);color:var(--orange);font-size:0.8rem;">- € ${calc.totale.toFixed(2)}</span>` : '<span style="color:var(--text-dim);font-size:0.75rem;">—</span>'}</td>
-          <td style="white-space:nowrap;">
-            <button class="btn btn-ghost btn-sm" style="padding:5px 8px;" onclick="editEntrata(${JSON.stringify(r).replace(/"/g,'&quot;')})" title="Modifica">✎</button>
-            <button class="btn btn-danger btn-sm" style="padding:5px 8px;" onclick="deleteItem('${r.ID}','Entrate')" title="Elimina">✕</button>
+            ? `<button class="toggle-btn ${rend?'rendicontata':'non-rendicontata'}" onclick="toggleRendicontata('${r.ID}', ${rend})" title="Clicca per cambiare">
+                ${rend ? '✓ Rend.' : '✗ Non rend.'}
+               </button>`
+            : '<span style="color:var(--text-dim);font-size:0.75rem;">—</span>'
+          }</td>
+          <td>${isPiva && !rend && accFis > 0
+            ? `<span style="font-family:var(--font-mono);color:var(--red);font-size:0.8rem;">€ ${accFis.toLocaleString('it-IT',{minimumFractionDigits:2})}</span>`
+            : '<span style="color:var(--text-dim);font-size:0.75rem;">—</span>'
+          }</td>
+          <td style="display:flex;gap:6px;">
+            <button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Entrate')">✕</button>
           </td>
         </tr>`;
       }).join('')}</tbody>
     </table>`;
   } catch(e) { el.innerHTML = errMsg(e); }
+}
+
+function isTruthy(val) {
+  if (val === true || val === 1 || val === 'true' || val === '1') return true;
+  if (val === 'TRUE') return true; // Google Sheets boolean
+  return false;
+}
+
+async function toggleRendicontata(id, currentValue) {
+  const newValue = !currentValue;
+  try {
+    await apiPost('updateEntrata', { id, rendicontata: newValue });
+    toast(newValue ? '✓ Segnata come rendicontata' : 'Segnata come non rendicontata', 'success');
+    loadEntrate(); // Ricarica la pagina — ricalcola l'accantonamento fiscale correttamente
+  } catch(e) { toast(e.message, 'error'); }
 }
 
 // ─── SPESE ────────────────────────────────────────────────────
@@ -1646,21 +928,24 @@ async function loadSpese() {
     await loadCacheIfNeeded();
     if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↓</div><p>Nessuna spesa registrata.</p></div>'; return; }
     el.innerHTML = `<table>
-      <thead><tr><th>Data</th><th>Importo</th><th>Categoria</th><th>Tipo</th><th>Descrizione</th><th>Spazio</th><th style="width:80px"></th></tr></thead>
+      <thead><tr><th>Data</th><th>Importo</th><th>Categoria</th><th>Tipo</th><th>Descrizione</th><th>Spazio</th><th></th></tr></thead>
       <tbody>${rows.map(r => `<tr>
         <td>${fmtDate(r.Data)}</td>
         <td><span class="negative" style="font-family:var(--font-mono)">- € ${parseFloat(r.Importo).toLocaleString('it-IT',{minimumFractionDigits:2})}</span></td>
         <td>${catBadge(r.Categoria)}</td>
         <td><span class="pill" style="border-color:var(--border);color:var(--text-dim)">${r.Tipo||''}</span></td>
         <td>${r.Descrizione||''}</td>
-        <td>${nomeSpazio(r.SpazioDiPrelievo)}</td>
-        <td style="white-space:nowrap;">
-          <button class="btn btn-ghost btn-sm" style="padding:5px 8px;" onclick="editSpesa(${JSON.stringify(r).replace(/"/g,'&quot;')})" title="Modifica">✎</button>
-          <button class="btn btn-danger btn-sm" style="padding:5px 8px;" onclick="deleteItem('${r.ID}','Spese')" title="Elimina">✕</button>
-        </td>
+        <td>${r.SpazioDiPrelievo||''}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Spese')">✕</button></td>
       </tr>`).join('')}</tbody>
     </table>`;
   } catch(e) { el.innerHTML = errMsg(e); }
+}
+
+function catBadge(catId) {
+  const cat = _cache.categorie.find(c => c.ID === catId || c.Nome === catId);
+  if (!cat) return `<span class="pill" style="border-color:var(--border);color:var(--text-dim)">${catId||''}</span>`;
+  return `<span class="pill" style="border-color:${cat.Colore}30;color:${cat.Colore};background:${cat.Colore}18">${cat.Icona||''} ${cat.Nome}</span>`;
 }
 
 // ─── RICORRENTI ───────────────────────────────────────────────
@@ -1668,49 +953,92 @@ async function loadRicorrenti() {
   const el = document.getElementById('ricorrentiTable');
   el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   try {
-    await loadCacheIfNeeded();
     const rawRows = await apiGet('getRicorrenti');
     const rows = Array.isArray(rawRows) ? rawRows : [];
     if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↻</div><p>Nessuna spesa ricorrente.</p></div>'; return; }
-    const totMensile = rows.filter(r => r.Attiva).reduce((a, r) => {
-      const imp = parseFloat(r.Importo) || 0;
-      const f = r.Frequenza || 'mensile';
-      if (f === 'settimanale') return a + imp * 4.33;
-      if (f === 'trimestrale') return a + imp / 3;
-      if (f === 'annuale')     return a + imp / 12;
-      return a + imp;
-    }, 0);
-    el.innerHTML = `
-      <div style="padding:12px 14px;background:rgba(91,138,247,0.08);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-        <span style="font-size:0.78rem;color:var(--text-dim);">Costo mensile totale stimato:</span>
-        <span style="font-family:var(--font-mono);color:var(--blue);font-size:1.1rem;">€ ${totMensile.toFixed(2)}</span>
-        <span style="font-size:0.72rem;color:var(--text-dim);margin-left:auto;">${rows.filter(r=>r.Attiva).length} attive su ${rows.length}</span>
-      </div>
-      <table>
-        <thead><tr><th>Nome</th><th>Importo</th><th>Frequenza</th><th>Mensile equiv.</th><th>Scadenza</th><th>Spazio</th><th>Stato</th><th style="width:80px"></th></tr></thead>
-        <tbody>${rows.map(r => {
-          const imp = parseFloat(r.Importo) || 0;
-          const f = r.Frequenza || 'mensile';
-          let mensile = imp;
-          if (f === 'settimanale') mensile = imp * 4.33;
-          else if (f === 'trimestrale') mensile = imp / 3;
-          else if (f === 'annuale') mensile = imp / 12;
-          return `<tr>
-            <td><strong>${r.Nome}</strong></td>
-            <td><span class="negative" style="font-family:var(--font-mono)">€ ${imp.toLocaleString('it-IT',{minimumFractionDigits:2})}</span></td>
-            <td>${r.Frequenza||''}</td>
-            <td style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text-dim);">€ ${mensile.toFixed(2)}</td>
-            <td>giorno ${r.GiornoScadenza||''}</td>
-            <td>${nomeSpazio(r.SpazioDiPrelievo)}</td>
-            <td><span class="pill" style="border-color:${r.Attiva?'var(--green)':'var(--text-dim)'};color:${r.Attiva?'var(--green)':'var(--text-dim)'}">${r.Attiva?'Attiva':'Inattiva'}</span></td>
-            <td style="white-space:nowrap;">
-              <button class="btn btn-ghost btn-sm" style="padding:5px 8px;" onclick="editRicorrente(${JSON.stringify(r).replace(/"/g,'&quot;')})" title="Modifica">✎</button>
-              <button class="btn btn-danger btn-sm" style="padding:5px 8px;" onclick="deleteItem('${r.ID}','SpesesRicorrenti')" title="Elimina">✕</button>
-            </td>
-          </tr>`;
-        }).join('')}</tbody>
-      </table>`;
+    el.innerHTML = `<table>
+      <thead><tr><th>Nome</th><th>Importo</th><th>Frequenza</th><th>Scadenza</th><th>Spazio</th><th>Stato</th><th></th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td><strong>${r.Nome}</strong></td>
+        <td><span class="negative" style="font-family:var(--font-mono)">€ ${parseFloat(r.Importo).toLocaleString('it-IT',{minimumFractionDigits:2})}</span></td>
+        <td>${r.Frequenza||''}</td>
+        <td>giorno ${r.GiornoScadenza||''}</td>
+        <td>${r.SpazioDiPrelievo||''}</td>
+        <td><span class="pill" style="border-color:${r.Attiva?'var(--green)':'var(--text-dim)'};color:${r.Attiva?'var(--green)':'var(--text-dim)'}">${r.Attiva?'Attiva':'Inattiva'}</span></td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','SpesesRicorrenti')">✕</button></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
   } catch(e) { el.innerHTML = errMsg(e); }
+}
+
+// ─── FATTURE P.IVA ────────────────────────────────────────────
+async function loadFatture() {
+  const el    = document.getElementById('fattureTable');
+  const statEl = document.getElementById('fattureStats');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  statEl.innerHTML = '';
+  try {
+    const rawRows = await apiGet('getFatture');
+    const rows = Array.isArray(rawRows) ? rawRows : [];
+
+    // Stats
+    const totEmesse = rows.filter(r => r.Stato === 'emessa').length;
+    const totPagate = rows.filter(r => r.Stato === 'pagata');
+    const totScadute = rows.filter(r => r.Stato === 'scaduta').length;
+    const incassato = totPagate.reduce((a,r) => a + (parseFloat(r.Importo)||0), 0);
+    const fmt = v => '€ ' + Number(v).toLocaleString('it-IT', { minimumFractionDigits:2 });
+
+    statEl.innerHTML = `<div class="grid-4" style="margin-bottom:0;">
+      <div class="stat-card"><span class="icon">🧾</span><div class="label">Totale fatture</div><div class="amount">${rows.length}</div></div>
+      <div class="stat-card"><span class="icon">⏳</span><div class="label">In attesa</div><div class="amount" style="color:var(--blue)">${totEmesse}</div></div>
+      <div class="stat-card"><span class="icon">✅</span><div class="label">Pagate</div><div class="amount positive">${totPagate.length}</div><div class="delta" style="color:var(--text-dim)">${fmt(incassato)} incassati</div></div>
+      <div class="stat-card"><span class="icon">⚠️</span><div class="label">Scadute</div><div class="amount ${totScadute>0?'negative':''}">${totScadute}</div></div>
+    </div>`;
+
+    if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🧾</div><p>Nessuna fattura registrata.<br><small>Aggiungi la prima fattura per iniziare a tracciare la tua progressività.</small></p></div>'; return; }
+
+    // Ordina per numero fattura desc
+    const sorted = [...rows].sort((a,b) => String(b.NumeroFattura||'').localeCompare(String(a.NumeroFattura||'')));
+
+    el.innerHTML = `<table>
+      <thead><tr><th>N° Fattura</th><th>Data</th><th>Cliente</th><th>Descrizione</th><th>Importo</th><th>IVA</th><th>Totale</th><th>Tipo</th><th>Stato</th><th></th></tr></thead>
+      <tbody>${sorted.map(r => {
+        const imp = parseFloat(r.Importo)||0;
+        const tot = parseFloat(r.TotaleConIva)||imp;
+        const stato = r.Stato || 'emessa';
+        const statoClass = `stato-${stato}`;
+        return `<tr>
+          <td><span class="fattura-num">${r.NumeroFattura||'—'}</span></td>
+          <td>${fmtDate(r.Data)}</td>
+          <td><strong>${r.Cliente||'—'}</strong></td>
+          <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.Descrizione||''}</td>
+          <td style="font-family:var(--font-mono)">€ ${imp.toLocaleString('it-IT',{minimumFractionDigits:2})}</td>
+          <td style="color:var(--text-dim)">${r.IVA||0}%</td>
+          <td style="font-family:var(--font-mono);color:var(--gold)">€ ${tot.toLocaleString('it-IT',{minimumFractionDigits:2})}</td>
+          <td><span class="pill" style="border-color:var(--border);color:var(--text-dim)">${labelFonte(r.Fonte)}</span></td>
+          <td>
+            <select class="stato-select pill ${statoClass}" style="background:transparent;border:1px solid;padding:3px 8px;font-size:0.7rem;cursor:pointer;border-radius:999px;"
+              onchange="updateStatoFattura('${r.ID}', this.value, this)" data-id="${r.ID}">
+              <option value="emessa"  ${stato==='emessa' ?'selected':''}>Emessa</option>
+              <option value="pagata"  ${stato==='pagata' ?'selected':''}>Pagata</option>
+              <option value="scaduta" ${stato==='scaduta'?'selected':''}>Scaduta</option>
+            </select>
+          </td>
+          <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Fatture')">✕</button></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+  } catch(e) { el.innerHTML = errMsg(e); }
+}
+
+async function updateStatoFattura(id, nuovoStato, selectEl) {
+  try {
+    const dataPag = nuovoStato === 'pagata' ? new Date().toISOString().split('T')[0] : '';
+    await apiPost('updateFattura', { id, stato: nuovoStato, dataPagamento: dataPag });
+    toast(`Stato aggiornato: ${nuovoStato}`, 'success');
+    // Aggiorna classe colore select
+    selectEl.className = `stato-select pill stato-${nuovoStato}`;
+  } catch(e) { toast(e.message, 'error'); }
 }
 
 // ─── SPAZI ────────────────────────────────────────────────────
@@ -1729,7 +1057,9 @@ async function loadSpazi() {
         <div class="spazio-nome">${s.Nome}</div>
         <div class="spazio-saldo" style="color:${saldo>=0?'var(--green)':'var(--red)'}">€ ${saldo.toLocaleString('it-IT',{minimumFractionDigits:2})}</div>
         ${s.Note?`<div class="spazio-note">${s.Note}</div>`:''}
-        <div style="margin-top:14px;"><button class="btn btn-danger btn-sm" onclick="deleteItem('${s.ID}','Spazi')">Rimuovi</button></div>
+        <div style="margin-top:14px;display:flex;gap:8px;">
+          <button class="btn btn-danger btn-sm" onclick="deleteItem('${s.ID}','Spazi')">Rimuovi</button>
+        </div>
       </div>`;
     }).join('');
   } catch(e) { el.innerHTML = errMsg(e); }
@@ -1740,7 +1070,6 @@ async function loadAccantonamenti() {
   const el = document.getElementById('accGrid');
   el.innerHTML = '<div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>';
   try {
-    await loadCacheIfNeeded();
     const rawRows = await apiGet('getAccantonamenti');
     const rows = Array.isArray(rawRows) ? rawRows : [];
     if (!rows.length) { el.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⊕</div><p>Nessun accantonamento.</p></div>'; return; }
@@ -1751,22 +1080,12 @@ async function loadAccantonamenti() {
       const pct = obi > 0 ? Math.min(100, (acc/obi)*100) : 0;
       const color = tipoColors[r.Tipo] || '#888';
       return `<div class="acc-card">
-        <div class="acc-header">
-          <div class="acc-nome">${r.Nome}</div>
-          <span class="acc-tipo pill" style="border-color:${color}40;color:${color};background:${color}18">${r.Tipo||''}</span>
-        </div>
-        <div class="acc-numbers">
-          <div class="acc-curr" style="color:${color}">€ ${acc.toLocaleString('it-IT',{minimumFractionDigits:2})}</div>
-          <div class="acc-target">/ € ${obi.toLocaleString('it-IT',{minimumFractionDigits:2})}</div>
-        </div>
+        <div class="acc-header"><div class="acc-nome">${r.Nome}</div><span class="acc-tipo pill" style="border-color:${color}40;color:${color};background:${color}18">${r.Tipo||''}</span></div>
+        <div class="acc-numbers"><div class="acc-curr" style="color:${color}">€ ${acc.toLocaleString('it-IT',{minimumFractionDigits:2})}</div><div class="acc-target">/ € ${obi.toLocaleString('it-IT',{minimumFractionDigits:2})}</div></div>
         <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
         <div class="acc-pct">${pct.toFixed(1)}% completato${r.Scadenza?' · Scade: '+fmtDate(r.Scadenza):''}</div>
         ${r.Note?`<div style="font-size:0.75rem;color:var(--text-dim);margin-top:8px;">${r.Note}</div>`:''}
-        <div style="font-size:0.72rem;color:var(--text-dim);margin-top:6px;">${r.Spazio ? `Spazio: ${nomeSpazio(r.Spazio)}` : ''}</div>
-        <div style="margin-top:12px;display:flex;gap:8px;">
-          <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="editAccantonamento(${JSON.stringify(r).replace(/"/g,'&quot;')})">✎ Modifica</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Accantonamenti')">✕</button>
-        </div>
+        <div style="margin-top:12px;"><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Accantonamenti')">Rimuovi</button></div>
       </div>`;
     }).join('');
   } catch(e) { el.innerHTML = errMsg(e); }
@@ -1794,10 +1113,7 @@ async function loadInvestimenti() {
           <td style="font-family:var(--font-mono)">€ ${att.toLocaleString('it-IT',{minimumFractionDigits:2})}</td>
           <td><span class="${delta>=0?'positive':'negative'}" style="font-family:var(--font-mono)">${delta>=0?'+':''}${pct}%</span></td>
           <td>${fmtDate(r.DataInizio)}</td>
-          <td style="white-space:nowrap;">
-            <button class="btn btn-ghost btn-sm" style="padding:5px 8px;" onclick="editInvestimento(${JSON.stringify(r).replace(/"/g,'&quot;')})" title="Modifica">✎</button>
-            <button class="btn btn-danger btn-sm" style="padding:5px 8px;" onclick="deleteItem('${r.ID}','Investimenti')" title="Elimina">✕</button>
-          </td>
+          <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Investimenti')">✕</button></td>
         </tr>`;
       }).join('')}</tbody>
     </table>`;
@@ -1826,439 +1142,28 @@ async function loadCategorie() {
   } catch(e) { el.innerHTML = errMsg(e); }
 }
 
-// ─── CALCOLATORE P.IVA ────────────────────────────────────────
-let regimeAttuale  = 'forfettario';
-let aliquotaImposta = 15;
-let cassaAttuale    = 'gestione_separata';
-let cassaOrdAttuale = 'gestione_separata';
-
-function setRegime(r) {
-  regimeAttuale = r;
-  document.getElementById('tabForf').classList.toggle('active', r === 'forfettario');
-  document.getElementById('tabOrd').classList.toggle('active', r === 'ordinario');
-  document.getElementById('sezForfettario').style.display = r === 'forfettario' ? 'block' : 'none';
-  document.getElementById('sezOrdinario').style.display   = r === 'ordinario'   ? 'block' : 'none';
-  aggiornaCalcolatore();
-}
-
-function setAliquota(a) {
-  aliquotaImposta = a;
-  document.getElementById('tabAliq5').classList.toggle('active', a === 5);
-  document.getElementById('tabAliq15').classList.toggle('active', a === 15);
-  aggiornaCalcolatore();
-}
-
-function setCassa(c) {
-  cassaAttuale = c;
-  document.getElementById('tabGestSep').classList.toggle('active', c === 'gestione_separata');
-  document.getElementById('tabArtigiani').classList.toggle('active', c === 'artigiani_commercianti');
-  document.getElementById('sezGestSep').style.display   = c === 'gestione_separata'       ? 'block' : 'none';
-  document.getElementById('sezArtigiani').style.display = c === 'artigiani_commercianti'  ? 'block' : 'none';
-  aggiornaCalcolatore();
-}
-
-function setCassaOrd(c) {
-  cassaOrdAttuale = c;
-  document.getElementById('tabOrdGestSep').classList.toggle('active', c === 'gestione_separata');
-  document.getElementById('tabOrdArtig').classList.toggle('active', c === 'artigiani_commercianti');
-  document.getElementById('sezOrdGestSep').style.display = c === 'gestione_separata'      ? 'block' : 'none';
-  document.getElementById('sezOrdArtig').style.display   = c === 'artigiani_commercianti' ? 'block' : 'none';
-  aggiornaCalcolatore();
-}
-
-function initCalcolatore() { aggiornaCalcolatore(); }
-
-// Calcola contributi INPS Cassa Artigiani/Commercianti dato reddito imponibile
-function calcInpsArtigiani(imponibile, fisso, minimale, aliqEcc) {
-  if (imponibile <= minimale) return fisso;
-  return fisso + (imponibile - minimale) * (aliqEcc / 100);
-}
-
-function aggiornaCalcolatore() {
-  const fatturato = parseInt(document.getElementById('calcFatturato').value) || 0;
-  document.getElementById('calcFatturatoLabel').textContent = '€ ' + fatturato.toLocaleString('it-IT');
-
-  const fmt    = v => '€ ' + Math.round(v).toLocaleString('it-IT');
-  const fmtPct = (v, pct) => `${fmt(v)} <span style="color:var(--text-dim);font-size:0.75rem;">(${pct.toFixed(1)}%)</span>`;
-
-  let rows = '', totale = 0, inpsCalcolato = 0, inpsLabel = '';
-
-  if (regimeAttuale === 'forfettario') {
-    const coeff = parseInt(document.getElementById('calcCoeff').value) || 67;
-    document.getElementById('calcCoeffLabel').textContent = coeff + '%';
-    const imponibile = fatturato * (coeff / 100);
-    const imposte    = imponibile * (aliquotaImposta / 100);
-
-    if (cassaAttuale === 'gestione_separata') {
-      const inpsPct = parseFloat(document.getElementById('calcInps').value) || 26.23;
-      document.getElementById('calcInpsLabel').textContent = inpsPct.toFixed(2) + '%';
-      inpsCalcolato = imponibile * (inpsPct / 100);
-      inpsLabel = `Gestione Separata INPS (${inpsPct.toFixed(2)}% su imponibile)`;
-    } else {
-      const minimale = parseInt(document.getElementById('calcMin').value) || 18415;
-      const fisso    = parseInt(document.getElementById('calcFisso').value) || 4292;
-      const aliqEcc  = parseFloat(document.getElementById('calcEcc').value) || 24;
-      document.getElementById('calcMinLabel').textContent  = '€ ' + minimale.toLocaleString('it-IT');
-      document.getElementById('calcFissoLabel').textContent = '€ ' + fisso.toLocaleString('it-IT');
-      document.getElementById('calcEccLabel').textContent  = aliqEcc.toFixed(1) + '%';
-      inpsCalcolato = calcInpsArtigiani(imponibile, fisso, minimale, aliqEcc);
-      const eccedenza = Math.max(0, imponibile - minimale);
-      inpsLabel = `Cassa Artigiani/Commercianti`;
-      rows += `
-        <div class="calc-result-row"><span>Fatturato lordo</span><span style="color:var(--green)">${fmt(fatturato)}</span></div>
-        <div class="calc-result-row"><span>Imponibile (coeff. ${coeff}%)</span><span>${fmt(imponibile)}</span></div>
-        <div class="calc-result-row"><span>Imposta sostitutiva (${aliquotaImposta}%)</span><span style="color:var(--red)">${fmtPct(imposte, (imposte/fatturato)*100)}</span></div>
-        <div class="calc-result-row"><span style="color:var(--text-dim);font-size:0.82rem;">INPS — contributo fisso minimale</span><span style="color:var(--orange)">${fmt(fisso)}</span></div>
-        ${eccedenza > 0 ? `<div class="calc-result-row"><span style="color:var(--text-dim);font-size:0.82rem;">INPS — eccedenza (€ ${Math.round(eccedenza).toLocaleString('it-IT')} × ${aliqEcc.toFixed(1)}%)</span><span style="color:var(--orange)">${fmt(inpsCalcolato - fisso)}</span></div>` : ''}
-        <div class="calc-result-row"><span>INPS totale Artigiani/Comm.</span><span style="color:var(--orange)">${fmtPct(inpsCalcolato, (inpsCalcolato/fatturato)*100)}</span></div>
-        <div class="calc-result-row"><span style="color:var(--text)">Totale imposte + contributi</span><span style="color:var(--orange)">${fmtPct(imposte+inpsCalcolato, ((imposte+inpsCalcolato)/fatturato)*100)}</span></div>
-        <div class="calc-result-row"><span style="color:var(--green)">Netto disponibile</span><span style="color:var(--green)">${fmt(fatturato - imposte - inpsCalcolato)}</span></div>`;
-      totale = imposte + inpsCalcolato;
-      document.getElementById('calcOutput').innerHTML = rows;
-      document.getElementById('calcMensile').textContent = '€ ' + Math.round(totale/12).toLocaleString('it-IT');
-      document.getElementById('calcPercMensile').textContent = `${((totale/(fatturato||1))*100).toFixed(1)}% del fatturato annuo, diviso per 12 mesi`;
-      return;
-    }
-
-    totale = imposte + inpsCalcolato;
-    rows = `
-      <div class="calc-result-row"><span>Fatturato lordo</span><span style="color:var(--green)">${fmt(fatturato)}</span></div>
-      <div class="calc-result-row"><span>Imponibile (coeff. ${coeff}%)</span><span>${fmt(imponibile)}</span></div>
-      <div class="calc-result-row"><span>Imposta sostitutiva (${aliquotaImposta}%)</span><span style="color:var(--red)">${fmtPct(imposte, (imposte/fatturato)*100)}</span></div>
-      <div class="calc-result-row"><span>${inpsLabel}</span><span style="color:var(--orange)">${fmtPct(inpsCalcolato, (inpsCalcolato/fatturato)*100)}</span></div>
-      <div class="calc-result-row"><span style="color:var(--text)">Totale imposte + contributi</span><span style="color:var(--orange)">${fmtPct(totale, (totale/fatturato)*100)}</span></div>
-      <div class="calc-result-row"><span style="color:var(--green)">Netto disponibile</span><span style="color:var(--green)">${fmt(fatturato - totale)}</span></div>`;
-
-  } else {
-    // REGIME ORDINARIO
-    const costi = parseInt(document.getElementById('calcCosti').value) || 0;
-    document.getElementById('calcCostiLabel').textContent = '€ ' + costi.toLocaleString('it-IT');
-
-    let inpsOrd = 0, inpsDettaglio = '';
-    if (cassaOrdAttuale === 'gestione_separata') {
-      const inpsPct = parseFloat(document.getElementById('calcInpsOrdPct').value) || 26.23;
-      document.getElementById('calcInpsOrdPctLabel').textContent = inpsPct.toFixed(2) + '%';
-      const baseInps = Math.max(0, fatturato - costi);
-      inpsOrd = baseInps * (inpsPct / 100);
-      inpsDettaglio = `Gestione Separata INPS (${inpsPct.toFixed(2)}%)`;
-    } else {
-      const fisso   = parseInt(document.getElementById('calcOrdFisso').value) || 4292;
-      const aliqEcc = parseFloat(document.getElementById('calcOrdEcc').value) || 24;
-      const minimale = 18415;
-      document.getElementById('calcOrdFissoLabel').textContent = '€ ' + fisso.toLocaleString('it-IT');
-      document.getElementById('calcOrdEccLabel').textContent   = aliqEcc.toFixed(1) + '%';
-      const baseInps = Math.max(0, fatturato - costi);
-      inpsOrd = calcInpsArtigiani(baseInps, fisso, minimale, aliqEcc);
-      inpsDettaglio = `Cassa Artigiani/Comm. (fisso + ecc. ${aliqEcc.toFixed(1)}%)`;
-    }
-
-    const reddito = Math.max(0, fatturato - costi - inpsOrd);
-    let irpef = 0;
-    if (reddito <= 28000)      irpef = reddito * 0.23;
-    else if (reddito <= 50000) irpef = 28000 * 0.23 + (reddito - 28000) * 0.35;
-    else                        irpef = 28000 * 0.23 + 22000 * 0.35 + (reddito - 50000) * 0.43;
-
-    const addReg = reddito * 0.0143;
-    const addCom = reddito * 0.008;
-    totale = irpef + addReg + addCom + inpsOrd;
-
-    rows = `
-      <div class="calc-result-row"><span>Fatturato lordo</span><span style="color:var(--green)">${fmt(fatturato)}</span></div>
-      <div class="calc-result-row"><span>Costi deducibili</span><span style="color:var(--text-dim)">- ${fmt(costi)}</span></div>
-      <div class="calc-result-row"><span>${inpsDettaglio}</span><span style="color:var(--orange)">${fmtPct(inpsOrd, (inpsOrd/fatturato)*100)}</span></div>
-      <div class="calc-result-row"><span>Reddito imponibile IRPEF</span><span>${fmt(reddito)}</span></div>
-      <div class="calc-result-row"><span>IRPEF (scaglioni 23–43%)</span><span style="color:var(--red)">${fmtPct(irpef, (irpef/fatturato)*100)}</span></div>
-      <div class="calc-result-row"><span>Addizionali reg. + com.</span><span style="color:var(--red)">${fmtPct(addReg+addCom, ((addReg+addCom)/fatturato)*100)}</span></div>
-      <div class="calc-result-row"><span style="color:var(--text)">Totale imposte + contributi</span><span style="color:var(--orange)">${fmtPct(totale, (totale/fatturato)*100)}</span></div>
-      <div class="calc-result-row"><span style="color:var(--green)">Netto disponibile</span><span style="color:var(--green)">${fmt(fatturato - totale)}</span></div>`;
+// ─── CACHE ────────────────────────────────────────────────────
+async function loadCacheIfNeeded() {
+  if (!_cache.spazi.length) {
+    try { const r = await apiGet('getSpazi'); _cache.spazi = Array.isArray(r) ? r : []; } catch(e) { _cache.spazi = []; }
   }
-
-  document.getElementById('calcOutput').innerHTML = rows;
-  document.getElementById('calcMensile').textContent = '€ ' + Math.round(totale/12).toLocaleString('it-IT');
-  document.getElementById('calcPercMensile').textContent = `${((totale/(fatturato||1))*100).toFixed(1)}% del fatturato annuo, diviso per 12 mesi`;
-}
-
-// ─── OBIETTIVI MENSILI ────────────────────────────────────────
-
-const REGOLE_DEFAULT = [
-  { id:'r01', title:'Pago prima me stesso', desc:'Ogni mese, appena arriva un incasso, sposto subito la quota risparmio/investimento prima di fare qualsiasi altra spesa.', pts:10, checked:false },
-  { id:'r02', title:'Nessun acquisto impulsivo sopra €50', desc:'Per acquisti non pianificati sopra €50 aspetto 48 ore prima di comprare.', pts:8, checked:false },
-  { id:'r03', title:'Revisione mensile del budget', desc:'A fine mese mi siedo 30 minuti a rivedere entrate, spese e progressi verso gli obiettivi.', pts:7, checked:false },
-  { id:'r04', title:'Accantonamento fiscale automatico', desc:'Ogni fattura emessa trasferisco subito la quota fiscale (tasse + INPS) sullo spazio dedicato, senza aspettare la scadenza.', pts:10, checked:false },
-  { id:'r05', title:'Investimento mensile costante', desc:'Verso una quota fissa ogni mese indipendentemente dal mercato (PAC / dollar-cost averaging). La costanza batte il timing.', pts:9, checked:false },
-  { id:'r06', title:'Fondo emergenza intoccabile', desc:'Non uso il fondo emergenza per spese non emergenziali. Se attingo, lo reintegro entro 3 mesi.', pts:8, checked:false },
-  { id:'r07', title:'Zero debiti al consumo', desc:'Non uso carte di credito per spese che non posso pagare a fine mese. Nessun finanziamento per beni che si deprezzano.', pts:10, checked:false },
-  { id:'r08', title:'Diversificazione degli investimenti', desc:'I miei investimenti sono distribuiti su almeno 2 asset class diverse (es. ETF azionario globale + obbligazionario).', pts:6, checked:false },
-  { id:'r09', title:'Tracciamento spese quotidiano', desc:'Registro ogni spesa entro 24h. La consapevolezza è il primo passo per ridurre i costi invisibili.', pts:7, checked:false },
-  { id:'r10', title:'Nessuna spesa ricorrente inutilizzata', desc:'Ogni 3 mesi verifico che tutti gli abbonamenti e i costi fissi siano ancora giustificati dal loro utilizzo.', pts:5, checked:false },
-];
-
-let OBIETTIVI = {
-  fatturato: 0,
-  spese: 0,
-  acc_fiscale: 0,
-  investimento: 0,
-  risparmio: 0,
-  emergenza: 0,
-  tasso_risp: 20,
-  regole: REGOLE_DEFAULT.map(r => ({ id:r.id, checked:r.checked }))
-};
-
-function loadObiettivi() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('fp_obiettivi') || 'null');
-    if (saved) {
-      Object.assign(OBIETTIVI, saved);
-      // merge new regole preserving checked state
-      REGOLE_DEFAULT.forEach(rd => {
-        if (!OBIETTIVI.regole.find(r => r.id === rd.id)) OBIETTIVI.regole.push({ id:rd.id, checked:false });
-      });
-    }
-  } catch(e) {}
-
-  // populate inputs
-  const fields = ['fatturato','spese','acc_fiscale','investimento','risparmio','emergenza','tasso_risp'];
-  fields.forEach(f => {
-    const el = document.getElementById('obj_' + f);
-    if (el && OBIETTIVI[f]) el.value = OBIETTIVI[f];
-  });
-
-  renderRegole();
-  aggiornaScorePreview();
-}
-
-function salvaObiettivi() {
-  const fields = ['fatturato','spese','acc_fiscale','investimento','risparmio','emergenza','tasso_risp'];
-  fields.forEach(f => {
-    const el = document.getElementById('obj_' + f);
-    if (el) OBIETTIVI[f] = parseFloat(el.value) || 0;
-  });
-  localStorage.setItem('fp_obiettivi', JSON.stringify(OBIETTIVI));
-  aggiornaScorePreview();
-}
-
-function toggleRegola(id) {
-  const r = OBIETTIVI.regole.find(x => x.id === id);
-  if (r) r.checked = !r.checked;
-  localStorage.setItem('fp_obiettivi', JSON.stringify(OBIETTIVI));
-  renderRegole();
-  aggiornaScorePreview();
-}
-
-function renderRegole() {
-  const el = document.getElementById('regoleList');
-  if (!el) return;
-  el.innerHTML = REGOLE_DEFAULT.map(rd => {
-    const stato = OBIETTIVI.regole.find(r => r.id === rd.id) || { checked:false };
-    return `<div class="regola-item">
-      <div class="regola-check ${stato.checked?'checked':''}" onclick="toggleRegola('${rd.id}')">${stato.checked?'✓':''}</div>
-      <div class="regola-content">
-        <div class="regola-title" style="color:${stato.checked?'var(--text)':'var(--text-dim)'}">${rd.title}</div>
-        <div class="regola-desc">${rd.desc}</div>
-        <div class="regola-pts">+${rd.pts} punti salute</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function aggiornaScorePreview() {
-  const scoreEl = document.getElementById('objScorePreview');
-  const labelEl = document.getElementById('objScoreLabel');
-  const barsEl  = document.getElementById('objScoreBars');
-  if (!scoreEl) return;
-  const score = calcolaHealthScore(null);
-  scoreEl.textContent = score.totale;
-  scoreEl.style.color = scoreColor(score.totale);
-  if (labelEl) labelEl.textContent = scoreLabel(score.totale);
-  if (barsEl) {
-    barsEl.innerHTML = score.componenti.map(c => `
-      <div class="obj-progress-row">
-        <div class="obj-label"><span>${c.label}</span><span style="color:${scoreColor(c.pct)}">${c.val} / ${c.max} pt</span></div>
-        <div class="obj-bar"><div class="obj-bar-fill" style="width:${c.pct}%;background:${scoreColor(c.pct)}"></div></div>
-      </div>`).join('');
+  if (!_cache.categorie.length) {
+    try { const r = await apiGet('getCategorie'); _cache.categorie = Array.isArray(r) ? r : []; } catch(e) { _cache.categorie = []; }
   }
 }
 
-// Calcola health score: dati reali se passati, altrimenti solo regole (anteprima)
-function calcolaHealthScore(dati) {
-  const obj = OBIETTIVI;
-  const regolePts = REGOLE_DEFAULT.reduce((acc, rd) => {
-    const stato = obj.regole.find(r => r.id === rd.id) || { checked:false };
-    return acc + (stato.checked ? rd.pts : 0);
-  }, 0);
-  const maxRegole = REGOLE_DEFAULT.reduce((a, r) => a + r.pts, 0); // 80 pts
-
-  let compNumerico = 0, maxNumerico = 0;
-  const componenti = [];
-
-  if (dati) {
-    // Componente 1: tasso risparmio (max 20 pt)
-    const tassoReale = dati.totaleEntrateMese > 0
-      ? ((dati.risparmioMese / dati.totaleEntrateMese) * 100) : 0;
-    const tassoTarget = obj.tasso_risp || 20;
-    const tassoPts = Math.min(20, Math.round((tassoReale / tassoTarget) * 20));
-    componenti.push({ label:'Tasso risparmio', val:tassoPts, max:20, pct:Math.min(100,(tassoReale/tassoTarget)*100) });
-    compNumerico += tassoPts; maxNumerico += 20;
-
-    // Componente 2: fatturato raggiunto (max 15 pt)
-    const fattPts = obj.fatturato > 0
-      ? Math.min(15, Math.round((dati.totaleEntrateMese / obj.fatturato) * 15)) : 0;
-    componenti.push({ label:'Obiettivo fatturato', val:fattPts, max:15, pct:obj.fatturato>0?Math.min(100,(dati.totaleEntrateMese/obj.fatturato)*100):0 });
-    compNumerico += fattPts; maxNumerico += 15;
-
-    // Componente 3: controllo spese (max 15 pt) — inversamente proporzionale
-    const spesePts = obj.spese > 0
-      ? Math.min(15, Math.round(Math.max(0, 1 - (dati.totaleSpeseMese / obj.spese)) * 15 + (dati.totaleSpeseMese <= obj.spese ? 15 : 0))) : 0;
-    const spesePct = obj.spese > 0 ? Math.min(100, Math.max(0, (1 - (dati.totaleSpeseMese / obj.spese)) * 100 + 100) / 2 * (dati.totaleSpeseMese <= obj.spese ? 1 : 0.3)) : 0;
-    componenti.push({ label:'Controllo spese', val:spesePts, max:15, pct:obj.spese>0?(dati.totaleSpeseMese<=obj.spese?Math.round((1-(dati.totaleSpeseMese/obj.spese))*50+50):Math.round(Math.max(0,(1-(dati.totaleSpeseMese/obj.spese))*100))):0 });
-    compNumerico += spesePts; maxNumerico += 15;
-
-    // Componente 4: accantonamento fiscale fatto (max 10 pt)
-    const entratePiva = (dati.entrateFonte?.partita_iva_consulenza||0) + (dati.entrateFonte?.partita_iva_affitto||0);
-    const accFiscaleReale = calcolaAccFiscale(dati.entrateFonte?.partita_iva_consulenza||0,'partita_iva_consulenza')?.totale||0
-      + (calcolaAccFiscale(dati.entrateFonte?.partita_iva_affitto||0,'partita_iva_affitto')?.totale||0);
-    const accFiscalePts = obj.acc_fiscale > 0 ? Math.min(10, Math.round((accFiscaleReale/obj.acc_fiscale)*10)) : (accFiscaleReale>0?10:0);
-    componenti.push({ label:'Acc. fiscale effettuato', val:accFiscalePts, max:10, pct:obj.acc_fiscale>0?Math.min(100,(accFiscaleReale/obj.acc_fiscale)*100):0 });
-    compNumerico += accFiscalePts; maxNumerico += 10;
-  }
-
-  // Componente regole comportamentali (sempre presente)
-  const regolePct = maxRegole > 0 ? Math.round((regolePts / maxRegole) * 100) : 0;
-  componenti.push({ label:'Regole comportamentali', val:regolePts, max:maxRegole, pct:regolePct });
-
-  // Score totale normalizzato a 100
-  const totaleRaw = dati
-    ? (compNumerico + regolePts)
-    : regolePts;
-  const totaleMax = dati ? (maxNumerico + maxRegole) : maxRegole;
-  const totale = Math.round((totaleRaw / totaleMax) * 100);
-
-  return { totale, componenti };
-}
-
-function scoreColor(pct) {
-  if (pct >= 80) return 'var(--green)';
-  if (pct >= 60) return 'var(--gold)';
-  if (pct >= 40) return 'var(--orange)';
-  return 'var(--red)';
-}
-
-function scoreLabel(score) {
-  if (score >= 85) return 'Eccellente — stai costruendo ricchezza solida';
-  if (score >= 70) return 'Buono — sei sulla strada giusta, affina i dettagli';
-  if (score >= 55) return 'Sufficiente — ci sono margini di miglioramento importanti';
-  if (score >= 35) return 'Da migliorare — focalizzati sui punti critici';
-  return 'Attenzione — rivedi la struttura del tuo budget';
-}
-
-// ─── SALDI INIZIALI ───────────────────────────────────────────
-async function loadSaldiIniziali() {
-  const el = document.getElementById('saldiInizGrid');
-  el.innerHTML = '<div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>';
-  try {
-    const rows = await apiGet('getSpazi');
-    const spazi = Array.isArray(rows) ? rows : [];
-    _cache.spazi = spazi;
-    if (!spazi.length) {
-      el.innerHTML = `<div class="empty" style="grid-column:1/-1">
-        <div class="empty-icon">◉</div>
-        <p>Nessuno spazio trovato. <br>Crea prima gli spazi dalla sezione <strong>Spazi &amp; Saldi</strong> o esegui <strong>Inizializza Fogli</strong>.</p>
-      </div>`;
-      return;
-    }
-    el.innerHTML = spazi.map(s => {
-      const saldo = parseFloat(s.Saldo) || 0;
-      const color = s.Colore || '#888';
-      return `<div class="spazio-card" id="siCard_${s.ID}">
-        <div class="spazio-tipo"><span class="dot" style="background:${color}"></span>${s.Tipo || ''}</div>
-        <div class="spazio-nome">${s.Nome}</div>
-        <div style="margin:12px 0 6px;">
-          <label style="font-size:0.7rem;color:var(--text-dim);letter-spacing:0.08em;text-transform:uppercase;display:block;margin-bottom:6px;">Saldo iniziale (€)</label>
-          <input
-            type="number"
-            id="si_${s.ID}"
-            value="${saldo.toFixed(2)}"
-            step="0.01"
-            style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;color:var(--text);font-family:var(--font-mono);font-size:1rem;outline:none;transition:border-color .18s;"
-            onfocus="this.style.borderColor='var(--gold-dim)'"
-            onblur="this.style.borderColor='var(--border)'"
-          />
-        </div>
-        <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:10px;">
-          Saldo attuale registrato: <span style="font-family:var(--font-mono);color:${saldo>=0?'var(--green)':'var(--red)'}">€ ${saldo.toLocaleString('it-IT',{minimumFractionDigits:2})}</span>
-        </div>
-        <button class="btn btn-teal btn-sm" style="width:100%;" onclick="salvaSaldoIniziale('${s.ID}','${s.Nome.replace(/'/g,"\\'")}')">
-          ✓ Imposta saldo
-        </button>
-        <div id="siStatus_${s.ID}" style="font-size:0.72rem;margin-top:6px;min-height:16px;"></div>
-      </div>`;
-    }).join('');
-  } catch(e) {
-    el.innerHTML = errMsg(e);
-  }
-}
-
-async function salvaSaldoIniziale(id, nome) {
-  const input  = document.getElementById('si_' + id);
-  const status = document.getElementById('siStatus_' + id);
-  const nuovoSaldo = parseFloat(input.value);
-  if (isNaN(nuovoSaldo)) { status.innerHTML = '<span style="color:var(--red)">Valore non valido</span>'; return; }
-
-  status.innerHTML = '<span style="color:var(--text-dim)">Salvataggio…</span>';
-  try {
-    await apiPost('updateSpazio', { id, saldo: nuovoSaldo });
-    // Aggiorna cache locale
-    const sp = _cache.spazi.find(s => s.ID === id);
-    if (sp) sp.Saldo = nuovoSaldo;
-    status.innerHTML = `<span style="color:var(--green)">✓ Salvato — € ${nuovoSaldo.toLocaleString('it-IT',{minimumFractionDigits:2})}</span>`;
-    // Aggiorna il testo "saldo attuale" nella card
-    const card = document.getElementById('siCard_' + id);
-    if (card) {
-      const attuale = card.querySelector('span[style*="font-mono"]');
-      if (attuale) {
-        attuale.style.color = nuovoSaldo >= 0 ? 'var(--green)' : 'var(--red)';
-        attuale.textContent = '€ ' + nuovoSaldo.toLocaleString('it-IT',{minimumFractionDigits:2});
-      }
-    }
-    setTimeout(() => { status.innerHTML = ''; }, 3000);
-  } catch(e) {
-    status.innerHTML = `<span style="color:var(--red)">✗ ${e.message}</span>`;
-  }
-}
-
-// ─── MODAL UTILS ─────────────────────────────────────────────
 function fillSpazioSelect(id) {
   const sel = document.getElementById(id);
   sel.innerHTML = _cache.spazi.map(s => `<option value="${s.ID}">${s.Nome} (${s.Tipo})</option>`).join('');
 }
-
 function fillCatSelect(id) {
   const sel = document.getElementById(id);
   sel.innerHTML = _cache.categorie.filter(c => c.Tipo === 'spesa').map(c => `<option value="${c.ID}">${c.Icona||''} ${c.Nome}</option>`).join('');
 }
 
+// ─── MODALS ───────────────────────────────────────────────────
 function openModal(id) { document.getElementById(id).classList.add('open'); prepModal(id); }
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-  // Reset edit mode whenever a modal is closed
-  if (_editMode) {
-    _editMode = false; _editId = null; _editSheet = null;
-    const modal = document.getElementById(id);
-    if (modal) {
-      const titleEl = modal.querySelector('.modal-title');
-      if (titleEl) titleEl.classList.remove('editing');
-      const saveBtn = modal.querySelector('.modal-footer .btn-primary');
-      if (saveBtn) saveBtn.textContent = saveBtn.getAttribute('data-default-text') || 'Salva';
-    }
-  }
-}
-
-async function submitSpazio() {
-  const payload = { nome: v('spz_nome'), tipo: v('spz_tipo'), saldo: v('spz_saldo'), colore: v('spz_colore'), note: v('spz_note') };
-  if (!payload.nome) return toast('Inserisci un nome', 'error');
-  await submit('addSpazio', payload, 'modalSpazio', loadSpazi);
-}
-
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
 });
@@ -2266,24 +1171,10 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
 async function prepModal(id) {
   await loadCacheIfNeeded();
   const today = new Date().toISOString().split('T')[0];
-  if (id === 'modalEntrata') {
-    document.getElementById('ent_data').value = today;
-    document.getElementById('ent_importo').value = '';
-    document.getElementById('fiscalPreview').classList.remove('show');
-    document.getElementById('rendicontazioneBox').style.display = 'none';
-    _rendicontata = true;
-    setRendicontata(true);
-    fillSpazioSelect('ent_spazio');
-  }
-  if (id === 'modalSpesa') {
-    document.getElementById('spe_data').value = today;
-    fillSpazioSelect('spe_spazio');
-    fillCatSelect('spe_categoria');
-  }
-  if (id === 'modalRicorrente') {
-    fillSpazioSelect('ric_spazio');
-    fillCatSelect('ric_categoria');
-  }
+  if (id === 'modalEntrata') { document.getElementById('ent_data').value = today; fillSpazioSelect('ent_spazio'); }
+  if (id === 'modalSpesa')   { document.getElementById('spe_data').value = today; fillSpazioSelect('spe_spazio'); fillCatSelect('spe_categoria'); }
+  if (id === 'modalRicorrente') { fillSpazioSelect('ric_spazio'); fillCatSelect('ric_categoria'); }
+  if (id === 'modalFattura')    { document.getElementById('fat_data').value = today; }
   if (id === 'modalAccantonamento') {
     const sel = document.getElementById('acc_spazio');
     sel.innerHTML = '<option value="">— nessuno —</option>' + _cache.spazi.map(s => `<option value="${s.ID}">${s.Nome}</option>`).join('');
@@ -2292,240 +1183,55 @@ async function prepModal(id) {
 
 function openQuickAdd() {
   const page = currentPage();
-  if (page === 'entrate') openModal('modalEntrata');
-  else if (page === 'spese') openModal('modalSpesa');
-  else if (page === 'ricorrenti') openModal('modalRicorrente');
-  else if (page === 'spazi') openModal('modalSpazio');
-  else if (page === 'accantonamenti') openModal('modalAccantonamento');
-  else if (page === 'investimenti') openModal('modalInvestimento');
-  else if (page === 'categorie') openModal('modalCategoria');
-  else openModal('modalSpesa');
+  const map = { entrate:'modalEntrata', spese:'modalSpesa', ricorrenti:'modalRicorrente', fatture:'modalFattura', spazi:'modalSpazio', accantonamenti:'modalAccantonamento', investimenti:'modalInvestimento', categorie:'modalCategoria' };
+  openModal(map[page] || 'modalSpesa');
 }
 
-// ─── MODIFICA RECORD ─────────────────────────────────────────
-// Stato globale per la modifica
-let _editMode = false;
-let _editId   = null;
-let _editSheet = null;
-
-function setEditMode(title, id, sheet) {
-  _editMode  = true;
-  _editId    = id;
-  _editSheet = sheet;
-  // Cambia aspetto titolo e pulsante salva
-  const modal = document.getElementById('modal' + title);
-  if (modal) {
-    const titleEl = modal.querySelector('.modal-title');
-    if (titleEl) titleEl.classList.add('editing');
-    const saveBtn = modal.querySelector('.modal-footer .btn-primary');
-    if (saveBtn) saveBtn.textContent = 'Aggiorna';
-  }
-}
-
-function clearEditMode(modalName) {
-  _editMode = false; _editId = null; _editSheet = null;
-  const modal = document.getElementById('modal' + modalName);
-  if (modal) {
-    const titleEl = modal.querySelector('.modal-title');
-    if (titleEl) titleEl.classList.remove('editing');
-    const saveBtn = modal.querySelector('.modal-footer .btn-primary');
-    if (saveBtn) saveBtn.textContent = saveBtn.getAttribute('data-orig-text') || 'Salva';
-  }
-}
-
-// updateRow: chiama updateEntrata/updateSpesa/etc sul backend tramite deleteRow + addX
-// Il backend non ha un updateRow generico quindi usiamo la strategia:
-// 1. Aggiorna il record con un'azione dedicata se disponibile (updateSpazio esiste)
-// 2. Altrimenti: delete + insert (con rollback saldo gestito dal backend)
-async function apiUpdateRow(sheet, id, payload) {
-  // Per Spazi esiste updateSpazio nativo
-  if (sheet === 'Spazi') return apiPost('updateSpazio', { id, ...payload });
-  // Per gli altri: delete poi add
-  // Prima eliminiamo (il backend fa rollback del saldo), poi inseriamo
-  await apiPost('deleteRow', { id, sheet });
-  const actionMap = {
-    Entrate: 'addEntrata', Spese: 'addSpesa',
-    SpesesRicorrenti: 'addRicorrente', Accantonamenti: 'addAccantonamento',
-    Investimenti: 'addInvestimento', Categorie: 'addCategoria'
-  };
-  const action = actionMap[sheet];
-  if (!action) throw new Error('Azione di aggiornamento non disponibile per: ' + sheet);
-  return apiPost(action, payload);
-}
-
-async function editEntrata(r) {
-  await loadCacheIfNeeded();
-  openModal('modalEntrata');
-  // Sovrascrive i valori dopo apertura (prepModal li resetta)
-  await new Promise(res => setTimeout(res, 50));
-  document.getElementById('ent_data').value    = r.Data ? r.Data.substring(0, 10) : '';
-  document.getElementById('ent_importo').value  = r.Importo || '';
-  document.getElementById('ent_fonte').value    = r.Fonte || 'partita_iva_consulenza';
-  document.getElementById('ent_desc').value     = r.Descrizione || '';
-  // Risolvi spazio: imposta l'opzione corretta
-  const spazioSel = document.getElementById('ent_spazio');
-  if (spazioSel) setSelectValue(spazioSel, r.SpazioDestinatario);
-  // Gestione rendicontazione
-  const noteRaw = r.Note || '';
-  const noteClean = noteRaw.replace('[RENDICONTATA]','').replace('[NON_RENDICONTATA]','').trim();
-  document.getElementById('ent_note').value = noteClean;
-  const nonRend = noteRaw.includes('[NON_RENDICONTATA]');
-  setRendicontata(!nonRend);
-  aggiornaPrevistaFiscale();
-  setEditMode('Entrata', r.ID, 'Entrate');
-}
-
-async function editSpesa(r) {
-  await loadCacheIfNeeded();
-  openModal('modalSpesa');
-  await new Promise(res => setTimeout(res, 50));
-  document.getElementById('spe_data').value      = r.Data ? r.Data.substring(0, 10) : '';
-  document.getElementById('spe_importo').value    = r.Importo || '';
-  document.getElementById('spe_tipo').value       = r.Tipo || 'quotidiana';
-  document.getElementById('spe_desc').value       = r.Descrizione || '';
-  document.getElementById('spe_note').value       = r.Note || '';
-  setSelectValue(document.getElementById('spe_categoria'), r.Categoria);
-  setSelectValue(document.getElementById('spe_spazio'), r.SpazioDiPrelievo);
-  setEditMode('Spesa', r.ID, 'Spese');
-}
-
-async function editRicorrente(r) {
-  await loadCacheIfNeeded();
-  openModal('modalRicorrente');
-  await new Promise(res => setTimeout(res, 50));
-  document.getElementById('ric_nome').value     = r.Nome || '';
-  document.getElementById('ric_importo').value  = r.Importo || '';
-  document.getElementById('ric_freq').value     = r.Frequenza || 'mensile';
-  document.getElementById('ric_giorno').value   = r.GiornoScadenza || 1;
-  document.getElementById('ric_note').value     = r.Note || '';
-  setSelectValue(document.getElementById('ric_categoria'), r.Categoria);
-  setSelectValue(document.getElementById('ric_spazio'), r.SpazioDiPrelievo);
-  setEditMode('Ricorrente', r.ID, 'SpesesRicorrenti');
-}
-
-async function editAccantonamento(r) {
-  await loadCacheIfNeeded();
-  openModal('modalAccantonamento');
-  await new Promise(res => setTimeout(res, 50));
-  document.getElementById('acc_nome').value       = r.Nome || '';
-  document.getElementById('acc_obiettivo').value  = r.Obiettivo || '';
-  document.getElementById('acc_accumulato').value = r.Accumulato || '';
-  document.getElementById('acc_tipo').value       = r.Tipo || 'generico';
-  document.getElementById('acc_scadenza').value   = r.Scadenza ? r.Scadenza.substring(0,10) : '';
-  document.getElementById('acc_note').value       = r.Note || '';
-  const spazioSel = document.getElementById('acc_spazio');
-  if (spazioSel) setSelectValue(spazioSel, r.Spazio);
-  setEditMode('Accantonamento', r.ID, 'Accantonamenti');
-}
-
-async function editInvestimento(r) {
-  openModal('modalInvestimento');
-  await new Promise(res => setTimeout(res, 50));
-  document.getElementById('inv_nome').value      = r.Nome || '';
-  document.getElementById('inv_tipo').value      = r.Tipo || 'etf';
-  document.getElementById('inv_data').value      = r.DataInizio ? r.DataInizio.substring(0,10) : '';
-  document.getElementById('inv_iniziale').value  = r.ValoreIniziale || '';
-  document.getElementById('inv_attuale').value   = r.ValoreAttuale || '';
-  document.getElementById('inv_note').value      = r.Note || '';
-  setEditMode('Investimento', r.ID, 'Investimenti');
-}
-
-// Helper: imposta il valore di un select cercando per value (ID) o per testo
-function setSelectValue(sel, value) {
-  if (!sel || !value) return;
-  // Prova con il valore esatto prima
-  for (const opt of sel.options) {
-    if (opt.value === value) { sel.value = value; return; }
-  }
-  // Prova con testo (per categorie salvate per nome anziché ID)
-  for (const opt of sel.options) {
-    if (opt.textContent.trim().includes(value)) { sel.value = opt.value; return; }
-  }
-}
-
-// ─── SUBMIT (aggiorna se in editMode, altrimenti inserisce) ──
+// ─── SUBMIT ───────────────────────────────────────────────────
 async function submitEntrata() {
-  const importo = parseFloat(v('ent_importo')) || 0;
-  const fonte   = v('ent_fonte');
-  const isPiva  = fonte === 'partita_iva_consulenza' || fonte === 'partita_iva_affitto';
-  let noteBase = v('ent_note');
-  if (isPiva) {
-    const flag = _rendicontata ? '[RENDICONTATA]' : '[NON_RENDICONTATA]';
-    noteBase = noteBase ? `${flag} ${noteBase}` : flag;
-  }
-  const payload = {
-    data: v('ent_data'), importo, fonte,
-    descrizione: v('ent_desc'), spazioDestinatario: v('ent_spazio'), note: noteBase,
-  };
+  const payload = { data: v('ent_data'), importo: v('ent_importo'), fonte: v('ent_fonte'), descrizione: v('ent_desc'), spazioDestinatario: v('ent_spazio'), rendicontata: v('ent_rendicontata') === 'true', note: v('ent_note') };
   if (!payload.data || !payload.importo) return toast('Compila data e importo', 'error');
-
-  const calcolo = (isPiva && _rendicontata) ? calcolaAccFiscale(importo, fonte) : null;
-
-  if (_editMode && _editSheet === 'Entrate') {
-    await submitEdit('Entrate', _editId, payload, 'modalEntrata', loadEntrate);
-  } else {
-    await submit('addEntrata', payload, 'modalEntrata', () => loadEntrate());
-    if (calcolo?.totale > 0) setTimeout(() => toast(`⚖ Ricorda di accantonare € ${calcolo.totale.toFixed(2)} per tasse/contributi`, 'warning'), 600);
-    else if (isPiva && !_rendicontata) setTimeout(() => toast('📋 Entrata registrata come NON rendicontata', 'info'), 600);
-  }
+  await submit('addEntrata', payload, 'modalEntrata', loadEntrate);
 }
-
 async function submitSpesa() {
-  const payload = {
-    data: v('spe_data'), importo: v('spe_importo'), categoria: v('spe_categoria'),
-    tipo: v('spe_tipo'), descrizione: v('spe_desc'), spazioDiPrelievo: v('spe_spazio'), note: v('spe_note'),
-  };
+  const payload = { data: v('spe_data'), importo: v('spe_importo'), categoria: v('spe_categoria'), tipo: v('spe_tipo'), descrizione: v('spe_desc'), spazioDiPrelievo: v('spe_spazio'), note: v('spe_note') };
   if (!payload.data || !payload.importo) return toast('Compila data e importo', 'error');
-  if (_editMode && _editSheet === 'Spese') await submitEdit('Spese', _editId, payload, 'modalSpesa', loadSpese);
-  else await submit('addSpesa', payload, 'modalSpesa', loadSpese);
+  await submit('addSpesa', payload, 'modalSpesa', loadSpese);
 }
-
 async function submitRicorrente() {
-  const payload = {
-    nome: v('ric_nome'), importo: v('ric_importo'), categoria: v('ric_categoria'),
-    frequenza: v('ric_freq'), giornoScadenza: v('ric_giorno'),
-    spazioDiPrelievo: v('ric_spazio'), note: v('ric_note'), attiva: true,
-  };
+  const payload = { nome: v('ric_nome'), importo: v('ric_importo'), categoria: v('ric_categoria'), frequenza: v('ric_freq'), giornoScadenza: v('ric_giorno'), spazioDiPrelievo: v('ric_spazio'), note: v('ric_note'), attiva: true };
   if (!payload.nome || !payload.importo) return toast('Compila nome e importo', 'error');
-  if (_editMode && _editSheet === 'SpesesRicorrenti') await submitEdit('SpesesRicorrenti', _editId, payload, 'modalRicorrente', loadRicorrenti);
-  else await submit('addRicorrente', payload, 'modalRicorrente', loadRicorrenti);
+  await submit('addRicorrente', payload, 'modalRicorrente', loadRicorrenti);
 }
-
+async function submitFattura() {
+  const payload = { data: v('fat_data'), numeroFattura: v('fat_numero'), cliente: v('fat_cliente'), descrizione: v('fat_desc'), importo: v('fat_importo'), iva: v('fat_iva'), fonte: v('fat_fonte'), stato: v('fat_stato'), dataPagamento: v('fat_datapag'), note: v('fat_note') };
+  if (!payload.data || !payload.cliente || !payload.importo) return toast('Compila data, cliente e importo', 'error');
+  try {
+    const res = await apiPost('addFattura', payload);
+    closeModal('modalFattura');
+    toast(`Fattura ${res.numeroFattura} salvata — Totale: € ${Number(res.totale).toLocaleString('it-IT',{minimumFractionDigits:2})}`, 'success');
+    loadFatture();
+  } catch(e) { toast(e.message, 'error'); }
+}
+async function submitSpazio() {
+  const payload = { nome: v('spz_nome'), tipo: v('spz_tipo'), saldo: v('spz_saldo'), colore: v('spz_colore'), note: v('spz_note') };
+  if (!payload.nome) return toast('Inserisci un nome', 'error');
+  await submit('addSpazio', payload, 'modalSpazio', loadSpazi);
+}
 async function submitAccantonamento() {
-  const payload = {
-    nome: v('acc_nome'), obiettivo: v('acc_obiettivo'), accumulato: v('acc_accumulato'),
-    tipo: v('acc_tipo'), scadenza: v('acc_scadenza'), spazio: v('acc_spazio'), note: v('acc_note'),
-  };
+  const payload = { nome: v('acc_nome'), obiettivo: v('acc_obiettivo'), accumulato: v('acc_accumulato'), tipo: v('acc_tipo'), scadenza: v('acc_scadenza'), spazio: v('acc_spazio'), note: v('acc_note') };
   if (!payload.nome || !payload.obiettivo) return toast('Compila nome e obiettivo', 'error');
-  if (_editMode && _editSheet === 'Accantonamenti') await submitEdit('Accantonamenti', _editId, payload, 'modalAccantonamento', loadAccantonamenti);
-  else await submit('addAccantonamento', payload, 'modalAccantonamento', loadAccantonamenti);
+  await submit('addAccantonamento', payload, 'modalAccantonamento', loadAccantonamenti);
 }
-
 async function submitInvestimento() {
-  const payload = {
-    nome: v('inv_nome'), tipo: v('inv_tipo'), dataInizio: v('inv_data'),
-    valoreIniziale: v('inv_iniziale'), valoreAttuale: v('inv_attuale'), note: v('inv_note'),
-  };
+  const payload = { nome: v('inv_nome'), tipo: v('inv_tipo'), dataInizio: v('inv_data'), valoreIniziale: v('inv_iniziale'), valoreAttuale: v('inv_attuale'), note: v('inv_note') };
   if (!payload.nome || !payload.valoreIniziale) return toast('Compila nome e valore', 'error');
-  if (_editMode && _editSheet === 'Investimenti') await submitEdit('Investimenti', _editId, payload, 'modalInvestimento', loadInvestimenti);
-  else await submit('addInvestimento', payload, 'modalInvestimento', loadInvestimenti);
+  await submit('addInvestimento', payload, 'modalInvestimento', loadInvestimenti);
 }
-
 async function submitCategoria() {
   const payload = { nome: v('cat_nome'), tipo: v('cat_tipo'), icona: v('cat_icona'), colore: v('cat_colore') };
   if (!payload.nome) return toast('Inserisci un nome', 'error');
   await submit('addCategoria', payload, 'modalCategoria', loadCategorie);
-}
-
-async function submitEdit(sheet, id, payload, modalId, reload) {
-  try {
-    await apiUpdateRow(sheet, id, payload);
-    closeModal(modalId);
-    clearEditMode(modalId.replace('modal', ''));
-    _cache.spazi = []; _cache.categorie = []; // invalida cache
-    toast('Aggiornato con successo', 'success');
-    reload();
-  } catch(e) { toast(e.message, 'error'); }
 }
 
 async function submit(action, payload, modalId, reload) {
@@ -2541,9 +1247,8 @@ async function deleteItem(id, sheet) {
   if (!confirm('Eliminare questo elemento?')) return;
   try {
     await apiPost('deleteRow', { id, sheet });
-    _cache.spazi = []; _cache.categorie = []; // invalida cache
     toast('Eliminato', 'success');
-    loadPage(currentPage());
+    refreshAll();
   } catch(e) { toast(e.message, 'error'); }
 }
 
@@ -2565,7 +1270,7 @@ async function initSheets() {
   el.textContent = '⏳ Inizializzazione in corso…';
   try {
     const res = await apiPost('initSheets', {});
-    el.innerHTML = `<span style="color:var(--green)">✓ ${res.message}</span>`;
+    el.innerHTML = `<span style="color:var(--green)">✓ ${res.message} — Creati: ${(res.created||[]).join(', ')||'nessuno'}</span>`;
   } catch(e) { el.innerHTML = `<span style="color:var(--red)">✗ ${e.message}</span>`; }
 }
 
@@ -2581,37 +1286,14 @@ function errMsg(e) { return `<div class="empty"><div class="empty-icon">⚡</div
 function toast(msg, type = 'info') {
   const el = document.createElement('div');
   el.className = `toast-msg ${type}`;
-  el.innerHTML = `<span>${type==='success'?'✓':type==='error'?'✗':type==='warning'?'⚠':'ℹ'}</span>${msg}`;
+  el.innerHTML = `<span>${type==='success'?'✓':type==='error'?'✗':'ℹ'}</span>${msg}`;
   document.getElementById('toast').appendChild(el);
-  setTimeout(() => el.remove(), type === 'warning' ? 5000 : 3000);
+  setTimeout(() => el.remove(), 3500);
 }
 
 // ─── INIT ─────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  loadAliquote();
-  // Pre-carica obiettivi in memoria (servono per il punteggio dashboard)
-  try {
-    const saved = JSON.parse(localStorage.getItem('fp_obiettivi') || 'null');
-    if (saved) {
-      Object.assign(OBIETTIVI, saved);
-      REGOLE_DEFAULT.forEach(rd => {
-        if (!OBIETTIVI.regole.find(r => r.id === rd.id)) OBIETTIVI.regole.push({ id:rd.id, checked:false });
-      });
-    }
-  } catch(e) {}
-  if (APPS_SCRIPT_URL) {
-    loadDashboard();
-  } else {
-    document.getElementById('dashboardContent').innerHTML = `
-      <div class="setup-banner">
-        <div class="icon">🔧</div>
-        <div>
-          <h3>Benvenuto – configura la connessione</h3>
-          <p>Prima di iniziare, vai in <strong>Configurazione</strong> e inserisci l'URL del tuo Google Apps Script.</p>
-          <br><button class="btn btn-primary btn-sm" onclick="navigate('setup')" style="margin-top:6px;">→ Vai alla Configurazione</button>
-        </div>
-      </div>`;
-  }
+  loadDashboard();
 });
 </script>
 </body>
