@@ -1150,6 +1150,7 @@ async function loadDashboard() {
   el.innerHTML = '<div class="loading"><div class="spinner"></div> Caricamento…</div>';
   try {
     const d = await apiGet('getDashboard');
+    await loadCacheIfNeeded();
     renderDashboard(d);
   } catch (e) {
     el.innerHTML = `<div class="empty"><div class="empty-icon">⚡</div><p>${e.message}</p><br><button class="btn btn-ghost btn-sm" onclick="navigate('setup')">Configura URL</button></div>`;
@@ -1288,7 +1289,11 @@ function renderDashboard(d) {
 
   // Cat chart
   if (chartCat) chartCat.destroy();
-  const catEntries = Object.entries(d.speseCat || {});
+  // Risolvi ID categoria → Nome
+  const catMap = {};
+  _cache.categorie.forEach(c => { catMap[c.ID] = c.Nome; catMap[c.Nome] = c.Nome; });
+  const catEntriesRaw = Object.entries(d.speseCat || {});
+  const catEntries = catEntriesRaw.map(([k, v]) => [catMap[k] || k, v]);
   const ctxC = document.getElementById('chartCat').getContext('2d');
   chartCat = new Chart(ctxC, {
     type: 'doughnut',
@@ -1332,15 +1337,17 @@ async function loadEntrate() {
   try {
     const rawRows = await apiGet('getEntrate');
     const rows = Array.isArray(rawRows) ? rawRows : [];
+    await loadCacheIfNeeded();
     if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↑</div><p>Nessuna entrata registrata.</p></div>'; return; }
+    const sorted = [...rows].reverse();
     el.innerHTML = `<table>
       <thead><tr><th>Data</th><th>Importo</th><th>Fonte</th><th>Descrizione</th><th>Spazio</th><th></th></tr></thead>
-      <tbody>${rows.map(r => `<tr>
+      <tbody>${sorted.map(r => `<tr>
         <td>${fmtDate(r.Data)}</td>
         <td><span class="positive" style="font-family:var(--font-mono)">+ € ${parseFloat(r.Importo).toLocaleString('it-IT',{minimumFractionDigits:2})}</span></td>
         <td><span class="pill" style="border-color:var(--green);color:var(--green)">${labelFonte(r.Fonte)}</span></td>
         <td>${r.Descrizione||''}</td>
-        <td>${r.SpazioDestinatario||''}</td>
+        <td>${spazioNome(r.SpazioDestinatario)}</td>
         <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Entrate')">✕</button></td>
       </tr>`).join('')}</tbody>
     </table>`;
@@ -1358,15 +1365,16 @@ async function loadSpese() {
     const rows = Array.isArray(rawRows) ? rawRows : [];
     await loadCacheIfNeeded();
     if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↓</div><p>Nessuna spesa registrata.</p></div>'; return; }
+    const sorted = [...rows].reverse();
     el.innerHTML = `<table>
       <thead><tr><th>Data</th><th>Importo</th><th>Categoria</th><th>Tipo</th><th>Descrizione</th><th>Spazio</th><th></th></tr></thead>
-      <tbody>${rows.map(r => `<tr>
+      <tbody>${sorted.map(r => `<tr>
         <td>${fmtDate(r.Data)}</td>
         <td><span class="negative" style="font-family:var(--font-mono)">- € ${parseFloat(r.Importo).toLocaleString('it-IT',{minimumFractionDigits:2})}</span></td>
         <td>${catBadge(r.Categoria)}</td>
         <td><span class="pill" style="border-color:var(--border);color:var(--text-dim)">${r.Tipo||''}</span></td>
         <td>${r.Descrizione||''}</td>
-        <td>${r.SpazioDiPrelievo||''}</td>
+        <td>${spazioNome(r.SpazioDiPrelievo)}</td>
         <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Spese')">✕</button></td>
       </tr>`).join('')}</tbody>
     </table>`;
@@ -1377,6 +1385,12 @@ function catBadge(catId) {
   const cat = _cache.categorie.find(c => c.ID === catId || c.Nome === catId);
   if (!cat) return `<span class="pill" style="border-color:var(--border);color:var(--text-dim)">${catId||''}</span>`;
   return `<span class="pill" style="border-color:${cat.Colore}30;color:${cat.Colore};background:${cat.Colore}18">${cat.Icona||''} ${cat.Nome}</span>`;
+}
+
+function spazioNome(spazioId) {
+  if (!spazioId) return '';
+  const s = _cache.spazi.find(sp => sp.ID === spazioId);
+  return s ? s.Nome : spazioId;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1654,7 +1668,6 @@ async function submitCategoria() {
 async function submit(action, payload, modalId, reload) {
   try {
     const res = await apiPost(action, payload);
-    // Reset tutti i campi input/textarea del modal (non select e non date)
     const modal = document.getElementById(modalId);
     modal.querySelectorAll('input[type="number"], input[type="text"], textarea').forEach(el => el.value = '');
     closeModal(modalId);
