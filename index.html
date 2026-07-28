@@ -529,8 +529,173 @@ canvas { max-width: 100%; }
   margin: 2px;
 }
 
+/* ── AZIONI DI RIGA (modifica / elimina) ──────────────────── */
+.row-actions { display: flex; gap: 6px; justify-content: flex-end; }
+.row-actions .btn { padding: 6px 10px; }
+
+/* ── SELECT INLINE (header di pagina) ─────────────────────── */
+.sel-inline {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 9px 14px;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+}
+.sel-inline:focus { border-color: var(--gold-dim); }
+
+/* ── BADGE (affidabilità, stato fondi) ────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  border: 1px solid;
+  letter-spacing: 0.02em;
+}
+.badge-green { color: var(--green);  border-color: rgba(79,207,122,0.35); background: rgba(79,207,122,0.12); }
+.badge-amber { color: var(--orange); border-color: rgba(251,146,60,0.35);  background: rgba(251,146,60,0.12); }
+.badge-red   { color: var(--red);    border-color: rgba(242,99,106,0.35);  background: rgba(242,99,106,0.12); }
+.badge-gold  { color: var(--gold);   border-color: var(--gold-dim);        background: var(--gold-glow); }
+
+/* ── DISCLAIMER / NOTE DI ONESTÀ ──────────────────────────── */
+.disclaimer {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.015);
+  margin-top: 20px;
+}
+.disclaimer strong { color: var(--text); font-weight: 500; }
+.warn-box {
+  border: 1px solid rgba(251,146,60,0.3);
+  background: rgba(251,146,60,0.08);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--text);
+  margin-bottom: 18px;
+}
+
+/* ── RIGHE CHIAVE/VALORE ──────────────────────────────────── */
+.kv-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 0.83rem;
+}
+.kv-row:last-child { border-bottom: none; }
+.kv-row .k { color: var(--text-dim); }
+.kv-row .v { font-family: var(--font-mono); }
+.kv-row.total { border-top: 1px solid var(--border); border-bottom: none; margin-top: 4px; padding-top: 12px; }
+.kv-row.total .k { color: var(--text); font-weight: 500; }
+.kv-row.total .v { font-size: 1rem; }
+.kv-sub { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
+
+/* ── SLIDER ───────────────────────────────────────────────── */
+.slider-block { margin-bottom: 22px; }
+.slider-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+  gap: 12px;
+}
+.slider-label {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.slider-value {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--gold);
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--surface3);
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid var(--surface);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+input[type="range"]::-moz-range-thumb {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid var(--surface);
+  cursor: pointer;
+}
+input[type="range"]::-moz-range-track { height: 4px; border-radius: 99px; background: var(--surface3); }
+
+/* ── DROPDOWN TAGLI SPESE ─────────────────────────────────── */
+.drop {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface2);
+  margin-bottom: 22px;
+  overflow: hidden;
+}
+.drop-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.drop-head:hover { background: var(--gold-glow); }
+.chevron { transition: transform 0.22s ease; color: var(--text-dim); font-size: 0.7rem; }
+.drop.open .chevron { transform: rotate(90deg); }
+.drop-panel { display: none; padding: 4px 16px 16px; border-top: 1px solid var(--border); }
+.drop.open .drop-panel { display: block; }
+.drop-summary { flex: 1; }
+.drop-summary .progress-bar { margin-top: 8px; }
+.cut-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1.6fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.cut-row:last-child { border-bottom: none; }
+.cut-name { font-size: 0.82rem; }
+.cut-media { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; font-family: var(--font-mono); }
+.cut-val { font-family: var(--font-mono); font-size: 0.85rem; color: var(--red); min-width: 74px; text-align: right; }
+
 /* ── RESPONSIVE ───────────────────────────────────────────── */
 @media (max-width: 1100px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 800px) { .cut-row { grid-template-columns: 1fr; gap: 8px; } .cut-val { text-align: left; } }
 @media (max-width: 800px) {
   .sidebar { transform: translateX(-100%); }
   .sidebar.open { transform: none; }
@@ -553,6 +718,12 @@ canvas { max-width: 100%; }
     <div class="nav-section">Panoramica</div>
     <button class="nav-item active" data-page="dashboard">
       <span class="nav-icon">◈</span> Dashboard
+    </button>
+    <button class="nav-item" data-page="report">
+      <span class="nav-icon">▤</span> Report Mensile
+    </button>
+    <button class="nav-item" data-page="simulatore">
+      <span class="nav-icon">◊</span> Simulatore
     </button>
 
     <div class="nav-section">Flussi</div>
@@ -603,6 +774,35 @@ canvas { max-width: 100%; }
     <div class="page active" id="page-dashboard">
       <div id="dashboardContent">
         <div class="loading"><div class="spinner"></div> Caricamento dati…</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ REPORT MENSILE ═══════════ -->
+    <div class="page" id="page-report">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:16px;flex-wrap:wrap;">
+        <div>
+          <h2 style="font-family:var(--font-serif);font-size:1.4rem;">Report Mensile</h2>
+          <p style="color:var(--text-dim);font-size:0.8rem;margin-top:4px;">Incassi, accantonamento fiscale forfettario e obiettivi 50/20/15/15</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <select class="sel-inline" id="rep_mese"></select>
+          <select class="sel-inline" id="rep_anno"></select>
+          <button class="btn btn-primary" onclick="loadReport()">Genera</button>
+        </div>
+      </div>
+      <div id="reportContent">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ SIMULATORE ═══════════ -->
+    <div class="page" id="page-simulatore">
+      <div style="margin-bottom:20px;">
+        <h2 style="font-family:var(--font-serif);font-size:1.4rem;">Simulatore Portfolio</h2>
+        <p style="color:var(--text-dim);font-size:0.8rem;margin-top:4px;">Muovi le leve e osserva l'effetto composto sul lungo periodo</p>
+      </div>
+      <div id="simulatoreContent">
+        <div class="loading"><div class="spinner"></div></div>
       </div>
     </div>
 
@@ -666,6 +866,7 @@ canvas { max-width: 100%; }
       <div class="grid-3" id="spaziGrid">
         <div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>
       </div>
+      <div id="storicoRettifiche" class="mt-28"></div>
     </div>
 
     <!-- ═══════════ ACCANTONAMENTI ═══════════ -->
@@ -677,7 +878,9 @@ canvas { max-width: 100%; }
         </div>
         <button class="btn btn-primary" onclick="openModal('modalAccantonamento')">+ Nuovo</button>
       </div>
-      <div class="grid-3" id="accGrid">
+      <div id="accSuggeriti" class="mt-20" style="margin-top:0;margin-bottom:28px;"></div>
+      <div class="chart-title">I tuoi accantonamenti</div>
+      <div class="grid-3 mt-20" id="accGrid">
         <div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>
       </div>
     </div>
@@ -742,9 +945,12 @@ canvas { max-width: 100%; }
         <div style="display:flex;gap:12px;margin-top:8px;">
           <button class="btn btn-primary" onclick="testConnection()">✓ Testa Connessione</button>
           <button class="btn btn-ghost" onclick="initSheets()">⬡ Inizializza Fogli</button>
+          <button class="btn btn-ghost" onclick="loadVerificaSchema()">🔍 Verifica Schema</button>
         </div>
         <div id="connStatus" style="margin-top:14px;font-size:0.8rem;color:var(--text-dim);"></div>
       </div>
+
+      <div id="schemaReport" class="mt-28"></div>
     </div>
 
   </main>
@@ -797,7 +1003,7 @@ canvas { max-width: 100%; }
 <!-- SPESA -->
 <div class="modal-overlay" id="modalSpesa">
   <div class="modal">
-    <div class="modal-title">↓ Nuova Spesa</div>
+    <div class="modal-title" id="modalSpesaTitle">↓ Nuova Spesa</div>
     <div class="form-row">
       <div class="form-group">
         <label>Data</label>
@@ -837,7 +1043,7 @@ canvas { max-width: 100%; }
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modalSpesa')">Annulla</button>
-      <button class="btn btn-primary" onclick="submitSpesa()">Salva Spesa</button>
+      <button class="btn btn-primary" id="btnSubmitSpesa" onclick="submitSpesa()">Salva Spesa</button>
     </div>
   </div>
 </div>
@@ -924,6 +1130,41 @@ canvas { max-width: 100%; }
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modalSpazio')">Annulla</button>
       <button class="btn btn-primary" onclick="submitSpazio()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- RETTIFICA SALDO -->
+<div class="modal-overlay" id="modalRettifica">
+  <div class="modal">
+    <div class="modal-title">⚖ Rettifica Saldo</div>
+    <p style="font-size:0.8rem;color:var(--text-dim);line-height:1.6;margin-bottom:20px;">
+      Corregge il saldo di <strong style="color:var(--text)" id="ret_nome">—</strong> senza creare
+      entrate o spese finte: i tuoi report, il simulatore e le stime restano puliti.
+    </p>
+    <div class="kv-row">
+      <span class="k">Saldo attuale registrato</span>
+      <span class="v" id="ret_attuale">—</span>
+    </div>
+    <div class="form-group" style="margin-top:18px;">
+      <label>Saldo reale (€)</label>
+      <input type="number" id="ret_nuovo" step="0.01" oninput="aggiornaDeltaRettifica()" />
+    </div>
+    <div class="kv-row" style="border:none;">
+      <span class="k">Differenza che verrà applicata</span>
+      <span class="v" id="ret_delta">—</span>
+    </div>
+    <div class="form-group" style="margin-top:14px;">
+      <label>Motivo della correzione</label>
+      <input type="text" id="ret_motivo" placeholder="Es. arrotondamenti, movimento mai registrato…" />
+    </div>
+    <div class="disclaimer" style="margin-top:4px;">
+      La rettifica viene annotata sul foglio <strong>Rettifiche</strong> con data, importo precedente e motivo,
+      così a distanza di mesi sai perché il patrimonio è cambiato.
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalRettifica')">Annulla</button>
+      <button class="btn btn-primary" onclick="submitRettifica()">Applica rettifica</button>
     </div>
   </div>
 </div>
@@ -1099,7 +1340,8 @@ async function apiPost(action, payload) {
 // NAVIGAZIONE
 // ─────────────────────────────────────────────────────────────
 const PAGE_TITLES = {
-  dashboard: 'Dashboard', entrate: 'Entrate', spese: 'Spese',
+  dashboard: 'Dashboard', report: 'Report Mensile', simulatore: 'Simulatore Portfolio',
+  entrate: 'Entrate', spese: 'Spese',
   ricorrenti: 'Spese Ricorrenti', spazi: 'Spazi & Saldi',
   accantonamenti: 'Accantonamenti', investimenti: 'Investimenti',
   categorie: 'Categorie', setup: 'Configurazione',
@@ -1120,6 +1362,8 @@ document.querySelectorAll('.nav-item').forEach(btn => {
 function loadPage(page) {
   switch (page) {
     case 'dashboard':      loadDashboard(); break;
+    case 'report':         loadReport(); break;
+    case 'simulatore':     loadSimulatore(); break;
     case 'entrate':        loadEntrate(); break;
     case 'spese':          loadSpese(); break;
     case 'ricorrenti':     loadRicorrenti(); break;
@@ -1133,7 +1377,11 @@ function loadPage(page) {
   }
 }
 
-function refreshAll() { loadPage(currentPage()); }
+function refreshAll() {
+  // Il simulatore tiene la baseline in cache: il refresh esplicito la invalida
+  if (currentPage() === 'simulatore') _simBaseline = null;
+  loadPage(currentPage());
+}
 
 function currentPage() {
   const active = document.querySelector('.nav-item.active');
@@ -1230,6 +1478,9 @@ function renderDashboard(d) {
       </div>
     </div>
 
+    <!-- Traiettoria patrimonio (Parte D) -->
+    <div class="mt-20" id="traiettoriaCard"></div>
+
     <!-- Spazi cards -->
     <div class="mt-20">
       <div class="chart-title">Tutti gli spazi</div>
@@ -1307,6 +1558,9 @@ function renderDashboard(d) {
       plugins: { legend: { position: 'right', labels: { color: '#7a7898', font: { size: 10 }, boxWidth: 12, padding: 8 } } },
     },
   });
+
+  // Traiettoria patrimonio — chiamata separata, non blocca il resto
+  loadTraiettoria();
 }
 
 const PALETTE = ['#4fcf7a','#f2636a','#5b8af7','#e2c96e','#a78bfa','#fb923c','#22d3ee','#ec4899','#34d399','#fbbf24'];
@@ -1363,6 +1617,7 @@ async function loadSpese() {
   try {
     const rawRows = await apiGet('getSpese');
     const rows = Array.isArray(rawRows) ? rawRows : [];
+    _speseRows = rows; // serve a openEditSpesa per precompilare il form
     await loadCacheIfNeeded();
     if (!rows.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">↓</div><p>Nessuna spesa registrata.</p></div>'; return; }
     const sorted = [...rows].reverse();
@@ -1375,10 +1630,74 @@ async function loadSpese() {
         <td><span class="pill" style="border-color:var(--border);color:var(--text-dim)">${r.Tipo||''}</span></td>
         <td>${r.Descrizione||''}</td>
         <td>${spazioNome(r.SpazioDiPrelievo)}</td>
-        <td><button class="btn btn-danger btn-sm" onclick="deleteItem('${r.ID}','Spese')">✕</button></td>
+        <td><div class="row-actions">
+          <button class="btn btn-ghost btn-sm" title="Modifica" onclick="openEditSpesa('${r.ID}')">✎</button>
+          <button class="btn btn-danger btn-sm" title="Elimina" onclick="deleteItem('${r.ID}','Spese')">✕</button>
+        </div></td>
       </tr>`).join('')}</tbody>
     </table>`;
   } catch(e) { el.innerHTML = errMsg(e); }
+}
+
+// ─────────────────────────────────────────────────────────────
+// MODIFICA SPESA
+// Il backend riallinea i saldi degli Spazi: qui si limita a
+// precompilare il form e a passare in modalità "modifica".
+// ─────────────────────────────────────────────────────────────
+let _speseRows = [];
+let _editSpesaId = null;
+
+function setSpesaModalMode(mode, descrizione) {
+  const isEdit = mode === 'edit';
+  _editSpesaId = isEdit ? _editSpesaId : null;
+  document.getElementById('modalSpesaTitle').textContent =
+    isEdit ? '✎ Modifica Spesa' : '↓ Nuova Spesa';
+  document.getElementById('btnSubmitSpesa').textContent =
+    isEdit ? 'Aggiorna Spesa' : 'Salva Spesa';
+}
+
+// Imposta il valore di una select preservando valori non più in elenco
+// (categoria cancellata, spazio rimosso): meglio mostrarli che riassegnarli in silenzio.
+function setSelectValue(id, val) {
+  const sel = document.getElementById(id);
+  if (!sel || val === undefined || val === null || val === '') return;
+  sel.value = val;
+  if (sel.value !== String(val)) {
+    const opt = document.createElement('option');
+    opt.value = val;
+    opt.textContent = val + ' (valore attuale)';
+    sel.appendChild(opt);
+    sel.value = val;
+  }
+}
+
+async function openEditSpesa(id) {
+  const row = _speseRows.find(r => String(r.ID) === String(id));
+  if (!row) return toast('Spesa non trovata: ricarica la pagina', 'error');
+
+  await prepModal('modalSpesa');          // popola select e imposta la modalità "nuova"
+  _editSpesaId = id;
+  setSpesaModalMode('edit');
+
+  document.getElementById('spe_data').value    = normalizzaData(row.Data);
+  document.getElementById('spe_importo').value = parseFloat(row.Importo) || 0;
+  document.getElementById('spe_desc').value    = row.Descrizione || '';
+  document.getElementById('spe_note').value    = row.Note || '';
+  setSelectValue('spe_categoria', row.Categoria);
+  setSelectValue('spe_tipo',      row.Tipo);
+  setSelectValue('spe_spazio',    row.SpazioDiPrelievo);
+
+  document.getElementById('modalSpesa').classList.add('open');
+}
+
+// L'input type=date vuole yyyy-MM-dd
+function normalizzaData(d) {
+  if (!d) return '';
+  const s = String(d).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const dd = new Date(s);
+  if (isNaN(dd.getTime())) return '';
+  return dd.getFullYear() + '-' + String(dd.getMonth()+1).padStart(2,'0') + '-' + String(dd.getDate()).padStart(2,'0');
 }
 
 function catBadge(catId) {
@@ -1437,11 +1756,95 @@ async function loadSpazi() {
         <div class="spazio-saldo" style="color:${saldo>=0?'var(--green)':'var(--red)'}">€ ${saldo.toLocaleString('it-IT',{minimumFractionDigits:2})}</div>
         ${s.Note?`<div class="spazio-note">${s.Note}</div>`:''}
         <div style="margin-top:14px;display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="openRettifica('${s.ID}')">⚖ Rettifica saldo</button>
           <button class="btn btn-ghost btn-sm" onclick="deleteItem('${s.ID}','Spazi')">Rimuovi</button>
         </div>
       </div>`;
     }).join('');
+    loadStoricoRettifiche();
   } catch(e) { el.innerHTML = errMsg(e); }
+}
+
+// ─────────────────────────────────────────────────────────────
+// RETTIFICA SALDO SPAZIO
+// Corregge il saldo senza generare movimenti fittizi: entrate e spese
+// restano il riflesso fedele di ciò che è davvero successo.
+// ─────────────────────────────────────────────────────────────
+let _rettificaSpazioId = null;
+let _rettificaPrec = 0;
+
+function openRettifica(id) {
+  const s = _cache.spazi.find(x => String(x.ID) === String(id));
+  if (!s) return toast('Spazio non trovato: ricarica la pagina', 'error');
+  _rettificaSpazioId = id;
+  _rettificaPrec = parseFloat(s.Saldo) || 0;
+  document.getElementById('ret_nome').textContent    = s.Nome;
+  document.getElementById('ret_attuale').textContent = eur(_rettificaPrec);
+  document.getElementById('ret_nuovo').value  = _rettificaPrec;
+  document.getElementById('ret_motivo').value = '';
+  aggiornaDeltaRettifica();
+  document.getElementById('modalRettifica').classList.add('open');
+}
+
+function aggiornaDeltaRettifica() {
+  const el = document.getElementById('ret_delta');
+  const raw = document.getElementById('ret_nuovo').value;
+  if (raw === '' || isNaN(parseFloat(raw))) { el.innerHTML = '<span style="color:var(--text-dim)">—</span>'; return; }
+  const delta = Math.round((parseFloat(raw) - _rettificaPrec) * 100) / 100;
+  el.innerHTML = delta === 0
+    ? '<span style="color:var(--text-dim)">nessuna variazione</span>'
+    : `<span class="${delta > 0 ? 'positive' : 'negative'}">${delta > 0 ? '+' : '−'} ${eur(Math.abs(delta))}</span>`;
+}
+
+async function submitRettifica() {
+  if (!_rettificaSpazioId) return;
+  const nuovo = document.getElementById('ret_nuovo').value;
+  if (nuovo === '' || isNaN(parseFloat(nuovo))) return toast('Inserisci un saldo valido', 'error');
+  try {
+    const res = await apiPost('rettificaSaldo', {
+      id: _rettificaSpazioId, nuovoSaldo: nuovo, motivo: v('ret_motivo'),
+    });
+    closeModal('modalRettifica');
+    _rettificaSpazioId = null;
+    if (res.invariato) {
+      toast('Saldo identico a quello registrato: nessuna rettifica applicata.', 'info');
+    } else {
+      toast(`${res.nome}: ${res.delta > 0 ? '+' : '−'} ${eur0(Math.abs(res.delta))} → ${eur(res.saldoNuovo)}`, 'success');
+    }
+    loadSpazi();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function loadStoricoRettifiche() {
+  const el = document.getElementById('storicoRettifiche');
+  if (!el) return;
+  try {
+    const raw = await apiGet('getRettifiche');
+    const rows = (Array.isArray(raw) ? raw : []).slice(0, 15);
+    if (!rows.length) { el.innerHTML = ''; return; }
+    el.innerHTML = `
+      <div class="drop" id="dropRettifiche">
+        <div class="drop-head" onclick="document.getElementById('dropRettifiche').classList.toggle('open')">
+          <span class="chevron">▶</span>
+          <div class="drop-summary">
+            <span class="slider-label">Storico rettifiche</span>
+            <div class="kv-sub">${rows.length} correzion${rows.length === 1 ? 'e registrata' : 'i registrate'} — perché il patrimonio è cambiato</div>
+          </div>
+        </div>
+        <div class="drop-panel">
+          ${rows.map(r => {
+            const delta = parseFloat(r.Delta) || 0;
+            return `<div class="kv-row">
+              <div>
+                <span class="k">${r.SpazioNome || '—'}</span>
+                <div class="kv-sub">${r.Data || ''}${r.Motivo ? ' · ' + r.Motivo : ''} · da ${eur(r.SaldoPrecedente)} a ${eur(r.SaldoNuovo)}</div>
+              </div>
+              <span class="v ${delta >= 0 ? 'positive' : 'negative'}">${delta > 0 ? '+' : '−'} ${eur(Math.abs(delta))}</span>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  } catch(e) { el.innerHTML = ''; }
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1450,6 +1853,7 @@ async function loadSpazi() {
 async function loadAccantonamenti() {
   const el = document.getElementById('accGrid');
   el.innerHTML = '<div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>';
+  loadAccantonamentiSuggeriti();
   try {
     const rawRows = await apiGet('getAccantonamenti');
     const rows = Array.isArray(rawRows) ? rawRows : [];
@@ -1576,6 +1980,9 @@ async function prepModal(id) {
     document.getElementById('spe_data').value = today;
     fillSpazioSelect('spe_spazio');
     fillCatSelect('spe_categoria');
+    // Default: nuova spesa. openEditSpesa() passa a "modifica" subito dopo.
+    _editSpesaId = null;
+    setSpesaModalMode('create');
   }
   if (id === 'modalRicorrente') {
     fillSpazioSelect('ric_spazio');
@@ -1608,7 +2015,39 @@ async function submitEntrata() {
     descrizione: v('ent_desc'), spazioDestinatario: v('ent_spazio'), note: v('ent_note'),
   };
   if (!payload.data || !payload.importo) return toast('Compila data e importo', 'error');
-  await submit('addEntrata', payload, 'modalEntrata', loadEntrate);
+  // Letti prima: submit() svuota i campi del modal
+  const fonte   = payload.fonte;
+  const importo = parseFloat(payload.importo) || 0;
+  const ok = await submit('addEntrata', payload, 'modalEntrata', loadEntrate);
+  if (ok) notificaAccantonamento(fonte, importo);
+}
+
+// Dopo un incasso P.IVA: quanto accantonare per QUESTO incasso.
+// Il reddito imponibile è importo × coefficiente, mai l'importo lordo.
+async function notificaAccantonamento(fonte, importo) {
+  const coeff = fonte === 'partita_iva_consulenza' ? FISCAL.coeffConsulenza
+              : fonte === 'partita_iva_affitto'    ? FISCAL.coeffAffitto
+              : null;
+  if (!coeff || importo <= 0) return;
+
+  const reddito = importo * coeff;
+  let accantona = reddito * FISCAL.aliquotaSostitutiva;
+  let oltre = false;
+
+  // Il contributo eccedente scatta solo se l'anno è già oltre il minimale
+  try {
+    const d = await apiGet('getAccantonamentiSuggeriti');
+    _accSuggeritiCache = d;
+    oltre = !!d.superatoMinimale;
+    if (document.getElementById('accSuggeriti') && currentPage() === 'accantonamenti') renderAccSuggeriti(d);
+  } catch (e) {
+    oltre = _accSuggeritiCache ? !!_accSuggeritiCache.superatoMinimale : false;
+  }
+  if (oltre) accantona += reddito * FISCAL.inpsAliquota * (1 - FISCAL.inpsRiduzioneForf);
+
+  toast(`Da questo incasso accantona ~${eur0(accantona)} nel fondo tasse.` +
+        `<br><span style="color:var(--text-dim);font-size:0.72rem">imponibile ${eur0(reddito)} (${Math.round(coeff*100)}% di ${eur0(importo)})` +
+        `${oltre ? ' · include INPS oltre minimale' : ''}</span>`, 'info');
 }
 
 async function submitSpesa() {
@@ -1617,6 +2056,17 @@ async function submitSpesa() {
     tipo: v('spe_tipo'), descrizione: v('spe_desc'), spazioDiPrelievo: v('spe_spazio'), note: v('spe_note'),
   };
   if (!payload.data || !payload.importo) return toast('Compila data e importo', 'error');
+
+  if (_editSpesaId) {
+    payload.id = _editSpesaId;
+    const ok = await submit('updateSpesa', payload, 'modalSpesa', loadSpese);
+    if (ok) {
+      _editSpesaId = null;
+      setSpesaModalMode('create');
+      toast('Spesa aggiornata: saldo dello spazio riallineato.', 'success');
+    }
+    return;
+  }
   await submit('addSpesa', payload, 'modalSpesa', loadSpese);
 }
 
@@ -1673,7 +2123,8 @@ async function submit(action, payload, modalId, reload) {
     closeModal(modalId);
     toast('Salvato con successo', 'success');
     reload();
-  } catch(e) { toast(e.message, 'error'); }
+    return true;
+  } catch(e) { toast(e.message, 'error'); return false; }
 }
 
 async function deleteItem(id, sheet) {
@@ -1707,6 +2158,908 @@ async function initSheets() {
     const res = await apiPost('initSheets', {});
     el.innerHTML = `<span style="color:var(--green)">✓ ${res.message} — Creati: ${(res.created||[]).join(', ')||'nessuno'}</span>`;
   } catch(e) { el.innerHTML = `<span style="color:var(--red)">✗ ${e.message}</span>`; }
+}
+
+// ═════════════════════════════════════════════════════════════
+// CONFIG FISCALE CLIENT-SIDE — regime forfettario
+// Duplicata dal backend (FISCAL_CONFIG) per far girare il simulatore
+// in tempo reale senza chiamate di rete. Deve restare allineata.
+// ═════════════════════════════════════════════════════════════
+const FISCAL = {
+  aliquotaSostitutiva: 0.05,
+  coeffConsulenza:     0.78,
+  coeffAffitto:        0.67,
+  inpsFissoAnnuo:      4515.43,
+  inpsMinimale:        18415.00,
+  inpsAliquota:        0.24,
+  inpsRiduzioneForf:   0.35,
+  targetSpese:         0.50,
+  targetInvestimenti:  0.20,
+  targetAccantonamenti:0.15,
+  targetCuscinetto:    0.15,
+};
+
+const MESI_LABEL = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
+                    'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+
+// Formattatori
+const eur  = v => '€ ' + Number(v||0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const eur0 = v => '€ ' + Math.round(Number(v)||0).toLocaleString('it-IT');
+const pct  = v => (Number(v)||0).toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
+
+// ─────────────────────────────────────────────────────────────
+// MOTORE FISCALE CLIENT-SIDE
+// Replica esatta della logica backend: il 5% e la soglia INPS si
+// applicano al REDDITO IMPONIBILE (fatturato × coefficiente), mai al
+// fatturato lordo. Nel forfettario non esiste IVA.
+// ─────────────────────────────────────────────────────────────
+function redditoImponibileJS(consulenza, affitto) {
+  return consulenza * FISCAL.coeffConsulenza + affitto * FISCAL.coeffAffitto;
+}
+
+function inpsFissoMensileJS() {
+  return FISCAL.inpsFissoAnnuo * (1 - FISCAL.inpsRiduzioneForf) / 12;
+}
+
+// Scompone il fatturato nella proporzione consulenza/affitto della baseline
+// e restituisce l'accantonamento fiscale mensile.
+function fiscaleJS(fatturato, quotaConsulenza, quotaAffitto) {
+  const qC = (quotaConsulenza === undefined) ? 1 : quotaConsulenza;
+  const qA = (quotaAffitto     === undefined) ? 0 : quotaAffitto;
+  const consulenza = fatturato * qC;
+  const affitto    = fatturato * qA;
+  const reddito    = redditoImponibileJS(consulenza, affitto);
+  const imposta    = reddito * FISCAL.aliquotaSostitutiva;
+  const inpsFisso  = inpsFissoMensileJS();
+  // Soglia confrontata col reddito imponibile ANNUALIZZATO, non col fatturato
+  const inpsEcc    = Math.max(0, reddito * 12 - FISCAL.inpsMinimale)
+                     * FISCAL.inpsAliquota * (1 - FISCAL.inpsRiduzioneForf) / 12;
+  return {
+    consulenza, affitto,
+    redditoImponibile: reddito,
+    imposta, inpsFisso, inpsEccedente: inpsEcc,
+    accantonamento: imposta + inpsFisso + inpsEcc,
+  };
+}
+
+// Montante composto con versamenti mensili costanti
+function proietta(mensile, tasso, mesi) {
+  const r = Math.pow(1 + tasso, 1/12) - 1;
+  let m = 0;
+  const serie = [{ mese: 0, valore: 0 }];
+  for (let i = 1; i <= mesi; i++) {
+    m = m * (1 + r) + mensile;
+    serie.push({ mese: i, valore: m });
+  }
+  return serie;
+}
+
+// Campiona ~n punti sull'orizzonte (l'ultimo è sempre incluso)
+function campionaProiezione(serie, n = 10) {
+  const mesi = serie.length - 1;
+  if (mesi <= 0) return [serie[0]];
+  const step = Math.max(1, Math.round(mesi / n));
+  const out = [];
+  for (let i = step; i <= mesi; i += step) out.push(serie[i]);
+  if (!out.length || out[out.length-1].mese !== mesi) out.push(serie[mesi]);
+  return out;
+}
+
+function labelOrizzonte(m) {
+  const a = Math.floor(m / 12), r = m % 12;
+  if (a === 0) return m + 'm';
+  return r === 0 ? a + 'a' : a + 'a ' + r + 'm';
+}
+
+// ═════════════════════════════════════════════════════════════
+// PARTE A — REPORT MENSILE
+// ═════════════════════════════════════════════════════════════
+let chartReport = null;
+
+function initReportSelettori() {
+  const selM = document.getElementById('rep_mese');
+  const selA = document.getElementById('rep_anno');
+  if (selM.options.length) return;
+  const now = new Date();
+  selM.innerHTML = MESI_LABEL.map((m, i) => `<option value="${i}">${m}</option>`).join('');
+  selM.value = now.getMonth();
+  const y = now.getFullYear();
+  selA.innerHTML = [0,1,2,3].map(k => `<option value="${y-k}">${y-k}</option>`).join('');
+  selA.value = y;
+}
+
+async function loadReport() {
+  initReportSelettori();
+  const el = document.getElementById('reportContent');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div> Calcolo report…</div>';
+  const m = v('rep_mese'), a = v('rep_anno');
+  try {
+    const d = await apiGet(`getReportMensile&mese=${encodeURIComponent(m)}&anno=${encodeURIComponent(a)}`);
+    renderReport(d);
+  } catch (e) { el.innerHTML = errMsg(e); }
+}
+
+function renderReport(d) {
+  const el  = document.getElementById('reportContent');
+  const inc = d.incassi, f = d.fiscale, ob = d.obiettivi;
+  const vuoto = (inc.totale === 0 && d.spese.totale === 0);
+
+  const fonti = [
+    { k: 'P.IVA Consulenza', v: inc.consulenza, note: 'coeff. redditività 78%' },
+    { k: 'P.IVA Affitto studi', v: inc.affitto, note: 'coeff. redditività 67%' },
+    { k: 'Contanti',  v: inc.contanti, note: 'fuori dal calcolo fiscale P.IVA' },
+    { k: 'Altro',     v: inc.altro,    note: '' },
+  ];
+
+  const cats = Object.entries(d.spese.perCategoria || {}).sort((x,y) => y[1]-x[1]);
+  const tipi = Object.entries(d.spese.perTipo || {}).sort((x,y) => y[1]-x[1]);
+
+  const scost = d.scostamentoSpese;
+  const scostHtml = scost > 0
+    ? `<span class="negative">+ ${eur(scost)} oltre il target</span>`
+    : `<span class="positive">${eur(Math.abs(scost))} sotto il target</span>`;
+
+  el.innerHTML = `
+    ${vuoto ? `<div class="warn-box">Nessun movimento registrato in ${d.periodo.label}. Il report mostra comunque le quote fisse (l'INPS fisso matura anche a incasso zero).</div>` : ''}
+
+    <!-- KPI -->
+    <div class="grid-4">
+      <div class="stat-card">
+        <span class="icon">↑</span>
+        <div class="label">Incassi totali</div>
+        <div class="amount positive">${eur(inc.totale)}</div>
+        <div class="delta" style="color:var(--text-dim)">di cui P.IVA ${eur(inc.fatturatoPIVA)}</div>
+      </div>
+      <div class="stat-card">
+        <span class="icon">🧾</span>
+        <div class="label">Da accantonare</div>
+        <div class="amount" style="color:var(--orange)">${eur(f.accantonamentoTotale)}</div>
+        <div class="delta" style="color:var(--text-dim)">imposta + INPS del mese</div>
+      </div>
+      <div class="stat-card">
+        <span class="icon">◈</span>
+        <div class="label">Netto dopo tasse</div>
+        <div class="amount gold">${eur(d.netto.nettoDopoTasse)}</div>
+        <div class="delta" style="color:var(--text-dim)">incassi − accantonamento</div>
+      </div>
+      <div class="stat-card">
+        <span class="icon">≈</span>
+        <div class="label">Risparmio effettivo</div>
+        <div class="amount ${d.netto.risparmioEffettivo >= 0 ? 'positive' : 'negative'}">${eur(d.netto.risparmioEffettivo)}</div>
+        <div class="delta" style="color:var(--text-dim)">netto − spese (${eur(d.spese.totale)})</div>
+      </div>
+    </div>
+
+    <!-- Incassi + Fiscale -->
+    <div class="grid-2 mt-20">
+      <div class="card">
+        <div class="chart-title">Incassi per fonte — ${d.periodo.label}</div>
+        ${fonti.map(r => `
+          <div class="kv-row">
+            <div><span class="k">${r.k}</span>${r.note ? `<div class="kv-sub">${r.note}</div>` : ''}</div>
+            <span class="v">${eur(r.v)}</span>
+          </div>`).join('')}
+        <div class="kv-row total"><span class="k">Totale incassato</span><span class="v gold">${eur(inc.totale)}</span></div>
+      </div>
+
+      <div class="card">
+        <div class="chart-title">Accantonamento fiscale</div>
+        <div class="kv-row">
+          <div><span class="k">Reddito imponibile</span>
+            <div class="kv-sub">${eur0(inc.consulenza)}×0,78 + ${eur0(inc.affitto)}×0,67 — non è il fatturato</div>
+          </div>
+          <span class="v">${eur(f.redditoImponibile)}</span>
+        </div>
+        <div class="kv-row">
+          <div><span class="k">Imposta sostitutiva 5%</span><div class="kv-sub">sul reddito imponibile</div></div>
+          <span class="v">${eur(f.impostaSostitutiva)}</span>
+        </div>
+        <div class="kv-row">
+          <div><span class="k">INPS fisso</span><div class="kv-sub">1/12 del contributo annuo ridotto del 35%</div></div>
+          <span class="v">${eur(f.inpsFisso)}</span>
+        </div>
+        <div class="kv-row">
+          <div><span class="k">INPS eccedente il minimale</span>
+            <div class="kv-sub">${f.inpsEccedente > 0
+              ? 'reddito annualizzato oltre ' + eur0(FISCAL.inpsMinimale)
+              : 'zero: reddito annualizzato sotto ' + eur0(FISCAL.inpsMinimale)}</div>
+          </div>
+          <span class="v">${eur(f.inpsEccedente)}</span>
+        </div>
+        <div class="kv-row total">
+          <span class="k">Totale da mettere da parte</span>
+          <span class="v" style="color:var(--orange)">${eur(f.accantonamentoTotale)}</span>
+        </div>
+        <div class="disclaimer" style="margin-top:14px;">${f.note}</div>
+      </div>
+    </div>
+
+    <!-- Obiettivi 50/20/15/15 -->
+    <div class="mt-28">
+      <div class="chart-title">Obiettivi sul netto dopo tasse — ${eur(d.netto.nettoDopoTasse)}</div>
+      <div class="grid-4">
+        ${[
+          ['Spese', ob.spese, '50%', 'var(--red)', 'tetto consigliato per le spese correnti'],
+          ['Investimenti', ob.investimenti, '20%', 'var(--green)', 'quota da mettere a mercato'],
+          ['Accantonamenti', ob.accantonamenti, '15%', 'var(--blue)', 'tasse e spese future'],
+          ['Cuscinetto', ob.cuscinetto, '15%', 'var(--gold)', 'liquidità di sicurezza'],
+        ].map(([nome, val, quota, col, sub]) => `
+          <div class="stat-card">
+            <div class="label">${nome} <span style="color:${col}">· ${quota}</span></div>
+            <div class="amount" style="color:${col}">${eur(val)}</div>
+            <div class="delta" style="color:var(--text-dim)">${sub}</div>
+          </div>`).join('')}
+      </div>
+      <div class="card mt-20">
+        <div class="kv-row">
+          <div><span class="k">Spese effettive del mese</span><div class="kv-sub">confronto col tetto del 50%</div></div>
+          <span class="v">${eur(d.spese.totale)} · ${scostHtml}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spese -->
+    <div class="grid-2 mt-20">
+      <div class="card">
+        <div class="chart-title">Spese per categoria</div>
+        ${cats.length ? cats.map(([k, val]) => `
+          <div class="kv-row">
+            <span class="k">${k}</span>
+            <span class="v">${eur(val)} <span style="color:var(--text-dim);font-size:0.72rem">${d.spese.totale ? pct(val/d.spese.totale*100) : ''}</span></span>
+          </div>`).join('') : '<div class="empty"><p>Nessuna spesa nel periodo.</p></div>'}
+      </div>
+      <div class="card">
+        <div class="chart-title">Spese per tipo</div>
+        ${tipi.length ? tipi.map(([k, val]) => `
+          <div class="kv-row">
+            <span class="k">${k}</span>
+            <span class="v">${eur(val)}</span>
+          </div>`).join('') : '<div class="empty"><p>Nessuna spesa nel periodo.</p></div>'}
+      </div>
+    </div>
+
+    <!-- Proiezione -->
+    <div class="card mt-20">
+      <div class="chart-title">Se investissi ogni mese la quota obiettivo del 20% (${eur(ob.investimenti)})</div>
+      <div class="chart-container" style="height:260px;"><canvas id="chartReport"></canvas></div>
+      <div class="kv-sub" style="margin-top:10px;">Montante a 5 anni con rendimento ipotetico del 5% annuo, confrontato col solo capitale versato.</div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Stime, non certezze.</strong> Gli importi fiscali sono calcolati con i coefficienti del regime forfettario
+      (78% consulenza, 67% affitto studi) e con i parametri INPS Artigiani/Commercianti impostati nell'app.
+      L'INPS eccedente qui è mensilizzato annualizzando il reddito del singolo mese, quindi oscilla con l'andamento degli incassi.
+      Il rendimento del 5% è un'ipotesi, non una previsione. <strong>Da confermare col commercialista</strong> prima di qualsiasi versamento.
+    </div>
+  `;
+
+  // Grafico proiezione 5 anni
+  if (chartReport) chartReport.destroy();
+  const mensile = ob.investimenti;
+  const serie   = campionaProiezione(proietta(mensile, 0.05, 60), 10);
+  const ctx = document.getElementById('chartReport').getContext('2d');
+  chartReport = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: serie.map(p => labelOrizzonte(p.mese)),
+      datasets: [
+        { label: 'Montante (5% annuo)', data: serie.map(p => Math.round(p.valore)),
+          borderColor: '#e2c96e', backgroundColor: 'rgba(226,201,110,0.10)',
+          fill: true, tension: 0.35, pointRadius: 3, pointBackgroundColor: '#e2c96e', borderWidth: 2 },
+        { label: 'Capitale versato', data: serie.map(p => Math.round(mensile * p.mese)),
+          borderColor: '#7a7898', backgroundColor: 'transparent',
+          borderDash: [5,5], fill: false, tension: 0, pointRadius: 0, borderWidth: 1.5 },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#7a7898', font: { size: 11 } } },
+        tooltip: { callbacks: { label: c => c.dataset.label + ': €' + c.parsed.y.toLocaleString('it-IT') } },
+      },
+      scales: {
+        x: { ticks: { color: '#7a7898' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        y: { ticks: { color: '#7a7898', callback: v => '€'+v.toLocaleString('it-IT') }, grid: { color: 'rgba(255,255,255,0.05)' } },
+      },
+    },
+  });
+}
+
+// ═════════════════════════════════════════════════════════════
+// PARTE B — SIMULATORE PORTFOLIO
+// Tutta la simulazione gira nel browser: il backend fornisce la
+// baseline UNA sola volta. Gli slider non chiamano mai la rete.
+// ═════════════════════════════════════════════════════════════
+let chartSim = null;
+let _simBaseline = null;
+let _simState = { investimento: 300, fatturato: 4000, anni: 10, tagli: {} };
+
+async function loadSimulatore() {
+  const el = document.getElementById('simulatoreContent');
+  if (_simBaseline) { renderSimulatore(_simBaseline); return; }
+  el.innerHTML = '<div class="loading"><div class="spinner"></div> Carico lo storico…</div>';
+  try {
+    _simBaseline = await apiGet('getBaselineSimulatore');
+    renderSimulatore(_simBaseline);
+  } catch (e) { el.innerHTML = errMsg(e); }
+}
+
+function renderSimulatore(b) {
+  const el = document.getElementById('simulatoreContent');
+  _simBaseline = b; // simCalcola() legge la baseline dalla globale
+
+  // Valori iniziali dallo storico
+  _simState.fatturato    = Math.min(10000, Math.max(3000, Math.round((b.fatturatoMedio || 4000) / 100) * 100));
+  _simState.investimento = Math.min(2500, Math.max(0, Math.round((b.fatturatoMedio ? b.fatturatoMedio * 0.10 : 300) / 10) * 10));
+  _simState.tagli = {};
+  (b.spesePerCategoria || []).forEach(c => { _simState.tagli[c.categoria] = 0; });
+
+  const cats = b.spesePerCategoria || [];
+
+  el.innerHTML = `
+    ${b.pochiDatiStorici ? `
+      <div class="warn-box">
+        <strong>Storico limitato — ${b.mesiDisponibili} ${b.mesiDisponibili === 1 ? 'mese disponibile' : 'mesi disponibili'}.</strong>
+        La baseline (fatturato medio, spese medie, proporzione consulenza/affitto) è calcolata su troppi pochi dati
+        per essere rappresentativa. Usa il simulatore per capire gli ordini di grandezza, non per pianificare.
+      </div>` : ''}
+    ${b.proporzioneStimata ? `
+      <div class="warn-box">Nessun incasso P.IVA nello storico: il simulatore assume 100% consulenza (coeff. 78%), l'ipotesi più prudente sul piano fiscale.</div>` : ''}
+
+    <!-- KPI -->
+    <div class="grid-3">
+      <div class="stat-card">
+        <span class="icon">◈</span>
+        <div class="label">Netto dopo tasse / mese</div>
+        <div class="amount gold" id="simNetto">—</div>
+        <div class="delta" style="color:var(--text-dim)" id="simNettoSub"></div>
+      </div>
+      <div class="stat-card">
+        <span class="icon">▲</span>
+        <div class="label">Investi ogni mese</div>
+        <div class="amount positive" id="simInvestibile">—</div>
+        <div class="delta" style="color:var(--text-dim)" id="simInvestibileSub"></div>
+      </div>
+      <div class="stat-card">
+        <span class="icon">◊</span>
+        <div class="label" id="simPortfolioLabel">Portfolio</div>
+        <div class="amount" style="color:var(--blue)" id="simPortfolio">—</div>
+        <div class="delta" style="color:var(--text-dim)" id="simPortfolioSub"></div>
+      </div>
+    </div>
+
+    <div class="grid-2 mt-20">
+      <!-- LEVE -->
+      <div class="card">
+        <div class="chart-title">Le tue leve</div>
+
+        <div class="slider-block">
+          <div class="slider-head">
+            <span class="slider-label">Investimento mensile</span>
+            <span class="slider-value" id="lblInvestimento">—</span>
+          </div>
+          <input type="range" id="simInvest" min="0" max="2500" step="10" value="${_simState.investimento}" />
+        </div>
+
+        <!-- Dropdown tagli spese -->
+        <div class="drop" id="dropTagli">
+          <div class="drop-head" onclick="document.getElementById('dropTagli').classList.toggle('open')">
+            <span class="chevron">▶</span>
+            <div class="drop-summary">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;">
+                <span class="slider-label">Taglio spese per categoria</span>
+                <span class="slider-value" id="lblTagliTot">− € 0,00</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" id="barTagli" style="width:0%;background:var(--red)"></div></div>
+              <div class="kv-sub" id="lblTagliSub">spese medie ${eur(b.speseMedieTotali)} / mese</div>
+            </div>
+          </div>
+          <div class="drop-panel">
+            ${cats.length ? cats.map((c, i) => {
+              const max  = Math.max(5, Math.round(c.mediaMensile));
+              const step = c.mediaMensile >= 50 ? 5 : 1;
+              return `<div class="cut-row">
+                <div>
+                  <div class="cut-name">${c.categoria}</div>
+                  <div class="cut-media">${eur(c.mediaMensile)} / mese</div>
+                </div>
+                <input type="range" class="sim-cut" data-cat="${encodeURIComponent(c.categoria)}" data-idx="${i}"
+                       min="0" max="${max}" step="${step}" value="0" />
+                <div class="cut-val" id="cutVal${i}">− € 0</div>
+              </div>`;
+            }).join('') : '<div class="empty"><p>Nessuna spesa storica da cui tagliare.</p></div>'}
+          </div>
+        </div>
+
+        <div class="slider-block">
+          <div class="slider-head">
+            <span class="slider-label">Fatturato P.IVA / mese</span>
+            <span class="slider-value" id="lblFatturato">—</span>
+          </div>
+          <input type="range" id="simFatturato" min="3000" max="10000" step="100" value="${_simState.fatturato}" />
+          <div class="kv-sub" style="margin-top:6px;">
+            Ripartito ${Math.round((b.quotaConsulenza||1)*100)}% consulenza / ${Math.round((b.quotaAffitto||0)*100)}% affitto, come nel tuo storico.
+          </div>
+        </div>
+
+        <div class="slider-block" style="margin-bottom:0;">
+          <div class="slider-head">
+            <span class="slider-label">Orizzonte temporale</span>
+            <span class="slider-value" id="lblAnni">—</span>
+          </div>
+          <input type="range" id="simAnni" min="1" max="20" step="1" value="${_simState.anni}" />
+        </div>
+      </div>
+
+      <!-- GRAFICO -->
+      <div class="card">
+        <div class="chart-title">Proiezione del portfolio</div>
+        <div class="chart-container" style="height:300px;"><canvas id="chartSim"></canvas></div>
+        <div class="kv-sub" style="margin-top:10px;">
+          Linea centrale: scenario base 5% annuo. La fascia copre lo scenario prudente (3%) e quello ottimista (8%).
+        </div>
+      </div>
+    </div>
+
+    <!-- CONSIGLIO -->
+    <div class="card mt-20" style="border-color:var(--gold-dim);">
+      <div class="chart-title">In pratica</div>
+      <div id="simConsiglio" style="font-size:0.85rem;line-height:1.7;color:var(--text-dim);"></div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Le proiezioni sono scenari, non previsioni.</strong> Il rendimento reale dei mercati varia;
+      più lungo l'orizzonte, più larga l'incertezza. Non sostituisce un consulente finanziario abilitato.
+      Il calcolo fiscale usa i coefficienti forfettari e i parametri INPS impostati nell'app: da confermare col commercialista.
+    </div>
+  `;
+
+  // Listener — tutto locale, nessuna chiamata al backend
+  document.getElementById('simInvest').addEventListener('input', e => {
+    _simState.investimento = parseFloat(e.target.value) || 0; simCalcola();
+  });
+  document.getElementById('simFatturato').addEventListener('input', e => {
+    _simState.fatturato = parseFloat(e.target.value) || 0; simCalcola();
+  });
+  document.getElementById('simAnni').addEventListener('input', e => {
+    _simState.anni = parseInt(e.target.value, 10) || 1; simCalcola();
+  });
+  document.querySelectorAll('.sim-cut').forEach(sl => {
+    sl.addEventListener('input', e => {
+      const cat = decodeURIComponent(e.target.dataset.cat);
+      const val = parseFloat(e.target.value) || 0;
+      _simState.tagli[cat] = val;
+      document.getElementById('cutVal' + e.target.dataset.idx).textContent = '− ' + eur0(val);
+      simCalcola();
+    });
+  });
+
+  // Grafico (creato una volta, poi solo aggiornato)
+  if (chartSim) chartSim.destroy();
+  const ctx = document.getElementById('chartSim').getContext('2d');
+  chartSim = new Chart(ctx, {
+    type: 'line',
+    data: { labels: [], datasets: [
+      { label: 'Prudente (3%)', data: [], borderColor: 'rgba(122,120,152,0.5)',
+        backgroundColor: 'transparent', pointRadius: 0, borderWidth: 1, tension: 0.35 },
+      { label: 'Ottimista (8%)', data: [], borderColor: 'rgba(122,120,152,0.5)',
+        backgroundColor: 'rgba(91,138,247,0.10)', fill: '-1', pointRadius: 0, borderWidth: 1, tension: 0.35 },
+      { label: 'Base (5%)', data: [], borderColor: '#e2c96e', backgroundColor: 'transparent',
+        pointRadius: 3, pointBackgroundColor: '#e2c96e', borderWidth: 2.5, tension: 0.35 },
+    ]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color: '#7a7898', font: { size: 11 }, boxWidth: 12 } },
+        tooltip: { callbacks: { label: c => c.dataset.label + ': €' + c.parsed.y.toLocaleString('it-IT') } },
+      },
+      scales: {
+        x: { ticks: { color: '#7a7898' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        y: { ticks: { color: '#7a7898', callback: v => '€'+v.toLocaleString('it-IT') }, grid: { color: 'rgba(255,255,255,0.05)' } },
+      },
+    },
+  });
+
+  simCalcola();
+}
+
+function simCalcola() {
+  const b = _simBaseline || {};
+  const s = _simState;
+
+  // ── Fiscale (identico al backend)
+  const fisc  = fiscaleJS(s.fatturato, b.quotaConsulenza, b.quotaAffitto);
+  const netto = s.fatturato + (b.contantiMedio || 0) - fisc.accantonamento;
+
+  // ── Tagli
+  const tagliTot   = Object.keys(s.tagli).reduce((a, k) => a + (s.tagli[k] || 0), 0);
+  const investibile = s.investimento + tagliTot;
+
+  // ── Proiezioni
+  const mesi   = s.anni * 12;
+  const base   = proietta(investibile, 0.05, mesi);
+  const prud   = proietta(investibile, 0.03, mesi);
+  const ottim  = proietta(investibile, 0.08, mesi);
+  const pBase  = campionaProiezione(base, 10);
+  const pPrud  = campionaProiezione(prud, 10);
+  const pOttim = campionaProiezione(ottim, 10);
+  const finale = base[base.length-1].valore;
+
+  // ── KPI
+  document.getElementById('simNetto').textContent = eur0(netto);
+  document.getElementById('simNettoSub').textContent =
+    `fatturato ${eur0(s.fatturato)} − tasse e INPS ${eur0(fisc.accantonamento)}` +
+    (b.contantiMedio ? ` + contanti ${eur0(b.contantiMedio)}` : '');
+  document.getElementById('simInvestibile').textContent = eur0(investibile);
+  document.getElementById('simInvestibileSub').textContent =
+    tagliTot > 0 ? `${eur0(s.investimento)} + ${eur0(tagliTot)} liberati dai tagli` : 'nessun taglio applicato';
+  document.getElementById('simPortfolioLabel').textContent = `Portfolio tra ${s.anni} ${s.anni === 1 ? 'anno' : 'anni'}`;
+  document.getElementById('simPortfolio').textContent = eur0(finale);
+  document.getElementById('simPortfolioSub').textContent =
+    `versati ${eur0(investibile * mesi)} · rendimento ${eur0(finale - investibile * mesi)}`;
+
+  // ── Label slider
+  document.getElementById('lblInvestimento').textContent = eur0(s.investimento);
+  document.getElementById('lblFatturato').textContent    = eur0(s.fatturato);
+  document.getElementById('lblAnni').textContent         = s.anni + (s.anni === 1 ? ' anno' : ' anni');
+  document.getElementById('lblTagliTot').textContent     = '− ' + eur0(tagliTot);
+  const speseMedie = b.speseMedieTotali || 0;
+  document.getElementById('barTagli').style.width = speseMedie > 0 ? Math.min(100, tagliTot/speseMedie*100) + '%' : '0%';
+  document.getElementById('lblTagliSub').textContent = speseMedie > 0
+    ? `${eur0(tagliTot)} tagliati su ${eur0(speseMedie)} di spese medie mensili`
+    : 'nessuno storico spese disponibile';
+
+  // ── Grafico
+  chartSim.data.labels = pBase.map(p => labelOrizzonte(p.mese));
+  chartSim.data.datasets[0].data = pPrud.map(p => Math.round(p.valore));
+  chartSim.data.datasets[1].data = pOttim.map(p => Math.round(p.valore));
+  chartSim.data.datasets[2].data = pBase.map(p => Math.round(p.valore));
+  chartSim.update('none');
+
+  // ── Consiglio
+  const cons = document.getElementById('simConsiglio');
+  if (tagliTot > 0) {
+    const soloTagli = proietta(tagliTot, 0.05, mesi);
+    const valTagli  = soloTagli[soloTagli.length-1].valore;
+    const dettaglio = Object.keys(s.tagli).filter(k => s.tagli[k] > 0)
+      .sort((a,c) => s.tagli[c] - s.tagli[a])
+      .map(k => `${k} (${eur0(s.tagli[k])})`).join(', ');
+    cons.innerHTML = `
+      Tagliando <strong style="color:var(--text)">${eur0(tagliTot)} al mese</strong> su ${dettaglio}
+      aggiungi circa <strong style="color:var(--green)">${eur0(valTagli)}</strong> al portfolio in ${s.anni} ${s.anni===1?'anno':'anni'},
+      allo scenario base del 5%.<br>
+      Di quei ${eur0(valTagli)}, ${eur0(tagliTot * mesi)} sono soldi tuoi non spesi e ${eur0(valTagli - tagliTot*mesi)} sono rendimento composto.`;
+  } else {
+    const target = netto * FISCAL.targetInvestimenti;
+    const diff   = s.investimento - target;
+    cons.innerHTML = diff >= 0
+      ? `Con ${eur0(s.investimento)} al mese sei <strong style="color:var(--green)">in linea o sopra</strong> il target del 20%
+         sul netto dopo tasse (${eur0(target)}). Il resto del netto va ripartito secondo il 50/20/15/15:
+         spese ${eur0(netto*FISCAL.targetSpese)}, accantonamenti ${eur0(netto*FISCAL.targetAccantonamenti)},
+         cuscinetto ${eur0(netto*FISCAL.targetCuscinetto)}.`
+      : `Il target del 20% sul netto dopo tasse sarebbe <strong style="color:var(--text)">${eur0(target)}</strong> al mese:
+         ti mancano <strong style="color:var(--orange)">${eur0(Math.abs(diff))}</strong>.
+         Apri il pannello dei tagli qui a fianco per vedere da quali categorie potresti liberarli.
+         Riferimento 50/20/15/15: spese ${eur0(netto*FISCAL.targetSpese)}, accantonamenti ${eur0(netto*FISCAL.targetAccantonamenti)},
+         cuscinetto ${eur0(netto*FISCAL.targetCuscinetto)}.`;
+  }
+}
+
+// ═════════════════════════════════════════════════════════════
+// PARTE C — ACCANTONAMENTI SUGGERITI
+// Il sistema NON sposta soldi: mostra solo quanto dovrebbe esserci.
+// ═════════════════════════════════════════════════════════════
+let _accSuggeritiCache = null;
+
+async function loadAccantonamentiSuggeriti() {
+  const el = document.getElementById('accSuggeriti');
+  if (!el) return;
+  el.innerHTML = '<div class="loading"><div class="spinner"></div> Calcolo accantonamenti…</div>';
+  try {
+    const d = await apiGet('getAccantonamentiSuggeriti');
+    _accSuggeritiCache = d;
+    renderAccSuggeriti(d);
+  } catch (e) { el.innerHTML = errMsg(e); }
+}
+
+function fondoBox(titolo, icona, colore, dovuto, attuale, daVersare, righe, fonteDato) {
+  const pctFill = dovuto > 0 ? Math.min(100, Math.max(0, attuale / dovuto * 100)) : (attuale > 0 ? 100 : 0);
+  const inPari  = daVersare <= 0.5;
+  return `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px;">
+        <div class="chart-title" style="margin:0;">${icona} ${titolo}</div>
+        <span class="badge ${inPari ? 'badge-green' : 'badge-amber'}">
+          ${inPari ? 'In pari ✓' : 'Metti ancora ' + eur0(daVersare)}
+        </span>
+      </div>
+      ${righe.map(r => `
+        <div class="kv-row">
+          <div><span class="k">${r[0]}</span>${r[2] ? `<div class="kv-sub">${r[2]}</div>` : ''}</div>
+          <span class="v">${eur(r[1])}</span>
+        </div>`).join('')}
+      <div class="kv-row total">
+        <span class="k">Dovresti avere</span>
+        <span class="v" style="color:${colore}">${eur(dovuto)}</span>
+      </div>
+      <div class="kv-row">
+        <div><span class="k">Attualmente nel fondo</span><div class="kv-sub">fonte: ${fonteDato}</div></div>
+        <span class="v">${eur(attuale)}</span>
+      </div>
+      <div class="progress-bar" style="margin-top:14px;">
+        <div class="progress-fill" style="width:${pctFill}%;background:${colore}"></div>
+      </div>
+      <div class="acc-pct">${pctFill.toFixed(1)}% coperto${inPari ? '' : ' · mancano ' + eur(daVersare)}</div>
+    </div>`;
+}
+
+function renderAccSuggeriti(d) {
+  const el = document.getElementById('accSuggeriti');
+  const t  = d.fondoTasse, i = d.fondoInvestimenti;
+
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
+      <div class="chart-title" style="margin:0;">Accantonamenti suggeriti — ${d.anno}</div>
+      <span class="kv-sub">maturato su ${d.mesiTrascorsi} ${d.mesiTrascorsi === 1 ? 'mese' : 'mesi'} · reddito imponibile cumulato ${eur(d.redditoImponibileCumulato)}</span>
+    </div>
+
+    ${d.superatoMinimale ? `
+      <div class="warn-box">
+        <strong>Superato il minimale INPS.</strong> Il reddito imponibile cumulato (${eur(d.redditoImponibileCumulato)})
+        ha superato la soglia di ${eur(d.minimaleInps)}: gli incassi P.IVA oltre soglia generano un contributo
+        aggiuntivo del ~15,6% (24% ridotto del 35%) sulla parte eccedente.
+      </div>` : `
+      <div class="kv-sub" style="margin-bottom:14px;">
+        Reddito imponibile ancora sotto il minimale di ${eur(d.minimaleInps)}: nessun contributo INPS eccedente maturato.
+      </div>`}
+
+    <div class="grid-2">
+      ${fondoBox('Fondo Tasse + INPS', '🧾', 'var(--red)', t.totaleDovuto, t.attualeNelFondo, t.daVersare, [
+        ['Imposta sostitutiva 5%', t.imposta, 'sul reddito imponibile cumulato dell\'anno'],
+        ['INPS fisso maturato', t.inpsFissoMaturato, `${eur(d.quotaInpsFissaMensile)} × ${d.mesiTrascorsi} mesi`],
+        ['INPS eccedente il minimale', t.inpsEccedente, d.superatoMinimale ? 'sulla parte oltre soglia' : 'zero: sotto la soglia del minimale'],
+      ], t.fonteDato)}
+
+      ${fondoBox('Fondo Investimenti', '▲', 'var(--green)', i.totaleDovuto, i.attualeNelFondo, i.daVersare, [
+        ['Base contanti (lorda)', i.baseContanti, 'nessun prelievo fiscale sui contanti'],
+        ['Base P.IVA (netta)', i.baseNettaPIVA, 'incassi P.IVA − imposta − INPS · nel forfettario nessuna IVA'],
+        ['Quota da investire', i.totaleDovuto, '20% della base complessiva'],
+      ], i.fonteDato)}
+    </div>
+
+    <div class="card mt-20">
+      <div class="kv-row">
+        <div><span class="k">Quota INPS fissa mensile</span>
+          <div class="kv-sub">1/12 del contributo annuo di ${eur(FISCAL.inpsFissoAnnuo)} ridotto del ${Math.round(FISCAL.inpsRiduzioneForf*100)}% — matura ogni mese, anche a incasso zero</div>
+        </div>
+        <span class="v gold">${eur(d.quotaInpsFissaMensile)}</span>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Nessun soldo viene spostato automaticamente.</strong> Questa card indica solo quanto <em>dovrebbe</em>
+      esserci nei fondi: il movimento lo esegui tu a mano, poi aggiorni l'accantonamento corrispondente.
+      ${d.note}
+    </div>
+  `;
+}
+
+// ═════════════════════════════════════════════════════════════
+// PARTE D — TRAIETTORIA PATRIMONIO (media pesata)
+// ═════════════════════════════════════════════════════════════
+let chartTraiettoria = null;
+
+async function loadTraiettoria() {
+  const el = document.getElementById('traiettoriaCard');
+  if (!el) return;
+  el.innerHTML = '<div class="card"><div class="loading"><div class="spinner"></div> Calcolo la traiettoria…</div></div>';
+  try {
+    const d = await apiGet('getStimePatrimonio');
+    renderTraiettoria(d);
+  } catch (e) { el.innerHTML = `<div class="card">${errMsg(e)}</div>`; }
+}
+
+function renderTraiettoria(d) {
+  const el = document.getElementById('traiettoriaCard');
+  const n  = d.mesiDisponibili;
+
+  const badge = {
+    bassa: ['badge-red',   `Stima debole — pochi dati (${n} ${n === 1 ? 'mese' : 'mesi'})`],
+    media: ['badge-amber', `Stima indicativa (${n} mesi)`],
+    buona: ['badge-green', `Stima attendibile (${n} mesi)`],
+  }[d.affidabilita] || ['badge-red', 'Stima debole'];
+
+  const traj = {
+    crescita:    ['Patrimonio in crescita ↗', 'var(--green)'],
+    stabile:     ['Patrimonio stabile →',     'var(--gold)'],
+    contrazione: ['Patrimonio in contrazione ↘', 'var(--red)'],
+  }[d.traiettoria] || ['Patrimonio stabile →', 'var(--gold)'];
+
+  if (!n) {
+    el.innerHTML = `<div class="card">
+      <div class="chart-title">Traiettoria patrimonio</div>
+      <span class="badge badge-red">Stima impossibile — nessun dato</span>
+      <div class="kv-sub" style="margin-top:12px;">${d.note}</div>
+    </div>`;
+    return;
+  }
+
+  const flusso = d.flussoNettoMensileStimato;
+
+  el.innerHTML = `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:18px;">
+        <div class="chart-title" style="margin:0;">Traiettoria patrimonio</div>
+        <span class="badge ${badge[0]}">${badge[1]}</span>
+      </div>
+
+      <div class="grid-2-1">
+        <div>
+          <div class="chart-container" style="height:180px;"><canvas id="chartTraiettoria"></canvas></div>
+        </div>
+        <div>
+          <div class="kv-row">
+            <div><span class="k">Flusso netto mensile stimato</span><div class="kv-sub">incassi − spese − quota fiscale</div></div>
+            <span class="v ${flusso >= 0 ? 'positive' : 'negative'}">${eur(flusso)}</span>
+          </div>
+          <div class="kv-row">
+            <span class="k">Incasso medio stimato</span>
+            <span class="v">${eur(d.stimaIncassoMensile)}</span>
+          </div>
+          <div class="kv-row">
+            <span class="k">Spesa media stimata</span>
+            <span class="v">${eur(d.stimaSpesaMensile)}</span>
+          </div>
+          <div class="kv-row">
+            <span class="k">Quota fiscale media</span>
+            <span class="v">${eur(d.accantonamentoFiscaleMedio)}</span>
+          </div>
+          <div class="kv-row total">
+            <span class="k" style="color:${traj[1]}">${traj[0]}</span>
+            <span class="v">${eur(d.patrimonioAttuale)} → ${eur((d.proiezione12Mesi[11]||{}).patrimonioStimato || d.patrimonioAttuale)}</span>
+          </div>
+          <div class="kv-sub" style="margin-top:8px;">patrimonio attuale → stima a 12 mesi</div>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        Stima su <strong>media pesata</strong> degli ultimi ${n} ${n === 1 ? 'mese' : 'mesi'} (i mesi recenti pesano di più).
+        Gli incassi P.IVA variano: usa questa proiezione come <strong>tendenza, non come certezza</strong>.
+        Variabilità storica degli incassi: ${pct(d.variabilitaIncassi * 100)}.
+      </div>
+    </div>`;
+
+  if (chartTraiettoria) chartTraiettoria.destroy();
+  const proj = d.proiezione12Mesi || [];
+  const ctx  = document.getElementById('chartTraiettoria').getContext('2d');
+  const col  = flusso >= 0 ? '#4fcf7a' : '#f2636a';
+  chartTraiettoria = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['oggi'].concat(proj.map(p => '+' + p.mese + 'm')),
+      datasets: [{
+        label: 'Patrimonio stimato',
+        data: [d.patrimonioAttuale].concat(proj.map(p => p.patrimonioStimato)),
+        borderColor: col,
+        backgroundColor: flusso >= 0 ? 'rgba(79,207,122,0.10)' : 'rgba(242,99,106,0.10)',
+        fill: true, tension: 0.35, pointRadius: 0, borderWidth: 2,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => '€' + c.parsed.y.toLocaleString('it-IT') } },
+      },
+      scales: {
+        x: { ticks: { color: '#7a7898', maxTicksLimit: 7 }, grid: { display: false } },
+        y: { ticks: { color: '#7a7898', callback: v => '€'+v.toLocaleString('it-IT') }, grid: { color: 'rgba(255,255,255,0.05)' } },
+      },
+    },
+  });
+}
+
+// ═════════════════════════════════════════════════════════════
+// VERIFICA SCHEMA FOGLI
+// Confronta le intestazioni reali del Google Sheet con quelle che il
+// codice si aspetta. Un disallineamento non genera errori: produce
+// silenziosamente zeri nei calcoli, o scritture nella cella sbagliata.
+// ═════════════════════════════════════════════════════════════
+async function loadVerificaSchema() {
+  const el = document.getElementById('schemaReport');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div> Leggo le intestazioni reali del foglio…</div>';
+  try {
+    renderVerificaSchema(await apiGet('verificaSchema'));
+  } catch (e) { el.innerHTML = errMsg(e); }
+}
+
+function renderVerificaSchema(d) {
+  const el = document.getElementById('schemaReport');
+
+  const statoBadge = {
+    ok:           ['badge-green', '✓ allineato'],
+    ok_con_avvisi:['badge-amber', '⚠ colonne extra'],
+    assente_ok:   ['badge-gold',  '○ non ancora creato'],
+    disallineato: ['badge-red',   '✗ disallineato'],
+    mancante:     ['badge-red',   '✗ foglio mancante'],
+  };
+
+  el.innerHTML = `
+    <div class="card" style="border-color:${d.ok ? 'rgba(79,207,122,0.35)' : 'rgba(242,99,106,0.35)'};">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:16px;">
+        <div class="chart-title" style="margin:0;">Verifica schema fogli</div>
+        <span class="badge ${d.ok ? 'badge-green' : 'badge-red'}">
+          ${d.ok ? 'Foglio coerente col codice ✓'
+                 : `${d.fogliInErrore} fogli disallineati · ${d.vincoliPosizionaliRotti} vincoli di posizione rotti`}
+        </span>
+      </div>
+
+      ${d.ok ? `
+        <div class="kv-sub">Tutte le intestazioni e tutte le posizioni critiche corrispondono a ciò che il codice legge e scrive.</div>
+      ` : `
+        <div class="warn-box">
+          <strong>Attenzione: il foglio non corrisponde a quanto il codice si aspetta.</strong>
+          Un'intestazione con testo diverso fa leggere <em>zero</em> ai calcoli senza generare errori;
+          una colonna spostata fa scrivere nella cella sbagliata. Correggi la riga 1 dei fogli segnalati.
+        </div>`}
+
+      <!-- Vincoli posizionali -->
+      <div class="chart-title" style="font-size:0.85rem;margin-top:22px;">Colonne usate per posizione (le più critiche)</div>
+      ${d.posizionali.map(p => `
+        <div class="kv-row">
+          <div>
+            <span class="k">${p.foglio} · colonna ${p.colonna}</span>
+            <div class="kv-sub">attesa "${p.atteso}" — usata da: ${p.usato}</div>
+          </div>
+          <span class="v ${p.ok ? 'positive' : 'negative'}">${p.ok ? '✓ ' + p.atteso : '✗ trovata "' + (p.trovato || 'vuota') + '"'}</span>
+        </div>`).join('')}
+
+      <!-- Fogli -->
+      <div class="chart-title" style="font-size:0.85rem;margin-top:26px;">Intestazioni per foglio</div>
+      ${d.fogli.map(f => {
+        const b = statoBadge[f.stato] || ['badge-red', f.stato];
+        return `
+        <div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:0.88rem;">${f.foglio}
+              <span class="kv-sub" style="display:inline;margin-left:8px;">${f.righe} righe</span>
+            </span>
+            <span class="badge ${b[0]}">${b[1]}</span>
+          </div>
+          ${f.messaggio ? `<div class="kv-sub" style="margin-top:8px;">${f.messaggio}</div>` : ''}
+          ${f.problemi && f.problemi.length ? `
+            <div style="margin-top:10px;">
+              ${f.problemi.map(p => `
+                <div class="kv-sub" style="color:${p.gravita === 'errore' ? 'var(--red)' : 'var(--orange)'};margin-top:4px;">
+                  ${p.gravita === 'errore' ? '✗' : '⚠'} ${p.testo}
+                </div>`).join('')}
+              <div class="kv-sub" style="margin-top:8px;">
+                Attese: <span style="font-family:var(--font-mono)">${f.attese.join(' · ')}</span>
+              </div>
+              <div class="kv-sub">
+                Trovate: <span style="font-family:var(--font-mono)">${f.trovate.length ? f.trovate.join(' · ') : '(nessuna)'}</span>
+              </div>
+            </div>` : ''}
+        </div>`;
+      }).join('')}
+
+      <!-- Campi letti per nome -->
+      <div class="chart-title" style="font-size:0.85rem;margin-top:26px;">Campi letti per nome intestazione</div>
+      <div class="kv-sub" style="margin-bottom:10px;">
+        Se una di queste intestazioni cambia testo, il valore diventa vuoto e i calcoli lo trattano come zero, senza errori a schermo.
+      </div>
+      ${d.campiPerNome.map(c => `
+        <div class="kv-row">
+          <div>
+            <span class="k">${c.foglio}</span>
+            <div class="kv-sub">${c.usato}</div>
+          </div>
+          <span class="v" style="font-size:0.78rem;">${c.campi.join(' · ')}</span>
+        </div>`).join('')}
+
+      <div class="disclaimer">${d.nota}</div>
+    </div>`;
 }
 
 // ─────────────────────────────────────────────────────────────
