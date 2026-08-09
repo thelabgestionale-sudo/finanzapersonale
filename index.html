@@ -861,12 +861,16 @@ input[type="range"]::-moz-range-track { height: 4px; border-radius: 99px; backgr
           <h2 style="font-family:var(--font-serif);font-size:1.4rem;">Spazi & Saldi</h2>
           <p style="color:var(--text-dim);font-size:0.8rem;margin-top:4px;">Contanti, carte, conti</p>
         </div>
-        <button class="btn btn-primary" onclick="openModal('modalSpazio')">+ Nuovo Spazio</button>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-ghost" onclick="openGiroconto()">⇄ Giroconto</button>
+          <button class="btn btn-primary" onclick="openModal('modalSpazio')">+ Nuovo Spazio</button>
+        </div>
       </div>
       <div class="grid-3" id="spaziGrid">
         <div class="loading" style="grid-column:1/-1"><div class="spinner"></div></div>
       </div>
-      <div id="storicoRettifiche" class="mt-28"></div>
+      <div id="storicoGiroconti" class="mt-28"></div>
+      <div id="storicoRettifiche"></div>
     </div>
 
     <!-- ═══════════ ACCANTONAMENTI ═══════════ -->
@@ -1148,6 +1152,51 @@ input[type="range"]::-moz-range-track { height: 4px; border-radius: 99px; backgr
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modalSpazio')">Annulla</button>
       <button class="btn btn-primary" onclick="submitSpazio()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- GIROCONTO TRA SPAZI -->
+<div class="modal-overlay" id="modalGiroconto">
+  <div class="modal">
+    <div class="modal-title">⇄ Giroconto tra Spazi</div>
+    <p style="font-size:0.8rem;color:var(--text-dim);line-height:1.6;margin-bottom:20px;">
+      Sposta denaro da uno spazio all'altro. Non crea entrate né spese: il patrimonio
+      totale non cambia, cambia solo dove si trova il denaro.
+    </p>
+    <div class="form-group">
+      <label>Da (origine)</label>
+      <select id="gir_da" onchange="aggiornaAnteprimaGiroconto()"></select>
+    </div>
+    <div class="form-group">
+      <label>A (destinazione)</label>
+      <select id="gir_a" onchange="aggiornaAnteprimaGiroconto()"></select>
+    </div>
+    <div class="form-group">
+      <label>Importo (€)</label>
+      <input type="number" id="gir_importo" min="0" step="0.01" placeholder="0.00"
+             oninput="aggiornaAnteprimaGiroconto()" />
+    </div>
+    <div class="kv-row">
+      <span class="k">Origine dopo il giroconto</span>
+      <span class="v" id="gir_saldoDa">—</span>
+    </div>
+    <div class="kv-row">
+      <span class="k">Destinazione dopo il giroconto</span>
+      <span class="v" id="gir_saldoA">—</span>
+    </div>
+    <div id="gir_avviso"></div>
+    <div class="form-group" style="margin-top:18px;">
+      <label>Motivo</label>
+      <input type="text" id="gir_motivo" placeholder="Es. quota mensile accantonamento spese…" />
+    </div>
+    <div class="disclaimer" style="margin-top:4px;">
+      Ogni giroconto viene annotato sul foglio <strong>Giroconti</strong> con data, importo e motivo.
+      Report, simulatore e stime non ne risentono: non è né un incasso né una spesa.
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalGiroconto')">Annulla</button>
+      <button class="btn btn-primary" onclick="submitGiroconto()">Esegui giroconto</button>
     </div>
   </div>
 </div>
@@ -1786,14 +1835,127 @@ async function loadSpazi() {
         <div class="spazio-nome">${s.Nome}</div>
         <div class="spazio-saldo" style="color:${saldo>=0?'var(--green)':'var(--red)'}">€ ${saldo.toLocaleString('it-IT',{minimumFractionDigits:2})}</div>
         ${s.Note?`<div class="spazio-note">${s.Note}</div>`:''}
-        <div style="margin-top:14px;display:flex;gap:8px;">
-          <button class="btn btn-ghost btn-sm" onclick="openRettifica('${s.ID}')">⚖ Rettifica saldo</button>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-sm" onclick="openGiroconto('${s.ID}')">⇄ Sposta</button>
+          <button class="btn btn-ghost btn-sm" onclick="openRettifica('${s.ID}')">⚖ Rettifica</button>
           <button class="btn btn-ghost btn-sm" onclick="deleteItem('${s.ID}','Spazi')">Rimuovi</button>
         </div>
       </div>`;
     }).join('');
+    loadStoricoGiroconti();
     loadStoricoRettifiche();
   } catch(e) { el.innerHTML = errMsg(e); }
+}
+
+// ─────────────────────────────────────────────────────────────
+// GIROCONTO TRA SPAZI
+// Sposta denaro senza generare entrate o spese: il patrimonio totale
+// resta identico, cambia solo la sua collocazione.
+// ─────────────────────────────────────────────────────────────
+function saldoSpazio(id) {
+  const s = _cache.spazi.find(x => String(x.ID) === String(id));
+  return s ? (parseFloat(s.Saldo) || 0) : 0;
+}
+
+function openGiroconto(daId) {
+  if (!_cache.spazi.length) return toast('Nessuno spazio disponibile', 'error');
+  if (_cache.spazi.length < 2) return toast('Servono almeno due spazi per un giroconto', 'error');
+
+  const opts = _cache.spazi.map(s =>
+    `<option value="${s.ID}">${s.Nome} — ${eur(parseFloat(s.Saldo) || 0)}</option>`).join('');
+  const selDa = document.getElementById('gir_da');
+  const selA  = document.getElementById('gir_a');
+  selDa.innerHTML = opts;
+  selA.innerHTML  = opts;
+
+  selDa.value = daId || _cache.spazi[0].ID;
+  // La destinazione non può coincidere con l'origine
+  const altro = _cache.spazi.find(s => String(s.ID) !== String(selDa.value));
+  selA.value = altro ? altro.ID : '';
+
+  document.getElementById('gir_importo').value = '';
+  document.getElementById('gir_motivo').value  = '';
+  aggiornaAnteprimaGiroconto();
+  document.getElementById('modalGiroconto').classList.add('open');
+}
+
+function aggiornaAnteprimaGiroconto() {
+  const da  = v('gir_da'), a = v('gir_a');
+  const raw = document.getElementById('gir_importo').value;
+  const imp = parseFloat(raw);
+  const elDa = document.getElementById('gir_saldoDa');
+  const elA  = document.getElementById('gir_saldoA');
+  const avv  = document.getElementById('gir_avviso');
+
+  if (da && a && da === a) {
+    elDa.innerHTML = elA.innerHTML = '<span style="color:var(--text-dim)">—</span>';
+    avv.innerHTML = '<div class="warn-box" style="margin:14px 0 0;">Origine e destinazione coincidono: scegli due spazi diversi.</div>';
+    return;
+  }
+  avv.innerHTML = '';
+
+  if (raw === '' || isNaN(imp) || imp <= 0) {
+    elDa.innerHTML = elA.innerHTML = '<span style="color:var(--text-dim)">—</span>';
+    return;
+  }
+
+  const dopoDa = Math.round((saldoSpazio(da) - imp) * 100) / 100;
+  const dopoA  = Math.round((saldoSpazio(a)  + imp) * 100) / 100;
+  elDa.innerHTML = `<span class="${dopoDa < 0 ? 'negative' : ''}">${eur(dopoDa)}</span>`;
+  elA.innerHTML  = `<span class="positive">${eur(dopoA)}</span>`;
+
+  if (dopoDa < 0) {
+    avv.innerHTML = `<div class="warn-box" style="margin:14px 0 0;">
+      L'origine resterebbe in rosso a ${eur(dopoDa)}. Puoi procedere comunque, ma controlla l'importo.</div>`;
+  }
+}
+
+async function submitGiroconto() {
+  const da = v('gir_da'), a = v('gir_a'), importo = v('gir_importo');
+  if (!da || !a)      return toast('Scegli origine e destinazione', 'error');
+  if (da === a)       return toast('Origine e destinazione coincidono', 'error');
+  const imp = parseFloat(importo);
+  if (isNaN(imp) || imp <= 0) return toast('Inserisci un importo maggiore di zero', 'error');
+
+  try {
+    const res = await apiPost('trasferisci', { da, a, importo, motivo: v('gir_motivo') });
+    closeModal('modalGiroconto');
+    toast(`${eur0(res.importo)} da ${res.da.nome} a ${res.a.nome}` +
+          `<br><span style="color:var(--text-dim);font-size:0.72rem">` +
+          `${res.da.nome}: ${eur0(res.da.saldoDopo)} · ${res.a.nome}: ${eur0(res.a.saldoDopo)}</span>`, 'success');
+    if (res.origineInNegativo) toast(`${res.da.nome} è ora in rosso.`, 'info');
+    loadSpazi();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function loadStoricoGiroconti() {
+  const el = document.getElementById('storicoGiroconti');
+  if (!el) return;
+  try {
+    const raw = await apiGet('getGiroconti');
+    const rows = (Array.isArray(raw) ? raw : []).slice(0, 15);
+    if (!rows.length) { el.innerHTML = ''; return; }
+    el.innerHTML = `
+      <div class="drop" id="dropGiroconti">
+        <div class="drop-head" onclick="document.getElementById('dropGiroconti').classList.toggle('open')">
+          <span class="chevron">▶</span>
+          <div class="drop-summary">
+            <span class="slider-label">Storico giroconti</span>
+            <div class="kv-sub">${rows.length} spostament${rows.length === 1 ? 'o' : 'i'} tra spazi — il patrimonio totale non è cambiato</div>
+          </div>
+        </div>
+        <div class="drop-panel">
+          ${rows.map(r => `
+            <div class="kv-row">
+              <div>
+                <span class="k">${r.DaNome || '—'} → ${r.ANome || '—'}</span>
+                <div class="kv-sub">${r.Data || ''}${r.Motivo ? ' · ' + r.Motivo : ''}</div>
+              </div>
+              <span class="v gold">${eur(r.Importo)}</span>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  } catch(e) { el.innerHTML = ''; }
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -2173,7 +2335,7 @@ async function deleteItem(id, sheet) {
 // Versione di Script.gs che questo index.html si aspetta.
 // Se il backend distribuito ne riporta una diversa (o nessuna), la Web App
 // non è stata ridistribuita dopo l'ultima modifica.
-const BACKEND_VERSION_ATTESA = '2026-07-28.2';
+const BACKEND_VERSION_ATTESA = '2026-07-28.3';
 
 async function testConnection() {
   const el = document.getElementById('connStatus');
@@ -2463,7 +2625,7 @@ function renderReport(d) {
         ${[
           ['Spese', ob.spese, '50%', 'var(--red)', 'tetto consigliato per le spese correnti'],
           ['Investimenti', ob.investimenti, '20%', 'var(--green)', 'quota da mettere a mercato'],
-          ['Accantonamenti', ob.accantonamenti, '15%', 'var(--blue)', 'tasse e spese future'],
+          ['Accantonamenti', ob.accantonamenti, '15%', 'var(--blue)', 'spese future: auto, dentista, imprevisti'],
           ['Cuscinetto', ob.cuscinetto, '15%', 'var(--gold)', 'liquidità di sicurezza'],
         ].map(([nome, val, quota, col, sub]) => `
           <div class="stat-card">
@@ -2878,7 +3040,7 @@ function fondoBox(titolo, icona, colore, dovuto, attuale, daVersare, righe, font
 
 function renderAccSuggeriti(d) {
   const el = document.getElementById('accSuggeriti');
-  const t  = d.fondoTasse, i = d.fondoInvestimenti;
+  const t  = d.fondoTasse, i = d.fondoInvestimenti, s = d.fondoSpese;
 
   el.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
@@ -2896,18 +3058,37 @@ function renderAccSuggeriti(d) {
         Reddito imponibile ancora sotto il minimale di ${eur(d.minimaleInps)}: nessun contributo INPS eccedente maturato.
       </div>`}
 
-    <div class="grid-2">
+    <div class="grid-3">
       ${fondoBox('Fondo Tasse + INPS', '🧾', 'var(--red)', t.totaleDovuto, t.attualeNelFondo, t.daVersare, [
         ['Imposta sostitutiva 5%', t.imposta, 'sul reddito imponibile cumulato dell\'anno'],
         ['INPS fisso maturato', t.inpsFissoMaturato, `${eur(d.quotaInpsFissaMensile)} × ${d.mesiTrascorsi} mesi`],
         ['INPS eccedente il minimale', t.inpsEccedente, d.superatoMinimale ? 'sulla parte oltre soglia' : 'zero: sotto la soglia del minimale'],
       ], t.fonteDato)}
 
+      ${fondoBox('Fondo Spese Future', '🛟', 'var(--blue)', s.totaleDovuto, s.attualeNelFondo, s.daVersare, [
+        ['Base netta', s.baseNetta, 'contanti lordi + P.IVA al netto di imposta e INPS'],
+        ['Quota da accantonare', s.totaleDovuto, `${Math.round(s.percentuale*100)}% della base netta`],
+        ['Ritmo suggerito', s.mediaMensile, `al mese, per stare in pari sui ${d.mesiTrascorsi} mesi trascorsi`],
+      ], s.fonteDato)}
+
       ${fondoBox('Fondo Investimenti', '▲', 'var(--green)', i.totaleDovuto, i.attualeNelFondo, i.daVersare, [
         ['Base contanti (lorda)', i.baseContanti, 'nessun prelievo fiscale sui contanti'],
         ['Base P.IVA (netta)', i.baseNettaPIVA, 'incassi P.IVA − imposta − INPS · nel forfettario nessuna IVA'],
-        ['Quota da investire', i.totaleDovuto, '20% della base complessiva'],
+        ['Quota da investire', i.totaleDovuto, `${Math.round(i.percentuale*100)}% della base complessiva`],
       ], i.fonteDato)}
+    </div>
+
+    <div class="card mt-20" style="border-color:var(--gold-dim);">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;">
+        <div>
+          <div class="chart-title" style="margin:0;">Devi spostare i soldi tu</div>
+          <div class="kv-sub" style="margin-top:6px;">
+            Il sistema non muove nulla da solo. Usa il giroconto per portare il denaro nei fondi:
+            non genera entrate né spese, quindi i tuoi report restano puliti.
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="navigate('spazi')">⇄ Vai al giroconto</button>
+      </div>
     </div>
 
     <div class="card mt-20">
